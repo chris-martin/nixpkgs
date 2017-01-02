@@ -12453,6 +12453,8 @@ in
 
   libbitcoin-client = callPackage ../tools/misc/libbitcoin/libbitcoin-client.nix { };
 
+  libbitcoin-explorer = callPackage ../tools/misc/libbitcoin/libbitcoin-explorer.nix { };
+
   go-ethereum = self.altcoins.go-ethereum;
 
   aumix = callPackage ../applications/audio/aumix {
