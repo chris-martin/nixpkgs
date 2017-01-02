@@ -12447,6 +12447,10 @@ in
   bitcoin = self.altcoins.bitcoin;
   bitcoin-xt = self.altcoins.bitcoin-xt;
 
+  libbitcoin = callPackage ../tools/misc/libbitcoin/libbitcoin.nix {
+    secp256k1 = secp256k1.override { enableECDH = true; };
+  };
+
   go-ethereum = self.altcoins.go-ethereum;
 
   aumix = callPackage ../applications/audio/aumix {
