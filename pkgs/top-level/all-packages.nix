@@ -8392,7 +8392,7 @@ in
 
   libpfm = callPackage ../development/libraries/libpfm { };
 
-  libpqxx = callPackage ../development/libraries/libpqxx { 
+  libpqxx = callPackage ../development/libraries/libpqxx {
     gnused = gnused_422;
   };
 
