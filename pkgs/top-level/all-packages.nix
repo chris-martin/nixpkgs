@@ -10567,6 +10567,7 @@ in
   newrelic-sysmond = callPackage ../servers/monitoring/newrelic-sysmond { };
 
   riemann = callPackage ../servers/monitoring/riemann { };
+  riemann-cli = callPackage ../tools/networking/riemann-cli { };
   riemann-dash = callPackage ../servers/monitoring/riemann-dash { };
   riemannq = callPackage ../tools/networking/riemannq { };
 
