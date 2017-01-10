@@ -10448,6 +10448,7 @@ in
 
   riemann = callPackage ../servers/monitoring/riemann { };
   riemann-dash = callPackage ../servers/monitoring/riemann-dash { };
+  riemannq = callPackage ../tools/networking/riemannq { };
 
   oidentd = callPackage ../servers/identd/oidentd { };
 
