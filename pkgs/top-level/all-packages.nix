@@ -13807,6 +13807,8 @@ in
 
   k9copy = qt5.callPackage ../applications/video/k9copy {};
 
+  kbtin = callPackage ../tools/networking/kbtin { };
+
   kdeconnect = qt5.callPackage ../applications/misc/kdeconnect { };
 
   kdecoration-viewer = kde5.callPackage ../tools/misc/kdecoration-viewer {};
