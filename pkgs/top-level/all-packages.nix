@@ -13719,6 +13719,8 @@ in
 
   k9copy = qt5.callPackage ../applications/video/k9copy {};
 
+  kbtin = callPackage ../tools/networking/kbtin { };
+
   kdeconnect = qt5.callPackage ../applications/misc/kdeconnect { };
 
   kdevelop-pg-qt = kde5.callPackage ../applications/editors/kdevelop5/kdevelop-pg-qt.nix {};
