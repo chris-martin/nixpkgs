@@ -3932,6 +3932,8 @@ in
 
   whois = callPackage ../tools/networking/whois { };
 
+  wordlist = callPackage ../tools/text/wordlist { };
+
   wsmancli = callPackage ../tools/system/wsmancli {};
 
   wolfebin = callPackage ../tools/networking/wolfebin {
