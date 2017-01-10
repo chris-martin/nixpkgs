@@ -14539,6 +14539,8 @@ in
     pythonPackages = python3Packages;
   };
 
+  pandora = callPackage ../applications/audio/pandora { };
+
   pinfo = callPackage ../applications/misc/pinfo { };
 
   pinpoint = callPackage ../applications/office/pinpoint {
