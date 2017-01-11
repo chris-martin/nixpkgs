@@ -4110,6 +4110,8 @@ in
     libpsl = null;
   };
 
+  dummy-wget = callPackage ../tools/networking/dummy-wget { };
+
   which = callPackage ../tools/system/which { };
 
   wicd = callPackage ../tools/networking/wicd { };
