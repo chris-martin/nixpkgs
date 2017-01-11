@@ -438,6 +438,8 @@ in
 
   argtable = callPackage ../tools/misc/argtable {};
 
+  argtable-2 = callPackage ../tools/misc/argtable-2 { };
+
   argyllcms = callPackage ../tools/graphics/argyllcms {};
 
   arp-scan = callPackage ../tools/misc/arp-scan { };
