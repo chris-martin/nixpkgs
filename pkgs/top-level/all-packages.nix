@@ -4393,6 +4393,8 @@ in
     libpsl = null;
   };
 
+  dummy-wget = callPackage ../tools/networking/dummy-wget { };
+
   which = callPackage ../tools/system/which { };
 
   chase = callPackage ../tools/system/chase { };
