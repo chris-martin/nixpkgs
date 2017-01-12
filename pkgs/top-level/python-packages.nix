@@ -1965,6 +1965,21 @@ in {
     };
   };
 
+  base58_0_2_2 = buildPythonPackage rec {
+    pname = "base58";
+    version = "0.2.2";
+    name = "${pname}-${version}";
+
+    src = pkgs.fetchurl {
+     url = "mirror://pypi/b/base58/${name}.tar.gz";
+     sha256 = "102vxvvz5jzc2ccgaf5pwdrmgypg277d7bfy0h9mp9d0nv9s9spi";
+    };
+
+    meta = {
+      description = "Base58 and Base58Check implementation";
+    };
+  };
+
   bcdoc = buildPythonPackage rec {
     name = "bcdoc-0.14.0";
 
