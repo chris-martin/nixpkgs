@@ -2256,6 +2256,8 @@ in
     packages = config.ihaskell.packages or (self: []);
   };
 
+  inherit (python35Packages) ipython;
+
   imapproxy = callPackage ../tools/networking/imapproxy { };
 
   imapsync = callPackage ../tools/networking/imapsync { };
@@ -2570,6 +2572,8 @@ in
 
   # Can be used as a user shell
   nologin = shadow;
+
+  inherit (nodePackages) npm;
 
   npm2nix = nodePackages.npm2nix;
 
@@ -4995,6 +4999,8 @@ in
 
   cabal-install = haskell.lib.disableSharedExecutables haskellPackages.cabal-install;
 
+  cabal = cabal-install;
+
   stack = haskell.lib.overrideCabal haskellPackages.stack (drv: {
     enableSharedExecutables = false;
     isLibrary = false;
@@ -5003,6 +5009,30 @@ in
   });
 
   all-cabal-hashes = callPackage ../data/misc/hackage/default.nix { };
+
+  inherit (haskellPackages) choose;
+
+  inherit (haskellPackages) ghc-mod;
+
+  inherit (haskellPackages) hasktags;
+
+  inherit (haskellPackages) hdevtools;
+
+  inherit (haskellPackages) hlint;
+
+  inherit (haskellPackages) hoogle;
+
+  inherit (haskellPackages) hsdev;
+
+  inherit (haskellPackages) intero;
+
+  inherit (haskellPackages) pointfree;
+
+  inherit (haskellPackages) pointful;
+
+  inherit (haskellPackages) purescript;
+
+  inherit (haskellPackages) stylish-haskell;
 
   inherit (ocamlPackages) haxe;
 
@@ -9971,7 +10001,11 @@ in
 
   yuicompressor = callPackage ../development/tools/yuicompressor { };
 
+  grunt = nodePackages.grunt-cli;
+
   ### DEVELOPMENT / BOWER MODULES (JAVASCRIPT)
+
+  inherit (nodePackages) bower;
 
   buildBowerComponents = callPackage ../development/bower-modules/generic { };
 
@@ -10702,6 +10736,8 @@ in
     fglrxCompat = config.xorg.fglrxCompat or false; # `config` because we have no `xorg.override`
   } // { inherit xlibsWrapper; } );
 
+  inherit (xorg) xkill;
+
   xwayland = callPackage ../servers/x11/xorg/xwayland.nix { };
 
   yaws = callPackage ../servers/http/yaws { erlang = erlangR17; };
@@ -10969,6 +11005,8 @@ in
   htop = callPackage ../tools/system/htop {
     inherit (darwin) IOKit;
   };
+
+  inherit (python27Packages) glances;
 
   # GNU/Hurd core packages.
   gnu = recurseIntoAttrs (callPackage ../os-specific/gnu {
@@ -12593,6 +12631,8 @@ in
 
   chatzilla = callPackage ../applications/networking/irc/chatzilla { };
 
+  inherit (gnome3) cheese;
+
   chirp = callPackage ../applications/misc/chirp {
     inherit (pythonPackages) pyserial pygtk;
   };
@@ -12772,6 +12812,8 @@ in
   docker = callPackage ../applications/virtualization/docker { };
 
   docker-gc = callPackage ../applications/virtualization/docker/gc.nix { };
+
+  docker-compose = python27Packages.docker_compose;
 
   docker-machine = callPackage ../applications/networking/cluster/docker-machine { };
   docker-machine-kvm = callPackage ../applications/networking/cluster/docker-machine/kvm.nix { };
@@ -13039,6 +13081,8 @@ in
 
   enhanced-ctorrent = callPackage ../applications/networking/enhanced-ctorrent { };
 
+  inherit (gnome3) eog;
+
   epdfview = callPackage ../applications/misc/epdfview { };
 
   inherit (gnome3) epiphany;
@@ -13099,6 +13143,8 @@ in
 
   fetchmail = callPackage ../applications/misc/fetchmail { };
 
+  inherit (gnome3) file-roller;
+
   flacon = callPackage ../applications/audio/flacon { };
 
   flexget = callPackage ../applications/networking/flexget { };
@@ -13137,6 +13183,8 @@ in
   geany-with-vte = callPackage ../applications/editors/geany/with-vte.nix { };
 
   gksu = callPackage ../applications/misc/gksu { };
+
+  inherit (gnome3) gnome-screenshot;
 
   gnuradio = callPackage ../applications/misc/gnuradio {
     inherit (python2Packages) cheetah lxml matplotlib numpy python pyopengl pyqt4 scipy wxPython pygtk;
@@ -14251,6 +14299,8 @@ in
   playonlinux = callPackage ../applications/misc/playonlinux {
      stdenv = stdenv_32bit;
   };
+
+  inherit (gnome3) polari;
 
   scudcloud = callPackage ../applications/networking/instant-messengers/scudcloud { };
 
@@ -16656,6 +16706,8 @@ in
         in self;
 
     in makeOverridable makePackages extra;
+
+  inherit (kde4) kcolorchooser;
 
   lumina = callPackage ../desktops/lumina { };
 
