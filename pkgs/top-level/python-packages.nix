@@ -19204,6 +19204,36 @@ in modules // {
     };
   };
 
+  pysha3 = buildPythonPackage rec {
+    name = "pysha3-${version}";
+    version = "0.3";
+
+    src = pkgs.fetchurl {
+      url = "mirror://pypi/p/pysha3/${name}.tar.gz";
+      sha256 = "0kghj6wbxjzwfn0h6m90yxkwx09wydr5p0kcgj2gn4fyfwgmy70r";
+    };
+
+    meta = {
+      homepage = https://bitbucket.org/tiran/pykeccak;
+      description = "SHA-3 wrapper (keccak) for Python";
+    };
+  };
+
+  pysha3_0_1 = buildPythonPackage rec {
+    name = "pysha3-${version}";
+    version = "0.1";
+
+    src = pkgs.fetchurl {
+      url = "mirror://pypi/p/pysha3/${name}.tar.gz";
+      sha256 = "1zhkj2wp019amvq9hqwcsmdj4lxgzhdab78ydchag4k3d8vhkq9n";
+    };
+
+    meta = {
+      homepage = https://bitbucket.org/tiran/pykeccak;
+      description = "SHA-3 wrapper (keccak) for Python";
+    };
+  };
+
   pyshp = buildPythonPackage rec {
     name = "pyshp-${version}";
     version = "1.2.3";
