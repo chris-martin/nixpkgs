@@ -1758,6 +1758,21 @@ in modules // {
     };
   };
 
+  base58 = buildPythonPackage rec {
+    pname = "base58";
+    version = "0.2.4";
+    name = "${pname}-${version}";
+
+    src = pkgs.fetchurl {
+     url = "mirror://pypi/b/base58/${name}.tar.gz";
+     sha256 = "130mh7sqdlfawi0vyrva88rqdi5nc9aks0s15y0gn6m8qz5lvjwp";
+    };
+
+    meta = {
+      description = "Base58 and Base58Check implementation";
+    };
+  };
+
   bcdoc = buildPythonPackage rec {
     name = "bcdoc-0.14.0";
 
