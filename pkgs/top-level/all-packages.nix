@@ -5765,6 +5765,7 @@ in
   pltScheme = racket; # just to be sure
 
   polyml = callPackage ../development/compilers/polyml { };
+  polyml_5_4 = callPackage ../development/compilers/polyml { };
 
   pure = callPackage ../development/interpreters/pure {
     llvm = llvm_35;
