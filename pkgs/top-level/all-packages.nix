@@ -2659,6 +2659,8 @@ in
 
   libreswan = callPackage ../tools/networking/libreswan { };
 
+  libscrypt = callPackage ../development/libraries/libscrypt { };
+
   libwebsockets = callPackage ../development/libraries/libwebsockets { };
 
   limesurvey = callPackage ../servers/limesurvey { };
