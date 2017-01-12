@@ -20060,8 +20060,8 @@ in {
 
     buildInputs = [ pkgs.libev ];
 
-    libEvSharedLibrary = 
-      if !stdenv.isDarwin  
+    libEvSharedLibrary =
+      if !stdenv.isDarwin
       then "${pkgs.libev}/lib/libev.so.4"
       else "${pkgs.libev}/lib/libev.4.dylib";
 
