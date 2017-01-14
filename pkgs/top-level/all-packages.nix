@@ -5027,7 +5027,7 @@ in
 
   all-cabal-hashes = callPackage ../data/misc/hackage/default.nix { };
 
-  inherit (haskellPackages) choose;
+  choose = haskellPackages.choose-exe;
 
   inherit (haskellPackages) ghc-mod;
 
