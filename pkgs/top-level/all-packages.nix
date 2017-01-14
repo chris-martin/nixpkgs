@@ -5381,7 +5381,7 @@ with pkgs;
         profiledCompiler = false;
         enableMultilib = true;
       }))
-    else throw "Multilib ${cc.name} not supported on ‘${system}’";
+    else throw "Multilib ${cc.name} not supported on ???${system}???";
 
   gcc_multi = wrapCCMulti gcc;
 
@@ -5674,6 +5674,8 @@ with pkgs;
   purescript = haskell.lib.justStaticExecutables haskellPackages.purescript;
   psc-package = haskell.lib.justStaticExecutables
     (haskellPackages.callPackage ../development/compilers/purescript/psc-package { });
+
+  choose = haskellPackages.choose-exe;
 
   inherit (ocamlPackages.haxe) haxe_3_2 haxe_3_4;
   haxe = haxe_3_4;
