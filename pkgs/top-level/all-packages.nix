@@ -4713,7 +4713,7 @@ in
 
   # Haskell and GHC
 
-  haskell = callPackage ./haskell-packages.nix { };
+  haskell = callPackage ./haskell-packages.nix { inherit crossSystem; };
 
   haskellPackages = haskell.packages.ghc801.override {
     overrides = config.haskellPackageOverrides or (self: super: {});
@@ -7418,8 +7418,6 @@ in
       inherit (darwin) libiconv;
     }
   );
-
-  libgit2_0_21 = callPackage ../development/libraries/git2/0.21.nix { };
 
   gle = callPackage ../development/libraries/gle { };
 
