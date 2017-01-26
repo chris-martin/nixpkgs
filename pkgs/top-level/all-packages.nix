@@ -377,6 +377,8 @@ in
 
   afl = callPackage ../tools/security/afl { };
 
+  agrep = callPackage ../tools/text/agrep { };
+
   aha = callPackage ../tools/text/aha { };
 
   ahcpd = callPackage ../tools/networking/ahcpd { };
@@ -10422,6 +10424,7 @@ in
   jetty = callPackage ../servers/http/jetty { };
 
   knot-dns = callPackage ../servers/dns/knot-dns { };
+  knot-resolver = callPackage ../servers/dns/knot-resolver { };
 
   rdkafka = callPackage ../development/libraries/rdkafka { };
 
@@ -11267,7 +11270,6 @@ in
   linux_3_18 = callPackage ../os-specific/linux/kernel/linux-3.18.nix {
     kernelPatches =
       [ kernelPatches.bridge_stp_helper
-        kernelPatches.packet_fix_race_condition_CVE_2016_8655
       ]
       ++ lib.optionals ((platform.kernelArch or null) == "mips")
       [ kernelPatches.mips_fpureg_emu
@@ -11279,7 +11281,6 @@ in
   linux_4_1 = callPackage ../os-specific/linux/kernel/linux-4.1.nix {
     kernelPatches =
       [ kernelPatches.bridge_stp_helper
-        kernelPatches.packet_fix_race_condition_CVE_2016_8655
       ]
       ++ lib.optionals ((platform.kernelArch or null) == "mips")
       [ kernelPatches.mips_fpureg_emu
@@ -11292,7 +11293,6 @@ in
     kernelPatches =
       [ kernelPatches.bridge_stp_helper
         kernelPatches.cpu-cgroup-v2."4.4"
-        kernelPatches.p9_caching_4_4
       ]
       ++ lib.optionals ((platform.kernelArch or null) == "mips")
       [ kernelPatches.mips_fpureg_emu
