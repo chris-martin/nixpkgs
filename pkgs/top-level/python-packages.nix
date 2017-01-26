@@ -2967,7 +2967,7 @@ in {
 
 
   blockdiag = buildPythonPackage rec {
-    name = "blockdiag";
+    name = "blockdiag-${version}";
     version = "1.5.3";
 
     src = pkgs.fetchurl {
@@ -4998,6 +4998,23 @@ in {
     };
   };
 
+  pydub = buildPythonPackage rec {
+    name = "${pname}-${version}";
+    pname = "pydub";
+    version = "0.16.7";
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/05/e0/8d2496c8ef1d7f2c8ff625be3849f550da42809b862879a8fb137c6baa11/${name}.tar.gz";
+      sha256 = "10rmbvsld5fni9wsvb7la8lblrglsnzd2l1159rcxqf6b8k441dx";
+    };
+
+    meta = {
+      description = "Manipulate audio with a simple and easy high level interface.";
+      homepage    = "http://pydub.com/";
+      license     = licenses.mit;
+      platforms   = platforms.all;
+    };
+  };
+
   pyjade = buildPythonPackage rec {
     name = "${pname}-${version}";
     pname = "pyjade";
@@ -5027,61 +5044,13 @@ in {
 
   pytest = self.pytest_29;
 
-  pytest_27 = buildPythonPackage rec {
-    name = "pytest-2.7.3";
+  pytest_27 = callPackage ../development/python-modules/pytest/2_7.nix {};
 
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/p/pytest/${name}.tar.gz";
-      sha256 = "1z4yi986f9n0p8qmzmn21m21m8j1x78hk3505f89baqm6pdw7afm";
-    };
+  pytest_28 = callPackage ../development/python-modules/pytest/2_8.nix {};
 
-    # Disabled temporarily because of Hydra issue with namespaces
-    doCheck = false;
+  pytest_29 = callPackage ../development/python-modules/pytest/2_9.nix {};
 
-    preCheck = ''
-      # don't test bash builtins
-      rm testing/test_argcomplete.py
-    '';
-
-    propagatedBuildInputs = with self; [ py ]
-      ++ (optional isPy26 argparse)
-      ++ stdenv.lib.optional
-        pkgs.config.pythonPackages.pytest.selenium or false
-        self.selenium;
-
-    meta = {
-      maintainers = with maintainers; [ domenkozar lovek323 madjar ];
-      platforms = platforms.unix;
-    };
-  };
-
-  pytest_28 = self.pytest_27.override rec {
-    name = "pytest-2.8.7";
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/p/pytest/${name}.tar.gz";
-      sha256 = "1bwb06g64x2gky8x5hcrfpg6r351xwvafimnhm5qxq7wajz8ck7w";
-    };
-  };
-
-  pytest_29 = self.pytest_27.override rec {
-    name = "pytest-2.9.2";
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/p/pytest/${name}.tar.gz";
-      sha256 = "1n6igbc1b138wx1q5gca4pqw1j6nsyicfxds5n0b5989kaxqmh8j";
-    };
-  };
-
-  pytest_30 = self.pytest_27.override rec {
-    name = "pytest-3.0.5";
-
-    propagatedBuildInputs = with self; [ hypothesis py ];
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/p/pytest/${name}.tar.gz";
-      sha256 = "1z9pj39w0r2gw5hsqndlmsqa80kgbrann5kfma8ww8zhaslkl02a";
-    };
-  };
+  pytest_30 = callPackage ../development/python-modules/pytest {};
 
   pytestcache = buildPythonPackage rec {
     name = "pytest-cache-1.0";
@@ -5107,27 +5076,8 @@ in {
     };
   };
 
-  pytestdjango = buildPythonPackage rec {
-    name = "pytest-django-${version}";
-    version = "2.9.1";
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/p/pytest-django/${name}.tar.gz";
-      sha256 = "1mmc7zsz3dlhs6sx4sppkj1vgshabi362r1a8b8wpj1qfximpqcb";
-    };
-
-    # doing this to allow depending packages to find
-    # pytest's binaries
-    pytest = self.pytest;
-
-    buildInputs = with self; [ pytest ];
-    propagatedBuildInputs = with self; [ django setuptools_scm_18 ];
-
-    meta = {
-      description = "py.test plugin for testing of Django applications";
-      homepage = http://pytest-django.readthedocs.org/en/latest/;
-      license = licenses.bsd3;
-    };
+  pytestdjango = callPackage ../development/python-modules/pytestdjango.nix {
+    pytest = self.pytest_30;
   };
 
   pytest-fixture-config = buildPythonPackage rec {
@@ -6321,9 +6271,9 @@ in {
       sha256 = "05f49f6hnl7npmi7kigg0ibqk8s3fhzx1ivvz1kqvlv4ay3paajc";
     };
 
-    buildInputs = [
-      pkgs.glibcLocales
-    ];
+    buildInputs = [ pkgs.glibcLocales ];
+
+    LC_ALL="en_US.UTF-8";
 
     propagatedBuildInputs = with self; [
       six
@@ -6334,10 +6284,8 @@ in {
       docker_pycreds
     ];
 
-    # Version conflict
+    # Flake8 version conflict
     doCheck = false;
-
-    LC_ALL="en_US.UTF-8";
 
     meta = {
       description = "An API client for docker written in Python";
@@ -7881,7 +7829,7 @@ in {
     meta = with stdenv.lib; {
       description = "Accessing and Modifying INI files";
       license = licenses.mit;
-      maintainers = [ "abcz2.uprola@gmail.com" ];
+      maintainers = with maintainers; [ danbst ];
     };
   };
 
@@ -10456,27 +10404,8 @@ in {
     };
   };
 
-  django_guardian = buildPythonPackage rec {
-    name = "django-guardian-${version}";
-    version = "1.4.4";
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/d/django-guardian/${name}.tar.gz";
-      sha256 = "1m7y3brk3697hr2cvkzl8dry4pp7wkmhvxmf8db1ardz1r9d8895";
-    };
-
-    buildInputs = with self ; [ pytest pytestrunner pytestdjango django_environ mock ];
-    propagatedBuildInputs = with self ; [ django six ];
-
-    checkPhase = ''
-      ${python.interpreter} nix_run_setup.py test --addopts="--ignore build"
-    '';
-
-    meta = {
-      description = "Per object permissions for Django";
-      homepage = https://github.com/django-guardian/django-guardian;
-      licenses = [ licenses.mit licenses.bsd2 ];
-    };
+  django_guardian = callPackage ../development/python-modules/django_guardian.nix {
+    pytest = self.pytest_30;
   };
 
   django_tagging = buildPythonPackage rec {
@@ -11810,14 +11739,21 @@ in {
   });
 
   foolscap = buildPythonPackage (rec {
-    name = "foolscap-0.10.1";
+    name = "foolscap-${version}";
+    version = "0.12.6";
 
     src = pkgs.fetchurl {
-      url = "http://foolscap.lothar.com/releases/${name}.tar.gz";
-      sha256 = "1wrnbdq3y3lfxnhx30yj9xbr3iy9512jb60k8qi1da1phalnwz5x";
+      url = "mirror://pypi/f/foolscap/${name}.tar.gz";
+      sha256 = "1bpmqq6485mmr5jza9q2c55l9m1bfsvsbd9drsip7p5qcsi22jrz";
     };
 
-    propagatedBuildInputs = [ self.twisted self.pyopenssl self.service-identity ];
+    propagatedBuildInputs = with self; [ mock twisted pyopenssl service-identity ];
+
+    checkPhase = ''
+      # Either uncomment this, or remove this custom check phase entirely, if
+      # you wish to do battle with the foolscap tests. ~ C.
+      # trial foolscap
+    '';
 
     meta = {
       homepage = http://foolscap.lothar.com/;
@@ -13322,6 +13258,8 @@ in {
       maintainers = with maintainers; [ couchemar nand0p ];
     };
   };
+
+  jabberbot = callPackage ../development/python-modules/jabberbot.nix {};
 
   jedi = buildPythonPackage (rec {
     name = "jedi-0.9.0";
@@ -19337,17 +19275,34 @@ in {
     '';
 
     preConfigure = optionalString (versionAtLeast protobuf.version "2.6.0") ''
-      PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=cpp
-      PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION_VERSION=2
+      export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=cpp
+      export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION_VERSION=2
     '';
 
-    checkPhase = if versionAtLeast protobuf.version "2.6.0" then ''
+    preBuild = optionalString (versionAtLeast protobuf.version "2.6.0") ''
+      ${python}/bin/${python.executable} setup.py build_ext --cpp_implementation
+    '';
+
+    checkPhase = ''
+      runHook preCheck
+    '' + (if versionAtLeast protobuf.version "2.6.0" then ''
       ${python.executable} setup.py google_test --cpp_implementation
+      echo "sanity checking the C extension . . ."
+      echo "import google.protobuf.descriptor" | ${python.executable}
     '' else ''
       ${python.executable} setup.py test
+    '') + ''
+      runHook postCheck
     '';
 
     installFlags = optional (versionAtLeast protobuf.version "2.6.0") "--install-option='--cpp_implementation'";
+
+    # the _message.so isn't installed, so we'll do that manually.
+    # if someone can figure out a less hacky way to get the _message.so to
+    # install, please do replace this.
+    postInstall = optionalString (versionAtLeast protobuf.version "2.6.0") ''
+      cp -v $(find build -name "_message*") $out/${python.sitePackages}/google/protobuf/pyext
+    '';
 
     doCheck = true;
 
@@ -19568,9 +19523,18 @@ in {
       sha256 = "0y2iw1dddcvi13xjh3l52z1mvnrbc41ik9k4nn7lwj8x5kimnk9n";
     };
 
+    patches = [
+      (pkgs.fetchpatch {
+        name = "CVE-2016-10127.patch";
+        url = "https://sources.debian.net/data/main/p/python-pysaml2/3.0.0-5/debian/patches/fix-xxe-in-xml-parsing.patch";
+        sha256 = "184lkwdayjqiahzsn4yp15parqpmphjsb1z7zwd636jvarxqgs2q";
+      })
+    ];
+
     propagatedBuildInputs = with self; [
       repoze_who paste cryptography pycrypto pyopenssl ipaddress six cffi idna
       enum34 pytz setuptools zope_interface dateutil requests2 pyasn1 webob decorator pycparser
+      defusedxml
     ];
     buildInputs = with self; [
       Mako pytest memcached pymongo mongodict pkgs.xmlsec
@@ -22286,7 +22250,7 @@ in {
       meta = with stdenv.lib; {
         description = "A Python binding to QScintilla, Qt based text editing control";
         license = licenses.lgpl21Plus;
-        maintainers = [ "abcz2.uprola@gmail.com" ];
+        maintainers = with maintainers; [ danbst ];
         platforms = platforms.linux;
       };
     };
@@ -24887,6 +24851,9 @@ in {
       matplotlib
     ];
 
+    # fails due to trying to run CSS as test
+    doCheck = false;
+
     meta = {
       description = "Scientific reports with embedded python computations with reST, LaTeX or markdown";
       homepage = http://mpastell.com/pweave/ ;
@@ -25295,9 +25262,11 @@ in {
     '';
 
     patchPhase = ''
-      substituteInPlace "scripts/syncthing-gtk" \
-              --replace "/usr/share" "$out/share"
-      substituteInPlace setup.py --replace "version = get_version()" "version = '${version}'"
+        substituteInPlace setup.py --replace "version = get_version()" "version = '${version}'"
+        substituteInPlace scripts/syncthing-gtk --replace "/usr/share" "$out/share"
+        substituteInPlace syncthing_gtk/app.py --replace "/usr/share" "$out/share"
+        substituteInPlace syncthing_gtk/wizard.py --replace "/usr/share" "$out/share"
+        substituteInPlace syncthing-gtk.desktop --replace "/usr/bin/syncthing-gtk" "$out/bin/syncthing-gtk"
     '';
 
     meta = {
@@ -26124,6 +26093,13 @@ in {
     };
 
     propagatedBuildInputs = with self; [ zope_interface ];
+
+    # Patch t.p._inotify to point to libc. Without this,
+    # twisted.python.runtime.platform.supportsINotify() == False
+    patchPhase = optionalString stdenv.isLinux ''
+      substituteInPlace twisted/python/_inotify.py --replace \
+        "ctypes.util.find_library('c')" "'${stdenv.glibc.out}/lib/libc.so.6'"
+    '';
 
     # Generate Twisted's plug-in cache.  Twisted users must do it as well.  See
     # http://twistedmatrix.com/documents/current/core/howto/plugin.html#auto3
@@ -28810,13 +28786,13 @@ EOF
   };
 
   libvirt = let
-    version = "2.5.0";
+    version = "3.0.0";
   in assert version == pkgs.libvirt.version; pkgs.stdenv.mkDerivation rec {
     name = "libvirt-python-${version}";
 
     src = pkgs.fetchurl {
       url = "http://libvirt.org/sources/python/${name}.tar.gz";
-      sha256 = "1lanyrk4invs5j4jrd7yvy7g8kilihjbcrgs5arx8k3bs9x7izgl";
+      sha256 = "1ha4bqf029si1lla1z7ca786w571fh3wfs4h7zaglfk4gb2w39wl";
     };
 
     buildInputs = with self; [ python pkgs.pkgconfig pkgs.libvirt lxml ];
@@ -29151,7 +29127,7 @@ EOF
     meta = {
       homepage = https://developers.google.com/storage/docs/gsutil;
       description = "Google Cloud Storage Tool";
-      maintainers = [ "Russell O'Connor <oconnorr@google.com>" ];
+      maintainers = with maintainers; [ roconnor ];
       license = licenses.asl20;
     };
     doCheck = false;
@@ -30507,26 +30483,7 @@ EOF
     };
   };
 
-  xmpppy = buildPythonPackage rec {
-    name = "xmpp.py-${version}";
-    version = "0.5.0rc1";
-
-    src = pkgs.fetchurl {
-      url = "mirror://sourceforge/xmpppy/xmpppy-${version}.tar.gz";
-      sha256 = "16hbh8kwc5n4qw2rz1mrs8q17rh1zq9cdl05b1nc404n7idh56si";
-    };
-
-    preInstall = ''
-      mkdir -p $out/bin $out/lib $out/share $(toPythonPath $out)
-      export PYTHONPATH=$PYTHONPATH:$(toPythonPath $out)
-    '';
-
-    disabled = isPy3k;
-
-    meta = {
-      description = "XMPP python library";
-    };
-  };
+  xmpppy = callPackage ../development/python-modules/xmpppy {};
 
   xstatic-bootbox = buildPythonPackage rec {
     name = "XStatic-Bootbox-${version}";

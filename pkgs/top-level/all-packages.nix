@@ -10,25 +10,11 @@ self: pkgs:
 
 with pkgs;
 
-let
-  defaultScope = pkgs // pkgs.xorg;
-in
-
 {
 
   # Allow callPackage to fill in the pkgs argument
   inherit pkgs;
 
-
-  # We use `callPackage' to be able to omit function arguments that
-  # can be obtained from `pkgs' or `pkgs.xorg' (i.e. `defaultScope').
-  # Use `newScope' for sets of packages in `pkgs' (see e.g. `gnome'
-  # below).
-  callPackage = newScope {};
-
-  callPackages = lib.callPackagesWith defaultScope;
-
-  newScope = extra: lib.callPackageWith (defaultScope // extra);
 
   # Override system. This is useful to build i686 packages on x86_64-linux.
   forceSystem = system: kernel: nixpkgsFun {
@@ -39,15 +25,9 @@ in
   # Used by wine, firefox with debugging version of Flash, ...
   pkgsi686Linux = forceSystem "i686-linux" "i386";
 
-  callPackage_i686 = lib.callPackageWith (pkgsi686Linux // pkgsi686Linux.xorg);
+  callPackage_i686 = pkgsi686Linux.callPackage;
 
-  forceNativeDrv = drv:
-    # Even when cross compiling, some packages come from the stdenv's
-    # bootstrapping package set. Those packages are only built for the native
-    # platform.
-    if crossSystem != null && drv ? crossDrv
-    then drv // { crossDrv = drv.nativeDrv; }
-    else drv;
+  forcedNativePackages = if hostPlatform == buildPlatform then pkgs else buildPackages;
 
   # A stdenv capable of building 32-bit binaries.  On x86_64-linux,
   # it uses GCC compiled with multilib support; on i686-linux, it's
@@ -525,6 +505,12 @@ in
   pass = callPackage ../tools/security/pass { };
 
   oracle-instantclient = callPackage ../development/libraries/oracle-instantclient { };
+
+  kwm = callPackage ../os-specific/darwin/kwm { };
+
+  khd = callPackage ../os-specific/darwin/khd {
+    inherit (darwin.apple_sdk.frameworks) Carbon Cocoa;
+  };
 
   reattach-to-user-namespace = callPackage ../os-specific/darwin/reattach-to-user-namespace {};
 
@@ -1679,6 +1665,8 @@ in
 
   fcppt = callPackage ../development/libraries/fcppt/default.nix { };
 
+  fcrackzip = callPackage ../tools/security/fcrackzip { };
+
   fcron = callPackage ../tools/system/fcron { };
 
   fdm = callPackage ../tools/networking/fdm {};
@@ -1891,6 +1879,8 @@ in
   gitlab-workhorse = callPackage ../applications/version-management/gitlab-workhorse { };
 
   gitstats = callPackage ../applications/version-management/gitstats { };
+
+  gogs = callPackage ../applications/version-management/gogs { };
 
   git-latexdiff = callPackage ../tools/typesetting/git-latexdiff { };
 
@@ -2362,6 +2352,8 @@ in
   john = callPackage ../tools/security/john {
     gcc = gcc49; # doesn't build with gcc5
   };
+
+  journalbeat = callPackage ../tools/system/journalbeat { };
 
   jp = callPackage ../development/tools/jp { };
 
@@ -2856,7 +2848,7 @@ in
 
   mkcue = callPackage ../tools/cd-dvd/mkcue { };
 
-  mkpasswd = callPackage ../tools/security/mkpasswd { };
+  mkpasswd = hiPrio (callPackage ../tools/security/mkpasswd { });
 
   mkrand = callPackage ../tools/security/mkrand { };
 
@@ -2938,6 +2930,8 @@ in
   nbd = callPackage ../tools/networking/nbd { };
 
   ndjbdns = callPackage ../tools/networking/ndjbdns { };
+
+  neofetch = callPackage ../tools/misc/neofetch { };
 
   nerdfonts = callPackage ../data/fonts/nerdfonts { };
 
@@ -3051,7 +3045,7 @@ in
 
   nmap = callPackage ../tools/security/nmap { };
 
-  nmap_graphical = callPackage ../tools/security/nmap {
+  nmap-graphical = callPackage ../tools/security/nmap {
     graphicalSupport = true;
   };
 
@@ -3121,6 +3115,8 @@ in
   oh-my-zsh = callPackage ../shells/oh-my-zsh { };
 
   opencc = callPackage ../tools/text/opencc { };
+
+  opencl-info = callPackage ../tools/system/opencl-info { };
 
   opencryptoki = callPackage ../tools/security/opencryptoki { };
 
@@ -3268,7 +3264,7 @@ in
   pngout = callPackage ../tools/graphics/pngout { };
 
   hurdPartedCross =
-    if crossSystem != null && crossSystem.config == "i586-pc-gnu"
+    if targetPlatform != buildPlatform && targetPlatform.config == "i586-pc-gnu"
     then (makeOverridable
             ({ hurd }:
               (parted.override {
@@ -3663,7 +3659,9 @@ in
 
   rpm = callPackage ../tools/package-management/rpm { };
 
-  rpm-ostree = callPackage ../tools/misc/rpm-ostree { };
+  rpm-ostree = callPackage ../tools/misc/rpm-ostree {
+    gperf = gperf_3_0;
+  };
 
   rpmextract = callPackage ../tools/archivers/rpmextract { };
 
@@ -3674,7 +3672,7 @@ in
   rtorrent = callPackage ../tools/networking/p2p/rtorrent { };
 
   rubber = callPackage ../tools/typesetting/rubber { };
-  
+
   rubocop = callPackage ../development/tools/rubocop { };
 
   runningx = callPackage ../tools/X11/runningx { };
@@ -4775,44 +4773,48 @@ in
 
   gccApple = throw "gccApple is no longer supported";
 
-  gccCrossStageStatic = let
+  gccCrossStageStatic = assert targetPlatform != buildPlatform; let
     libcCross1 =
       if stdenv.cross.libc == "msvcrt" then windows.mingw_w64_headers
       else if stdenv.cross.libc == "libSystem" then darwin.xcode
       else null;
     in wrapGCCCross {
-      gcc = forceNativeDrv (gcc.cc.override {
-        cross = crossSystem;
+      gcc = forcedNativePackages.gcc.cc.override {
+        cross = targetPlatform;
         crossStageStatic = true;
         langCC = false;
         libcCross = libcCross1;
         enableShared = false;
-      });
+        # Why is this needed?
+        inherit (forcedNativePackages) binutilsCross;
+      };
       libc = libcCross1;
       binutils = binutilsCross;
-      cross = crossSystem;
+      cross = targetPlatform;
   };
 
   # Only needed for mingw builds
-  gccCrossMingw2 = wrapGCCCross {
+  gccCrossMingw2 = assert targetPlatform != buildPlatform; wrapGCCCross {
     gcc = gccCrossStageStatic.gcc;
     libc = windows.mingw_headers2;
     binutils = binutilsCross;
-    cross = assert crossSystem != null; crossSystem;
+    cross = targetPlatform;
   };
 
-  gccCrossStageFinal = wrapGCCCross {
-    gcc = forceNativeDrv (gcc.cc.override {
-      cross = crossSystem;
+  gccCrossStageFinal = assert targetPlatform != buildPlatform; wrapGCCCross {
+    gcc = forcedNativePackages.gcc.cc.override {
+      cross = targetPlatform;
       crossStageStatic = false;
 
       # XXX: We have troubles cross-compiling libstdc++ on MinGW (see
       # <http://hydra.nixos.org/build/4268232>), so don't even try.
-      langCC = crossSystem.config != "i686-pc-mingw32";
-    });
+      langCC = targetPlatform.config != "i686-pc-mingw32";
+      # Why is this needed?
+      inherit (forcedNativePackages) binutilsCross;
+    };
     libc = libcCross;
     binutils = binutilsCross;
-    cross = crossSystem;
+    cross = targetPlatform;
   };
 
   gcc45 = lowPrio (wrapCC (callPackage ../development/compilers/gcc/4.5 {
@@ -4830,7 +4832,7 @@ in
     # and host != build), `cross' must be null but the cross-libc must still
     # be passed.
     cross = null;
-    libcCross = if crossSystem != null then libcCross else null;
+    libcCross = if targetPlatform != buildPlatform then libcCross else null;
   }));
 
   gcc48 = lowPrio (wrapCC (callPackage ../development/compilers/gcc/4.8 {
@@ -4843,7 +4845,7 @@ in
     # and host != build), `cross' must be null but the cross-libc must still
     # be passed.
     cross = null;
-    libcCross = if crossSystem != null then libcCross else null;
+    libcCross = if targetPlatform != buildPlatform then libcCross else null;
 
     isl = if !stdenv.isDarwin then isl_0_14 else null;
     cloog = if !stdenv.isDarwin then cloog else null;
@@ -4860,7 +4862,7 @@ in
     # and host != build), `cross' must be null but the cross-libc must still
     # be passed.
     cross = null;
-    libcCross = if crossSystem != null then libcCross else null;
+    libcCross = if targetPlatform != buildPlatform then libcCross else null;
 
     isl = if !stdenv.isDarwin then isl_0_11 else null;
 
@@ -4877,7 +4879,7 @@ in
     # and host != build), `cross' must be null but the cross-libc must still
     # be passed.
     cross = null;
-    libcCross = if crossSystem != null then libcCross else null;
+    libcCross = if targetPlatform != buildPlatform then libcCross else null;
 
     isl = if !stdenv.isDarwin then isl_0_14 else null;
   }));
@@ -4892,7 +4894,7 @@ in
     # and host != build), `cross' must be null but the cross-libc must still
     # be passed.
     cross = null;
-    libcCross = if crossSystem != null then libcCross else null;
+    libcCross = if targetPlatform != buildPlatform then libcCross else null;
 
     isl = if !stdenv.isDarwin then isl_0_14 else null;
   }));
@@ -5025,7 +5027,7 @@ in
 
   # Haskell and GHC
 
-  haskell = callPackage ./haskell-packages.nix { inherit crossSystem; };
+  haskell = callPackage ./haskell-packages.nix { };
 
   haskellPackages = haskell.packages.ghc801.override {
     overrides = config.haskellPackageOverrides or (self: super: {});
@@ -5133,6 +5135,14 @@ in
   ikarus = callPackage ../development/compilers/ikarus { };
 
   intercal = callPackage ../development/compilers/intercal { };
+
+  irony-server = callPackage ../development/tools/irony-server/default.nix {
+    # The repository of irony to use -- must match the version of the employed emacs
+    # package.  Wishing we could merge it into one irony package, to avoid this issue,
+    # but its emacs-side expression is autogenerated, and we can't hook into it (other
+    # than peek into its version).
+    inherit (emacsPackagesNg.melpaStablePackages) irony;
+  };
 
   hugs = callPackage ../development/interpreters/hugs { };
 
@@ -5521,12 +5531,12 @@ in
   wrapGCCCross =
     {gcc, libc, binutils, cross, shell ? "", name ? "gcc-cross-wrapper"}:
 
-    forceNativeDrv (callPackage ../build-support/gcc-cross-wrapper {
+    forcedNativePackages.callPackage ../build-support/gcc-cross-wrapper {
       nativeTools = false;
       nativeLibc = false;
       noLibc = (libc == null);
       inherit gcc binutils libc shell name cross;
-    });
+    };
 
   # prolog
   yap = callPackage ../development/compilers/yap { };
@@ -5534,6 +5544,8 @@ in
   yasm = callPackage ../development/compilers/yasm { };
 
   yosys = callPackage ../development/compilers/yosys { };
+
+  zulu = callPackage ../development/compilers/zulu { };
 
 
   ### DEVELOPMENT / INTERPRETERS
@@ -5794,6 +5806,14 @@ in
     php70
     php71;
 
+  php-embed = php71-embed;
+
+  php71-embed = php71.override {
+    config.php.embed = true;
+    config.php.apxs2 = false;
+  };
+
+
   picoc = callPackage ../development/interpreters/picoc {};
 
   picolisp = callPackage ../development/interpreters/picolisp {};
@@ -6028,9 +6048,9 @@ in
 
   antlr = callPackage ../development/tools/parsing/antlr/2.7.7.nix { };
 
-  antlr3 = callPackage ../development/tools/parsing/antlr { };
   antlr3_4 = callPackage ../development/tools/parsing/antlr/3.4.nix { };
   antlr3_5 = callPackage ../development/tools/parsing/antlr/3.5.nix { };
+  antlr3 = antlr3_5;
 
   ant = apacheAnt;
 
@@ -6099,12 +6119,12 @@ in
     gold = false;
   });
 
-  binutilsCross = assert crossSystem != null; lowPrio (forceNativeDrv (
-    if crossSystem.libc == "libSystem" then darwin.cctools_cross
-    else binutils.override {
+  binutilsCross = assert targetPlatform != buildPlatform; lowPrio (
+    if targetPlatform.libc == "libSystem" then darwin.cctools_cross
+    else forcedNativePackages.binutils.override {
       noSysDirs = true;
-      cross = crossSystem;
-    }));
+      cross = targetPlatform;
+    });
 
   bison2 = callPackage ../development/tools/parsing/bison/2.x.nix { };
   bison3 = callPackage ../development/tools/parsing/bison/3.x.nix { };
@@ -6308,6 +6328,8 @@ in
 
   doxygen_gui = lowPrio (doxygen.override { inherit qt4; });
 
+  drake = callPackage ../development/tools/build-managers/drake { };
+
   drush = callPackage ../development/tools/misc/drush { };
 
   editorconfig-core-c = callPackage ../development/tools/misc/editorconfig-core-c { };
@@ -6393,6 +6415,8 @@ in
   gradle_2_5 = self.gradleGen.gradle_2_5;
 
   gperf = callPackage ../development/tools/misc/gperf { };
+  # 3.1 changed some parameters from int to size_t, leading to mismatches.
+  gperf_3_0 = callPackage ../development/tools/misc/gperf/3.0.x.nix { };
 
   grail = callPackage ../development/libraries/grail { };
 
@@ -6450,7 +6474,9 @@ in
 
   jenkins-job-builder = pythonPackages.jenkins-job-builder;
 
-  kconfig-frontends = callPackage ../development/tools/misc/kconfig-frontends { };
+  kconfig-frontends = callPackage ../development/tools/misc/kconfig-frontends {
+    gperf = gperf_3_0;
+  };
 
   kcov = callPackage ../development/tools/analysis/kcov { };
 
@@ -6490,6 +6516,8 @@ in
   minizinc = callPackage ../development/tools/minizinc { };
 
   mk = callPackage ../development/tools/build-managers/mk { };
+
+  msgpack-tools = callPackage ../development/tools/msgpack-tools { };
 
   msitools = callPackage ../development/tools/misc/msitools { };
 
@@ -6567,9 +6595,9 @@ in
      cross_renaming: we should make all programs use pkgconfig as
      nativeBuildInput after the renaming.
      */
-  pkgconfig = forceNativeDrv (callPackage ../development/tools/misc/pkgconfig {
+  pkgconfig = forcedNativePackages.callPackage ../development/tools/misc/pkgconfig {
     fetchurl = fetchurlBoot;
-  });
+  };
   pkgconfigUpstream = lowPrio (pkgconfig.override { vanilla = true; });
 
   postiats-utilities = callPackage ../development/tools/postiats-utilities {};
@@ -6743,7 +6771,7 @@ in
   gdbGuile = lowPrio (gdb.override { inherit guile; });
 
   gdbCross = lowPrio (callPackage ../development/tools/misc/gdb {
-    target = crossSystem;
+    target = if targetPlatform != buildPlatform then targetPlatform else null;
   });
 
   gdb-multitarget = lowPrio (gdb.override { multitarget = true; });
@@ -6873,10 +6901,7 @@ in
   beecrypt = callPackage ../development/libraries/beecrypt { };
 
   beignet = callPackage ../development/libraries/beignet {
-    inherit (llvmPackages_37) llvm clang-unwrapped;
-    inherit (xorg) libX11 libXfixes libpthreadstubs libXdmcp libXdamage libXxf86vm;
-    inherit (python3Packages) python;
-    inherit (purePackages) gl;
+    inherit (llvmPackages) llvm clang-unwrapped;
   };
 
   belle-sip = callPackage ../development/libraries/belle-sip { };
@@ -6949,10 +6974,6 @@ in
   chmlib = callPackage ../development/libraries/chmlib { };
 
   chromaprint = callPackage ../development/libraries/chromaprint { };
-
-  cilaterm = callPackage ../development/libraries/cil-aterm {
-    stdenv = overrideInStdenv stdenv [gnumake380];
-  };
 
   cl = callPackage ../development/libraries/cl { };
 
@@ -7348,10 +7369,10 @@ in
     withGd = true;
   };
 
-  glibcCross = forceNativeDrv (glibc.override {
+  glibcCross = forcedNativePackages.glibc.override {
     gccCross = gccCrossStageStatic;
     linuxHeaders = linuxHeadersCross;
-  });
+  };
 
   # We can choose:
   libcCrossChooser = name: if name == "glibc" then glibcCross
@@ -7360,7 +7381,7 @@ in
     else if name == "libSystem" then darwin.xcode
     else throw "Unknown libc";
 
-  libcCross = assert crossSystem != null; libcCrossChooser crossSystem.libc;
+  libcCross = assert targetPlatform != buildPlatform; libcCrossChooser targetPlatform.libc;
 
   # Only supported on Linux
   glibcLocales = if stdenv.isLinux then callPackage ../development/libraries/glibc/locales.nix { } else null;
@@ -7578,10 +7599,6 @@ in
 
   gtkmm2 = callPackage ../development/libraries/gtkmm/2.x.nix { };
   gtkmm3 = callPackage ../development/libraries/gtkmm/3.x.nix { };
-
-  gtkmozembedsharp = callPackage ../development/libraries/gtkmozembed-sharp {
-    gtksharp = gtk-sharp-2_0;
-  };
 
   gtk-sharp-2_0 = callPackage ../development/libraries/gtk-sharp/2.0.nix {
     inherit (gnome2) libglade libgtkhtml gtkhtml
@@ -8269,9 +8286,9 @@ in
   # glibc provides libiconv so systems with glibc don't need to build libiconv
   # separately, but we also provide libiconvReal, which will always be a
   # standalone libiconv, just in case you want it
-  libiconv = if crossSystem != null then
-    (if crossSystem.libc == "glibc" then libcCross
-      else if crossSystem.libc == "libSystem" then darwin.libiconv
+  libiconv = if stdenv ? cross then
+    (if stdenv.cross.libc == "glibc" then libcCross
+      else if stdenv.cross.libc == "libSystem" then darwin.libiconv
       else libiconvReal)
     else if stdenv.isGlibc then glibcIconv stdenv.cc.libc
     else if stdenv.isDarwin then darwin.libiconv
@@ -8292,7 +8309,9 @@ in
   # On non-GNU systems we need GNU Gettext for libintl.
   libintlOrEmpty = stdenv.lib.optional (!stdenv.isLinux) gettext;
 
-  libid3tag = callPackage ../development/libraries/libid3tag { };
+  libid3tag = callPackage ../development/libraries/libid3tag {
+    gperf = gperf_3_0;
+  };
 
   libidn = callPackage ../development/libraries/libidn { };
 
@@ -8318,10 +8337,6 @@ in
   libjpeg_turbo = callPackage ../development/libraries/libjpeg-turbo { };
   libjpeg_drop = callPackage ../development/libraries/libjpeg-drop { };
   libjpeg = if stdenv.isLinux then libjpeg_turbo else libjpeg_original; # some problems, both on FreeBSD and Darwin
-
-  libjpeg62 = callPackage ../development/libraries/libjpeg/62.nix {
-    libtool = libtool_1_5;
-  };
 
   libjreen = callPackage ../development/libraries/libjreen { };
 
@@ -8963,7 +8978,7 @@ in
 
   opencl-headers = callPackage ../development/libraries/opencl-headers { };
 
-  opencl-icd = callPackage ../development/libraries/opencl-icd { };
+  opencl-clhpp = callPackage ../development/libraries/opencl-clhpp { };
 
   opencollada = callPackage ../development/libraries/opencollada { };
 
@@ -10028,10 +10043,6 @@ in
 
   jflex = callPackage ../development/libraries/java/jflex { };
 
-  jjtraveler = callPackage ../development/libraries/java/jjtraveler {
-    stdenv = overrideInStdenv stdenv [gnumake380];
-  };
-
   junit = callPackage ../development/libraries/java/junit { antBuild = releaseTools.antBuild; };
 
   junixsocket = callPackage ../development/libraries/java/junixsocket { };
@@ -10362,6 +10373,7 @@ in
   jetty = callPackage ../servers/http/jetty { };
 
   knot-dns = callPackage ../servers/dns/knot-dns { };
+  knot-resolver = callPackage ../servers/dns/knot-resolver { };
 
   rdkafka = callPackage ../development/libraries/rdkafka { };
 
@@ -10465,7 +10477,9 @@ in
 
   rspamd = callPackage ../servers/mail/rspamd { };
 
-  pfixtools = callPackage ../servers/mail/postfix/pfixtools.nix { };
+  pfixtools = callPackage ../servers/mail/postfix/pfixtools.nix {
+    gperf = gperf_3_0;
+  };
   pflogsumm = callPackage ../servers/mail/postfix/pflogsumm.nix { };
 
   postgrey = callPackage ../servers/mail/postgrey { };
@@ -10926,8 +10940,8 @@ in
     cmdline = callPackage ../os-specific/darwin/command-line-tools {};
     apple-source-releases = callPackage ../os-specific/darwin/apple-source-releases { };
   in apple-source-releases // rec {
-    cctools_cross = callPackage (forceNativeDrv (callPackage ../os-specific/darwin/cctools/port.nix {}).cross) {
-      cross = assert crossSystem != null; crossSystem;
+    cctools_cross = callPackage (forcedNativePackages.callPackage ../os-specific/darwin/cctools/port.nix {}).cross {
+      cross = assert targetPlatform != buildPlatform; targetPlatform;
       inherit maloader;
       xctoolchain = xcode.toolchain;
     };
@@ -11000,7 +11014,7 @@ in
   libossp_uuid = callPackage ../development/libraries/libossp-uuid { };
 
   libuuid =
-    if crossSystem != null && crossSystem.config == "i586-pc-gnu"
+    if targetPlatform != buildPlatform && targetPlatform.config == "i586-pc-gnu"
     then (utillinuxMinimal // {
       crossDrv = lib.overrideDerivation utillinuxMinimal.crossDrv (args: {
         # `libblkid' fails to build on GNU/Hurd.
@@ -11087,7 +11101,7 @@ in
 
   # GNU/Hurd core packages.
   gnu = recurseIntoAttrs (callPackage ../os-specific/gnu {
-    inherit platform crossSystem;
+    inherit platform;
   });
 
   hwdata = callPackage ../os-specific/linux/hwdata { };
@@ -11109,7 +11123,9 @@ in
     inherit (perlPackages) SGMLSpm;
   };
 
-  iptables = callPackage ../os-specific/linux/iptables { };
+  iptables = callPackage ../os-specific/linux/iptables {
+    flex = flex_2_5_35;
+  };
 
   ipset = callPackage ../os-specific/linux/ipset { };
 
@@ -11164,13 +11180,13 @@ in
 
   linuxHeaders = linuxHeaders_4_4;
 
-  linuxHeaders24Cross = forceNativeDrv (callPackage ../os-specific/linux/kernel-headers/2.4.nix {
-    cross = assert crossSystem != null; crossSystem;
-  });
+  linuxHeaders24Cross = forcedNativePackages.callPackage ../os-specific/linux/kernel-headers/2.4.nix {
+    cross = assert targetPlatform != buildPlatform; targetPlatform;
+  };
 
-  linuxHeaders26Cross = forceNativeDrv (callPackage ../os-specific/linux/kernel-headers/4.4.nix {
-    cross = assert crossSystem != null; crossSystem;
-  });
+  linuxHeaders26Cross = forcedNativePackages.callPackage ../os-specific/linux/kernel-headers/4.4.nix {
+    cross = assert targetPlatform != buildPlatform; targetPlatform;
+  };
 
   linuxHeaders_3_18 = callPackage ../os-specific/linux/kernel-headers/3.18.nix { };
 
@@ -11181,8 +11197,8 @@ in
     else if ver == "2.6" then linuxHeaders26Cross
     else throw "Unknown linux kernel version";
 
-  linuxHeadersCross = assert crossSystem != null;
-    linuxHeadersCrossChooser crossSystem.platform.kernelMajor;
+  linuxHeadersCross = assert targetPlatform != buildPlatform;
+    linuxHeadersCrossChooser targetPlatform.platform.kernelMajor;
 
   kernelPatches = callPackage ../os-specific/linux/kernel/patches.nix { };
 
@@ -11236,7 +11252,6 @@ in
   linux_3_18 = callPackage ../os-specific/linux/kernel/linux-3.18.nix {
     kernelPatches =
       [ kernelPatches.bridge_stp_helper
-        kernelPatches.packet_fix_race_condition_CVE_2016_8655
       ]
       ++ lib.optionals ((platform.kernelArch or null) == "mips")
       [ kernelPatches.mips_fpureg_emu
@@ -11248,7 +11263,6 @@ in
   linux_4_1 = callPackage ../os-specific/linux/kernel/linux-4.1.nix {
     kernelPatches =
       [ kernelPatches.bridge_stp_helper
-        kernelPatches.packet_fix_race_condition_CVE_2016_8655
       ]
       ++ lib.optionals ((platform.kernelArch or null) == "mips")
       [ kernelPatches.mips_fpureg_emu
@@ -11261,7 +11275,6 @@ in
     kernelPatches =
       [ kernelPatches.bridge_stp_helper
         kernelPatches.cpu-cgroup-v2."4.4"
-        kernelPatches.p9_caching_4_4
       ]
       ++ lib.optionals ((platform.kernelArch or null) == "mips")
       [ kernelPatches.mips_fpureg_emu
@@ -11278,6 +11291,7 @@ in
         # !!! 4.7 patch doesn't apply, 4.9 patch not up yet, will keep checking
         # kernelPatches.cpu-cgroup-v2."4.7"
         kernelPatches.modinst_arg_list_too_long
+        kernelPatches.p9_caching_4_9
       ]
       ++ lib.optionals ((platform.kernelArch or null) == "mips")
       [ kernelPatches.mips_fpureg_emu
@@ -11290,6 +11304,7 @@ in
     kernelPatches = [
       kernelPatches.bridge_stp_helper
       kernelPatches.modinst_arg_list_too_long
+      kernelPatches.p9_caching_4_9
     ] ++ lib.optionals ((platform.kernelArch or null) == "mips") [
       kernelPatches.mips_fpureg_emu
       kernelPatches.mips_fpu_sigill
@@ -11449,7 +11464,7 @@ in
   });
 
   # The current default kernel / kernel modules.
-  linuxPackages = linuxPackages_4_4;
+  linuxPackages = linuxPackages_4_9;
   linux = linuxPackages.kernel;
 
   # Update this when adding the newest kernel major version!
@@ -11690,6 +11705,8 @@ in
 
   powerdns = callPackage ../servers/dns/powerdns { };
 
+  pdns-recursor = callPackage ../servers/dns/pdns-recursor { };
+
   powertop = callPackage ../os-specific/linux/powertop { };
 
   prayer = callPackage ../servers/prayer { };
@@ -11782,6 +11799,7 @@ in
 
   systemd = callPackage ../os-specific/linux/systemd {
     utillinux = utillinuxMinimal; # break the cyclic dependency
+    gperf = gperf_3_0; # fix build until v233
   }
     // {
       udev.bin = systemd;     # ${systemd.udev.bin}/bin/udevadm
@@ -11845,7 +11863,7 @@ in
   uclibcCross = lowPrio (callPackage ../os-specific/linux/uclibc {
     linuxHeaders = linuxHeadersCross;
     gccCross = gccCrossStageStatic;
-    cross = assert crossSystem != null; crossSystem;
+    cross = assert targetPlatform != buildPlatform; targetPlatform;
   });
 
   udev = systemd;
@@ -12444,19 +12462,7 @@ in
 
   ao = callPackage ../applications/graphics/ao {};
 
-  ardour = ardour5;
-
-  ardour3 =  callPackage ../applications/audio/ardour/ardour3.nix {
-    inherit (gnome2) libgnomecanvas libgnomecanvasmm;
-    inherit (vamp) vampSDK;
-  };
-
-  ardour4 =  callPackage ../applications/audio/ardour/ardour4.nix {
-    inherit (gnome2) libgnomecanvas libgnomecanvasmm;
-    inherit (vamp) vampSDK;
-  };
-
-  ardour5 =  callPackage ../applications/audio/ardour {
+  ardour = callPackage ../applications/audio/ardour {
     inherit (gnome2) libgnomecanvas libgnomecanvasmm;
     inherit (vamp) vampSDK;
   };
@@ -12583,7 +12589,9 @@ in
 
   bibletime = callPackage ../applications/misc/bibletime { };
 
-  bitkeeper = callPackage ../applications/version-management/bitkeeper { };
+  bitkeeper = callPackage ../applications/version-management/bitkeeper {
+    gperf = gperf_3_0;
+  };
 
   bitlbee = callPackage ../applications/networking/instant-messengers/bitlbee { };
   bitlbee-plugins = callPackage ../applications/networking/instant-messengers/bitlbee/plugins.nix { };
@@ -12865,6 +12873,7 @@ in
   };
 
   docker = callPackage ../applications/virtualization/docker { };
+  docker-proxy = callPackage ../applications/virtualization/docker/proxy.nix { };
 
   docker-gc = callPackage ../applications/virtualization/docker/gc.nix { };
 
@@ -13591,10 +13600,6 @@ in
   gqview = callPackage ../applications/graphics/gqview { };
 
   gmpc = callPackage ../applications/audio/gmpc {};
-
-  gmtk = callPackage ../applications/networking/browsers/mozilla-plugins/gmtk {
-    inherit (gnome2) GConf;
-  };
 
   gnome-mpv = callPackage ../applications/video/gnome-mpv { };
 
@@ -14522,6 +14527,8 @@ in
 
   osmo = callPackage ../applications/office/osmo { };
 
+  palemoon = callPackage ../applications/networking/browsers/palemoon { };
+
   pamix = callPackage ../applications/audio/pamix { };
 
   pamixer = callPackage ../applications/audio/pamixer { };
@@ -14539,6 +14546,8 @@ in
   pavucontrol = callPackage ../applications/audio/pavucontrol { };
 
   paraview = callPackage ../applications/graphics/paraview { };
+
+  packet = callPackage ../development/tools/packet { };
 
   pbrt = callPackage ../applications/graphics/pbrt { };
 
@@ -14780,9 +14789,9 @@ in
 
   quiterss = qt5.callPackage ../applications/networking/newsreaders/quiterss {};
 
-  quodlibet = callPackage ../applications/audio/quodlibet { };
+  quodlibet-without-gst-plugins = callPackage ../applications/audio/quodlibet { };
 
-  quodlibet-with-gst-plugins = callPackage ../applications/audio/quodlibet {
+  quodlibet = callPackage ../applications/audio/quodlibet {
     withGstPlugins = true;
     gst_plugins_bad = null;
   };
@@ -15243,9 +15252,7 @@ in
     vte = gnome2.vte.override { pythonSupport = true; };
   };
 
-  termite = callPackage ../applications/misc/termite {
-    vte = gnome3_20.vte-select-text;
-  };
+  termite = callPackage ../applications/misc/termite { vte = null; };
 
   tesseract = callPackage ../applications/graphics/tesseract { };
 
@@ -15438,7 +15445,6 @@ in
   };
 
   virtmanager = callPackage ../applications/virtualization/virt-manager {
-    inherit (gnome2) gnome_python;
     vte = gnome3.vte;
     dconf = gnome3.dconf;
     spice_gtk = spice_gtk;
@@ -16466,9 +16472,7 @@ in
 
   warmux = callPackage ../games/warmux { };
 
-  warsow = callPackage ../games/warsow {
-    libjpeg = libjpeg62;
-  };
+  warsow = callPackage ../games/warsow { };
 
   warzone2100 = qt5.callPackage ../games/warzone2100 { };
 
@@ -16561,8 +16565,6 @@ in
     gtkmm = self.gtkmm2;
     libcanberra = self.libcanberra_gtk2;
   });
-
-  gnome3_20 = recurseIntoAttrs (callPackage ../desktops/gnome-3/3.20 { });
 
   gnome3_22 = recurseIntoAttrs (callPackage ../desktops/gnome-3/3.22 { });
 
@@ -17027,7 +17029,9 @@ in
 
   abella = callPackage ../applications/science/logic/abella {};
 
-  alt-ergo = callPackage ../applications/science/logic/alt-ergo {};
+  alt-ergo = callPackage ../applications/science/logic/alt-ergo {
+    ocamlPackages = ocamlPackages_4_02;
+  };
 
   aspino = callPackage ../applications/science/logic/aspino {};
 
@@ -17041,14 +17045,10 @@ in
     inherit (ocamlPackages_4_01_0) ocaml findlib lablgtk;
     camlp5 = ocamlPackages_4_01_0.camlp5_transitional;
   };
-  coq_8_5 = callPackage ../applications/science/logic/coq/8.5.nix {
-    inherit (ocamlPackages) ocaml findlib lablgtk;
-    camlp5 = ocamlPackages.camlp5_transitional;
+  coq_8_5 = callPackage ../applications/science/logic/coq {
+    version = "8.5pl3";
   };
-  coq_8_6 = callPackage ../applications/science/logic/coq/8.6.nix {
-    inherit (ocamlPackages) ocaml findlib lablgtk;
-    camlp5 = ocamlPackages.camlp5_transitional;
-  };
+  coq_8_6 = callPackage ../applications/science/logic/coq {};
   coq_HEAD = callPackage ../applications/science/logic/coq/HEAD.nix {
     inherit (ocamlPackages) ocaml findlib lablgtk;
     camlp5 = ocamlPackages.camlp5_transitional;
@@ -17316,7 +17316,9 @@ in
 
   scilab-bin = callPackage ../applications/science/math/scilab-bin {};
 
-  scotch = callPackage ../applications/science/math/scotch { };
+  scotch = callPackage ../applications/science/math/scotch {
+    flex = flex_2_5_35;
+  };
 
   msieve = callPackage ../applications/science/math/msieve { };
 
@@ -17637,6 +17639,8 @@ in
     nix-prefetch-svn
     nix-prefetch-zip
     nix-prefetch-scripts;
+
+  nix-update-source = callPackage ../tools/package-management/nix-update-source {};
 
   nix-template-rpm = callPackage ../build-support/templaterpm { inherit (pythonPackages) python toposort; };
 
@@ -17999,8 +18003,6 @@ in
 
   yadm = callPackage ../applications/version-management/yadm { };
 
-  yafc = callPackage ../applications/networking/yafc { };
-
   yamdi = callPackage ../tools/video/yamdi { };
 
   yandex-disk = callPackage ../tools/filesystems/yandex-disk { };
@@ -18050,7 +18052,7 @@ in
 
   discord = callPackage ../applications/networking/instant-messengers/discord { };
 
-  golden-cheetah = qt55.callPackage ../applications/misc/golden-cheetah {};
+  golden-cheetah = qt5.callPackage ../applications/misc/golden-cheetah {};
 
   linkchecker = callPackage ../tools/networking/linkchecker { };
 
@@ -18083,4 +18085,6 @@ in
   simplenote = callPackage ../applications/misc/simplenote { };
 
   hy = callPackage ../development/interpreters/hy {};
+
+  ghc-standalone-archive = callPackage ../os-specific/darwin/ghc-standalone-archive { inherit (darwin) cctools; };
 }
