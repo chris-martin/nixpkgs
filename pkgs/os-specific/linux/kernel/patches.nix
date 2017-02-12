@@ -25,10 +25,13 @@ let
     inherit grver kver grrev;
 
     patch = fetchurl {
-      # When updating versions/hashes, ALWAYS use the official version; we use
-      # this mirror only because upstream removes sources files immediately upon
-      # releasing a new version ...
-      url = "https://raw.githubusercontent.com/slashbeast/grsecurity-scrape/master/${grbranch}/${name}.patch";
+      urls = [
+        "https://grsecurity.net/${grbranch}/${name}.patch"
+        # When updating versions/hashes, ALWAYS use the official
+        # version; we use this mirror only because upstream removes
+        # source files immediately upon releasing a new version ...
+        "https://raw.githubusercontent.com/slashbeast/grsecurity-scrape/master/${grbranch}/${kver}/${name}.patch"
+      ];
       inherit sha256;
     };
 
@@ -92,9 +95,9 @@ rec {
   };
 
   grsecurity_testing = grsecPatch
-    { kver   = "4.8.15";
-      grrev  = "201612301949";
-      sha256 = "1083r30ipvdi3kjixlsp3f1mmf7848f2p32ds956caarvr4vkm3b";
+    { kver   = "4.8.17";
+      grrev  = "201701151620";
+      sha256 = "10gavcdby8aiylbx8afc1x4j0vzbb16bhlw39a7ibnav45scsr0p";
     };
 
   # This patch relaxes grsec constraints on the location of usermode helpers,
