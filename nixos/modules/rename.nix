@@ -168,6 +168,14 @@ with lib;
     # dhcpd
     (mkRenamedOptionModule [ "services" "dhcpd" ] [ "services" "dhcpd4" ])
 
+    # locate
+    (mkRenamedOptionModule [ "services" "locate" "period" ] [ "services" "locate" "interval" ])
+    (mkRemovedOptionModule [ "services" "locate" "includeStore" ] "Use services.locate.prunePaths" )
+
+    # nfs
+    (mkRenamedOptionModule [ "services" "nfs" "lockdPort" ] [ "services" "nfs" "server" "lockdPort" ])
+    (mkRenamedOptionModule [ "services" "nfs" "statdPort" ] [ "services" "nfs" "server" "statdPort" ])
+
     # Options that are obsolete and have no replacement.
     (mkRemovedOptionModule [ "boot" "initrd" "luks" "enable" ] "")
     (mkRemovedOptionModule [ "programs" "bash" "enable" ] "")
