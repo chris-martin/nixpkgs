@@ -1806,6 +1806,8 @@ with pkgs;
 
   fswebcam = callPackage ../os-specific/linux/fswebcam { };
 
+  fullwidth = callPackage ../tools/text/fullwidth { };
+
   fuseiso = callPackage ../tools/filesystems/fuseiso { };
 
   fuse-7z-ng = callPackage ../tools/filesystems/fuse-7z-ng { };
