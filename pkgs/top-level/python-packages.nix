@@ -12,14 +12,14 @@ let
 let
   pythonAtLeast = versionAtLeast python.pythonVersion;
   pythonOlder = versionOlder python.pythonVersion;
-  isPy26 = python.majorVersion == "2.6";
-  isPy27 = python.majorVersion == "2.7";
-  isPy33 = python.majorVersion == "3.3";
-  isPy34 = python.majorVersion == "3.4";
-  isPy35 = python.majorVersion == "3.5";
-  isPy36 = python.majorVersion == "3.6";
+  isPy26 = python.pythonVersion == "2.6";
+  isPy27 = python.pythonVersion == "2.7";
+  isPy33 = python.pythonVersion == "3.3";
+  isPy34 = python.pythonVersion == "3.4";
+  isPy35 = python.pythonVersion == "3.5";
+  isPy36 = python.pythonVersion == "3.6";
   isPyPy = python.executable == "pypy";
-  isPy3k = strings.substring 0 1 python.majorVersion == "3";
+  isPy3k = strings.substring 0 1 python.pythonVersion == "3";
 
   callPackage = pkgs.newScope self;
 
@@ -70,6 +70,8 @@ in {
   recursivePthLoader = callPackage ../development/python-modules/recursive-pth-loader { };
 
   setuptools = callPackage ../development/python-modules/setuptools { };
+
+  vowpalwabbit = callPackage ../development/python-modules/vowpalwabbit { pythonPackages = self; };
 
   acoustics = buildPythonPackage rec {
     pname = "acoustics";
@@ -332,6 +334,8 @@ in {
 
   pysideTools = callPackage ../development/python-modules/pyside/tools.nix { };
 
+  python-sql = callPackage ../development/python-modules/python-sql { };
+
   pytimeparse = buildPythonPackage rec {
     pname = "pytimeparse";
     version = "1.1.6";
@@ -353,6 +357,8 @@ in {
   };
 
   pyxml = if !isPy3k then callPackage ../development/python-modules/pyxml{ } else throw "pyxml not supported for interpreter ${python.executable}";
+
+  relatorio = callPackage ../development/python-modules/relatorio { };
 
   rhpl = if !isPy3k then callPackage ../development/python-modules/rhpl {} else throw "rhpl not supported for interpreter ${python.executable}";
 
@@ -3178,12 +3184,9 @@ in {
     '';
 
     meta = {
-      homepage = https://github.com/boto3/boto;
-
+      homepage = https://github.com/boto/boto3;
       license = stdenv.lib.licenses.asl20;
-
       description = "AWS SDK for Python";
-
       longDescription = ''
         Boto3 is the Amazon Web Services (AWS) Software Development Kit (SDK) for
         Python, which allows Python developers to write software that makes use of
@@ -4549,11 +4552,11 @@ in {
   cryptography = buildPythonPackage rec {
     # also bump cryptography_vectors
     name = "cryptography-${version}";
-    version = "1.5.3";
+    version = "1.7.2";
 
     src = pkgs.fetchurl {
       url = "mirror://pypi/c/cryptography/${name}.tar.gz";
-      sha256 = "cf82ddac919b587f5e44247579b433224cc2e03332d2ea4d89aa70d7e6b64ae5";
+      sha256 = "1ad9zmzi31fnz31qfchxcwiydvlxq88xndlgsvzr7m537n5vd347";
     };
 
     buildInputs = [ pkgs.openssl self.pretend self.cryptography_vectors
@@ -4570,11 +4573,11 @@ in {
   cryptography_vectors = buildPythonPackage rec {
       # also bump cryptography
     name = "cryptography_vectors-${version}";
-    version = "1.5.3";
+    version = "1.7.2";
 
     src = pkgs.fetchurl {
       url = "mirror://pypi/c/cryptography-vectors/${name}.tar.gz";
-      sha256 = "e513fecd146a844da19022abd1b4dfbf3335c1941464988f501d7a16f30acdae";
+      sha256 = "1p5cw3dzgcpzmp81qb9860hn9qlcvr4rnf0fy31fbvhxl7lfxr2b";
     };
   };
 
@@ -4714,6 +4717,37 @@ in {
     meta = with stdenv.lib; {
       homepage = "https://github.com/dreamhost/cliff-tablib";
     };
+  };
+
+  openant = buildPythonPackage rec {
+    name = "openant-unstable-2017-02-11";
+
+    meta = with stdenv.lib; {
+      homepage = "https://github.com/Tigge/openant";
+      description = "ANT and ANT-FS Python Library";
+      license = licenses.mit;
+      platforms = platforms.linux;
+    };
+
+    src = pkgs.fetchFromGitHub {
+      owner = "Tigge";
+      repo = "openant";
+      rev = "ed89281e37f65d768641e87356cef38877952397";
+      sha256 = "1g81l9arqdy09ijswn3sp4d6i3z18d44lzyb78bwnvdb14q22k19";
+    };
+
+    # Removes some setup.py hacks intended to install udev rules.
+    # We do the job ourselves in postInstall below.
+    postPatch = ''
+      sed -i -e '/cmdclass=.*/d' setup.py
+    '';
+
+    postInstall = ''
+      install -dm755 "$out/etc/udev/rules.d"
+      install -m644 resources/ant-usb-sticks.rules "$out/etc/udev/rules.d/99-ant-usb-sticks.rules"
+    '';
+
+    propagatedBuildInputs = with self; [ pyusb ];
   };
 
   opencv = pkgs.opencv.override {
@@ -6516,27 +6550,28 @@ in {
     };
   };
 
-  urllib3 = buildPythonPackage rec {
-    name = "urllib3-1.12";
+  urllib3 = let
+    disabled_tests = [
+      "test_headers" "test_headerdict" "test_can_validate_ip_san" "test_delayed_body_read_timeout"
+      "test_timeout_errors_cause_retries" "test_select_multiple_interrupts_with_event"
+    ];
+  in buildPythonPackage rec {
+    pname = "urllib3";
+    version = "1.20";
+    name = "${pname}-${version}";
 
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/u/urllib3/${name}.tar.gz";
-      sha256 = "1ikj72kd4cdcq7pmmcd5p6s9dvp7wi0zw01635v4xzkid5vi598f";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "0bx76if7shzlyykmaj4fhjkir5bswc4fdx5r4q0lrn3q51p2pvwp";
     };
 
-    doCheck = !isPy3k;  # lots of transient failures
-    checkPhase = ''
-      # Not worth the trouble
-      rm test/with_dummyserver/test_poolmanager.py
-      rm test/with_dummyserver/test_proxy_poolmanager.py
-      rm test/with_dummyserver/test_socketlevel.py
-      # pypy: https://github.com/shazow/urllib3/issues/736
-      rm test/with_dummyserver/test_connectionpool.py
+    NOSE_EXCLUDE=concatStringsSep "," disabled_tests;
 
+    checkPhase = ''
       nosetests -v --cover-min-percentage 1
     '';
 
-    buildInputs = with self; [ coverage tornado mock nose ];
+    buildInputs = with self; [ coverage tornado mock nose psutil pysocks ];
 
     meta = {
       description = "A Python library for Dropbox's HTTP-based Core and Datastore APIs";
@@ -6763,18 +6798,18 @@ in {
   };
 
   evdev = buildPythonPackage rec {
-    version = "0.4.7";
+    version = "0.6.4";
     name = "evdev-${version}";
     disabled = isPy34;  # see http://bugs.python.org/issue21121
 
     src = pkgs.fetchurl {
       url = "mirror://pypi/e/evdev/${name}.tar.gz";
-      sha256 = "1mz8cfncpxc1wbk2nj7apl0ssqc0vfndysxchq3wabd9vzx5p71k";
+      sha256 = "1wkag91s8j0f45jx5n619z354n8pz8in9krn81hp7hlkhi6p8s2j";
     };
 
     buildInputs = with self; [ pkgs.linuxHeaders ];
 
-    patchPhase = "sed -e 's#/usr/include/linux/input.h#${pkgs.linuxHeaders}/include/linux/input.h#' -i setup.py";
+    patchPhase = "sed -e 's#/usr/include/linux/#${pkgs.linuxHeaders}/include/linux/#g' -i setup.py";
 
     doCheck = false;
 
@@ -9083,6 +9118,8 @@ in {
     };
 
     propagatedBuildInputs = with self; [ python-axolotl-curve25519 protobuf3_0 pycrypto ];
+    # IV == 0 in tests is not supported by pycrytpodom (our pycrypto drop-in)
+    doCheck = !isPy3k;
 
     meta = {
       homepage = "https://github.com/tgalal/python-axolotl";
@@ -11026,15 +11063,20 @@ in {
   };
 
   enum34 = if pythonAtLeast "3.4" then null else buildPythonPackage rec {
-    name = "enum34-${version}";
-    version = "1.0.4";
+    pname = "enum34";
+    version = "1.1.6";
+    name = "${pname}-${version}";
 
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/e/enum34/${name}.tar.gz";
-      sha256 = "0iz4jjdvdgvfllnpmd92qxj5fnfxqpgmjpvpik0jjim3lqk9zhfk";
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "8ad8c4783bf61ded74527bffb48ed9b54166685e4230386a9ed9b1279e2df5b1";
     };
 
     buildInputs = optional isPy26 self.ordereddict;
+    checkPhase = ''
+      ${python.interpreter} -m unittest discover
+    '';
+
 
     meta = {
       homepage = https://pypi.python.org/pypi/enum34;
@@ -12235,14 +12277,14 @@ in {
 
   glances = buildPythonPackage rec {
     name = "glances-${version}";
-    version = "2.7.1_1";
+    version = "2.8.2";
     disabled = isPyPy;
 
     src = pkgs.fetchFromGitHub {
       owner = "nicolargo";
       repo = "glances";
       rev = "v${version}";
-      sha256 = "0gc2qgpzmy7q31z8b11ls4ifb0lwrz94xnz1kj27kc369a01gbxv";
+      sha256 = "1jwaq9k6q8wn197wadiwid7d8aik24rhsypmcl5q0jviwkhhiri9";
     };
 
     doCheck = false;
@@ -16748,8 +16790,19 @@ in {
       rev = "64cbb10095cf9ef0270d65fff58085a13bc0abe9";
       sha256 = "0s5kz5ln96ka0f1sa9nyp34c28mkxkrgcxbvysdawlppg7ay9s1z";
     };
+    buildInputs = with pkgs; [ bashInteractive ]; # needed for bash-completion helper
     propagatedBuildInputs = with self; [ urlgrabber m2crypto pyyaml ];
-    postInstall = "ln -s $out/bin/osc-wrapper.py $out/bin/osc";
+    postInstall = ''
+      ln -s $out/bin/osc-wrapper.py $out/bin/osc
+      install -D -m555 dist/osc.complete $out/share/bash-completion/helpers/osc-helper
+      mkdir -p $out/share/bash-completion/completions
+      cat >>$out/share/bash-completion/completions/osc <<EOF
+      test -z "\$BASH_VERSION" && return
+      complete -o default _nullcommand >/dev/null 2>&1 || return
+      complete -r _nullcommand >/dev/null 2>&1         || return
+      complete -o default -C $out/share/bash-completion/helpers/osc-helper osc
+      EOF
+    '';
     meta = {
       description = "opensuse-commander with svn like handling";
       maintainers = [ maintainers.peti ];
@@ -19280,63 +19333,27 @@ in {
   });
 
   protobuf = self.protobuf2_6;
-  protobuf3_0 = (self.protobufBuild pkgs.protobuf3_0).override { doCheck = false; };
-  protobuf3_0_0b2 = (self.protobufBuild pkgs.protobuf3_0_0b2).override { doCheck = false; };
-  protobuf2_6 = self.protobufBuild pkgs.protobuf2_6;
-  protobuf2_5 = self.protobufBuild pkgs.protobuf2_5;
-  protobufBuild = protobuf: buildPythonPackage rec {
-    inherit (protobuf) name src;
-    disabled = isPy3k || isPyPy;
-
-    propagatedBuildInputs = with self; [ protobuf google_apputils ];
-
-    prePatch = ''
-      while [ ! -d python ]; do
-        cd *
-      done
-      cd python
-    '';
-
-    preConfigure = optionalString (versionAtLeast protobuf.version "2.6.0") ''
-      export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=cpp
-      export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION_VERSION=2
-    '';
-
-    preBuild = optionalString (versionAtLeast protobuf.version "2.6.0") ''
-      ${python}/bin/${python.executable} setup.py build_ext --cpp_implementation
-    '';
-
-    checkPhase = ''
-      runHook preCheck
-    '' + (if versionAtLeast protobuf.version "2.6.0" then ''
-      ${python.executable} setup.py google_test --cpp_implementation
-      echo "sanity checking the C extension . . ."
-      echo "import google.protobuf.descriptor" | ${python.executable}
-    '' else ''
-      ${python.executable} setup.py test
-    '') + ''
-      runHook postCheck
-    '';
-
-    installFlags = optional (versionAtLeast protobuf.version "2.6.0") "--install-option='--cpp_implementation'";
-
-    # the _message.so isn't installed, so we'll do that manually.
-    # if someone can figure out a less hacky way to get the _message.so to
-    # install, please do replace this.
-    postInstall = optionalString (versionAtLeast protobuf.version "2.6.0") ''
-      cp -v $(find build -name "_message*") $out/${python.sitePackages}/google/protobuf/pyext
-    '';
-
-    doCheck = true;
-
-    meta = {
-      description = "Protocol Buffers are Google's data interchange format";
-      homepage = http://code.google.com/p/protobuf/;
-    };
-
-    passthru.protobuf = protobuf;
+  # only required by tensorflow
+  protobuf3_0_0b2 = callPackage ../development/python-modules/protobuf.nix {
+    disabled = isPyPy || isPy3k;
+    doCheck = isPy3k;
+    protobuf = pkgs.protobuf3_0_0b2;
   };
 
+  protobuf3_0 = callPackage ../development/python-modules/protobuf.nix {
+    disabled = isPyPy;
+    doCheck = isPy3k;
+    protobuf = pkgs.protobuf3_0;
+  };
+  protobuf2_6 = callPackage ../development/python-modules/protobuf.nix {
+    disabled = isPy3k || isPyPy;
+    doCheck = false;
+    protobuf = pkgs.protobuf2_6;
+  };
+  protobuf2_5 = callPackage ../development/python-modules/protobuf.nix {
+    disabled = isPy3k || isPyPy;
+    protobuf = pkgs.protobuf2_5;
+  };
 
   psutil = buildPythonPackage rec {
     name = "psutil-${version}";
@@ -19867,9 +19884,8 @@ in {
       patchShebangs .
     '';
 
-    buildInputs = [
-      self.setuptools self.nose pkgs.pkgconfig pkgs.swig pkgs.libcdio
-    ];
+    buildInputs = [ self.setuptools self.nose pkgs.pkgconfig pkgs.swig pkgs.libcdio ]
+      ++ stdenv.lib.optional stdenv.isDarwin pkgs.libiconv;
 
     patches = [ ../development/python-modules/pycdio/add-cdtext-toc.patch ];
 
@@ -19940,12 +19956,12 @@ in {
   };
 
   pycurl = buildPythonPackage (rec {
-    name = "pycurl-7.19.5";
+    name = "pycurl-7.19.5.1";
     disabled = isPyPy; # https://github.com/pycurl/pycurl/issues/208
 
     src = pkgs.fetchurl {
       url = "http://pycurl.sourceforge.net/download/${name}.tar.gz";
-      sha256 = "0hqsap82zklhi5fxhc69kxrwzb0g9566f7sdpz7f9gyxkmyam839";
+      sha256 = "0v5w66ir3siimfzg3kc8hfrrilwwnbxq5bvipmrpyxar0kw715vf";
     };
 
     propagatedBuildInputs = with self; [ pkgs.curl pkgs.openssl.out ];
@@ -21525,11 +21541,11 @@ in {
 
   pyopenssl = buildPythonPackage rec {
     name = "pyopenssl-${version}";
-    version = "16.1.0";
+    version = "16.2.0";
 
     src = pkgs.fetchurl {
       url = "mirror://pypi/p/pyOpenSSL/pyOpenSSL-${version}.tar.gz";
-      sha256 = "88f7ada2a71daf2c78a4f139b19d57551b4c8be01f53a1cb5c86c2f3bf01355f";
+      sha256 = "0vji4yrfshs15xpczbhzhasnjrwcarsqg87n98ixnyafnyxs6ybp";
     };
 
     preCheck = ''
@@ -22717,17 +22733,14 @@ in {
   };
 
   robotframework = buildPythonPackage rec {
-    version = "2.8.7";
+    version = "3.0.2";
     name = "robotframework-${version}";
     disabled = isPy3k;
 
     src = pkgs.fetchurl {
       url = "mirror://pypi/r/robotframework/${name}.tar.gz";
-      sha256 = "0mfd0s989j3jrpl8q0lb4wsjy1x280chfr9r74m2dyi9c7rxzc58";
+      sha256 = "1xqzxv00lxf9xi4vdxdsyd1bfmx18gi96vrnijpzj9w2aqrz4610";
     };
-
-    # error: invalid command 'test'
-    doCheck = false;
 
     meta = {
       description = "Generic test automation framework";
@@ -22832,6 +22845,24 @@ in {
       license = licenses.asl20;
       platforms = platforms.linux;
       maintainers = with maintainers; [ bjornfor ];
+    };
+  };
+
+  robotframework-requests = buildPythonPackage rec {
+    version = "0.4.6";
+    name = "robotframework-requests-${version}";
+
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/ad/da/51359b11d2005ff425984205677890fafaf270a71b03df22c255501bc99d/robotframework-requests-0.4.6.tar.gz";
+      sha256 = "0416rxg7g0pfg77akljnkass0xz0id26v4saag2q2h1fgwrm7n4q";
+    };
+
+    buildInputs = with self; [ unittest2 ];
+    propagatedBuildInputs = with self; [ robotframework lxml requests2 ];
+
+    meta = {
+      description = "Robot Framework keyword library wrapper around the HTTP client library requests";
+      homepage = https://github.com/bulkan/robotframework-requests;
     };
   };
 
@@ -26398,14 +26429,17 @@ in {
     # # 1.0.0 and up create a circle dependency with traceback2/pbr
     doCheck = false;
 
-    patchPhase = ''
+    postPatch = ''
+      # argparse is needed for python < 2.7, which we do not support anymore.
+      substituteInPlace setup.py --replace "argparse"
+
       # # fixes a transient error when collecting tests, see https://bugs.launchpad.net/python-neutronclient/+bug/1508547
       sed -i '510i\        return None, False' unittest2/loader.py
       # https://github.com/pypa/packaging/pull/36
       sed -i 's/version=VERSION/version=str(VERSION)/' setup.py
     '';
 
-    propagatedBuildInputs = with self; [ six argparse traceback2 ];
+    propagatedBuildInputs = with self; [ six traceback2 ];
 
     meta = {
       description = "A backport of the new features added to the unittest testing framework";
@@ -26838,11 +26872,11 @@ EOF
 
   webassets = buildPythonPackage rec {
     name = "webassets-${version}";
-    version = "0.12.0";
+    version = "0.12.1";
 
     src = pkgs.fetchurl {
       url = "mirror://pypi/w/webassets/${name}.tar.gz";
-      sha256 = "14m13xa5sc7iqq2j1wsd2klcwaihqlhz2l9lmn92dks2yc8hplcr";
+      sha256 = "1nrqkpb7z46h2b77xafxihqv3322cwqv6293ngaky4j3ff4cing7";
     };
 
     buildInputs = with self; [ nose jinja2 mock pytest ];
@@ -27490,12 +27524,8 @@ EOF
       sha256 = "1q0f3pskb09saw1qkd2s6vmk80rq5zjhq8l93dfr2x6r04r0q46j";
     };
 
+    nativeBuildInputs = with pkgs; [ wrapGAppsHook ];
     propagatedBuildInputs = with self; [ pkgs.gobjectIntrospection pygobject3 pkgs.graphviz pkgs.gnome3.gtk ];
-
-    preFixup = ''
-        wrapProgram "$out/bin/"* \
-          --prefix GI_TYPELIB_PATH : "$GI_TYPELIB_PATH"
-    '';
 
     meta = {
       description = "xdot.py is an interactive viewer for graphs written in Graphviz's dot";
@@ -31997,6 +32027,29 @@ EOF
 
   yarl = callPackage ../development/python-modules/yarl { };
 
+  suseapi = buildPythonPackage rec {
+    name = "${pname}-${version}";
+    pname = "suseapi";
+    version = "0.24-5-g9937e3b";
+
+    src = pkgs.fetchFromGitHub {
+      owner = "openSUSE";
+      repo = "python-${pname}";
+      rev = version;
+      sha256 = "1144h26wrzazzy6y3yy163fccqmggk5hazjkk8l9a547390ilgrv";
+    };
+
+    propagatedBuildInputs = with self; [
+      django suds-jurko ldap mechanize beautifulsoup4 pyxdg dateutil requests
+    ];
+
+    meta = {
+      homepage = "https://github.com/openSUSE/python-suseapi/";
+      description = "Python module to work with various SUSE services";
+      license = licenses.gpl3Plus;
+    };
+  };
+
   stripe = buildPythonPackage rec {
     name = "${pname}-${version}";
     pname = "stripe";
@@ -32090,6 +32143,8 @@ EOF
   incremental = callPackage ../development/python-modules/incremental { };
 
   treq = callPackage ../development/python-modules/treq { };
+
+  snakeviz = callPackage ../development/python-modules/snakeviz { };
 
 });
 

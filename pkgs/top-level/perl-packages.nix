@@ -1555,10 +1555,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   CGI = buildPerlPackage rec {
-    name = "CGI-4.31";
+    name = "CGI-4.35";
     src = fetchurl {
       url = "mirror://cpan/authors/id/L/LE/LEEJO/${name}.tar.gz";
-      sha256 = "dee34f45525efb698d02c56ba2458a72acc34c4dcb05344706b587840b4e8c99";
+      sha256 = "07gwnlc7vq58fjwmfsrv0hfyirqqdrpjhf89caq34rjrkz2wsd0b";
     };
     buildInputs = [ TestDeep TestWarn ];
     propagatedBuildInputs = [ HTMLParser self."if" ];
@@ -2696,10 +2696,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   CryptOpenSSLRandom = buildPerlPackage rec {
-    name = "Crypt-OpenSSL-Random-0.10";
+    name = "Crypt-OpenSSL-Random-0.11";
     src = fetchurl {
       url = "mirror://cpan/authors/id/R/RU/RURBAN/${name}.tar.gz";
-      sha256 = "12pirh1pj8lpvzcwj2if9i6dbr6a7s9g1zc7gzbd3v87d6mx0rdf";
+      sha256 = "0yjcabkibrkafywvdkmd1xpi6br48skyk3l15ni176wvlg38335v";
     };
     NIX_CFLAGS_COMPILE = "-I${pkgs.openssl.dev}/include";
     NIX_CFLAGS_LINK = "-L${pkgs.openssl.out}/lib -lcrypto";
@@ -3928,10 +3928,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DigestCRC = buildPerlPackage rec {
-    name = "Digest-CRC-0.21";
+    name = "Digest-CRC-0.22.2";
     src = fetchurl {
       url = "mirror://cpan/authors/id/O/OL/OLIMAUL/${name}.tar.gz";
-      sha256 = "79a0ef8081767c324edb9da39f80835910ed7c5b0539ed106caf7f2467d1958f";
+      sha256 = "112b50f7fbc6f6baf5d4584ee97f542ced6c9ec03a3147f7902c84b8b26778cb";
     };
     meta = {
       description = "Module that calculates CRC sums of all sorts";

@@ -95,9 +95,9 @@ rec {
   };
 
   grsecurity_testing = grsecPatch
-    { kver   = "4.9.10";
-      grrev  = "201702152052";
-      sha512 = "3whjlrm06r724q9lkycm2jalv3wm9bhxjlvgnglrfnc48rnv3b4j2m6gnq396pc3axnd2mpiinlwjwarw59dhs9qax9l7ddcc3cxd4k";
+    { kver   = "4.9.11";
+      grrev  = "201702222257";
+      sha512 = "3yla1fw6iykzb19rpyqg910qhizi3njcywxksxcylf2z2da02i7nkjia0n0qn8n16lwlj44d9f59ka5xsml5r4vha77c850b6w436ni";
     };
 
   # This patch relaxes grsec constraints on the location of usermode helpers,
@@ -175,13 +175,12 @@ rec {
       };
     };
 
-  sctp_bug_on_CVE_2017_5986 = rec
-    { name = "sctp_BUG_ON_CVE_2017_5986.patch";
+  DCCP_double_free_vulnerability_CVE-2017-6074 = rec
+    { name = "DCCP_double_free_vulnerability_CVE-2017-6074.patch";
       patch = fetchpatch {
         inherit name;
-        url = "https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/patch/?id=2dcab598484185dea7ec22219c76dcdd59e3cb90";
-        sha256 = "15np10bfm5yzby9zbkrh23qpm91wnprblsk0xn9yjryypnz8njxh";
+        url = "https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/patch/?id=5edabca9d4cff7f1f2b68f0bac55ef99d9798ba4";
+        sha256 = "10dmv3d3gj8rvj9h40js4jh8xbr5wyaqiy0kd819mya441mj8ll2";
       };
     };
-
 }
