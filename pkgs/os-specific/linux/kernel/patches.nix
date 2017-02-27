@@ -95,9 +95,9 @@ rec {
   };
 
   grsecurity_testing = grsecPatch
-    { kver   = "4.9.10";
-      grrev  = "201702152052";
-      sha512 = "3whjlrm06r724q9lkycm2jalv3wm9bhxjlvgnglrfnc48rnv3b4j2m6gnq396pc3axnd2mpiinlwjwarw59dhs9qax9l7ddcc3cxd4k";
+    { kver   = "4.9.12";
+      grrev  = "201702231830";
+      sha512 = "1455wpdy5lizdibs86llaxf087vggl921dn83pf4cnc9fbzc5mwa46vazahv9g8467bb335vgg5fcba2i0026s1h9vcsvyy6470m4i3";
     };
 
   # This patch relaxes grsec constraints on the location of usermode helpers,
