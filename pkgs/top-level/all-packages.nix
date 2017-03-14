@@ -16912,8 +16912,6 @@ with pkgs;
 
   kakasi = callPackage ../tools/text/kakasi { };
 
-  inherit (kde4) kcolorchooser;
-
   kde4 =
     let
       deps = lib.makeScope newScope (self: {
