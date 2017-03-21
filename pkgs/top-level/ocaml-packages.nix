@@ -198,6 +198,8 @@ let
 
     fpath = callPackage ../development/ocaml-modules/fpath { };
 
+    functoria = callPackage ../development/ocaml-modules/functoria { };
+
     functory = callPackage ../development/ocaml-modules/functory { };
 
     gen = callPackage ../development/ocaml-modules/gen { };
@@ -382,6 +384,10 @@ let
 
     ocsigen_server = callPackage ../development/ocaml-modules/ocsigen-server { };
 
+    ocsigen-start = callPackage ../development/ocaml-modules/ocsigen-start { };
+
+    ocsigen-toolkit = callPackage ../development/ocaml-modules/ocsigen-toolkit { };
+
     ojquery = callPackage ../development/ocaml-modules/ojquery { };
 
     omd = callPackage ../development/ocaml-modules/omd { };
@@ -478,6 +484,8 @@ let
       if lib.versionAtLeast ocaml.version "4.02"
       then callPackage ../development/ocaml-modules/ppx_deriving {}
       else null;
+
+    ppx_deriving_yojson = callPackage ../development/ocaml-modules/ppx_deriving_yojson {};
 
     ppx_import = callPackage ../development/ocaml-modules/ppx_import {};
 

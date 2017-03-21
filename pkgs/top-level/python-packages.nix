@@ -307,6 +307,37 @@ in {
 
   pygame-git = callPackage ../development/python-modules/pygame/git.nix { };
 
+  pygame_sdl2 = buildPythonPackage rec {
+    pname = "pygame_sdl2";
+    version = "6.99.10.1227";
+    name = "${pname}-${version}";
+
+    meta = {
+      description = "A reimplementation of parts of pygame API using SDL2";
+      homepage    = "https://github.com/renpy/pygame_sdl2";
+      # Some parts are also available under Zlib License
+      license     = licenses.lgpl2;
+      maintainers = with maintainers; [ raskin ];
+    };
+
+    propagatedBuildInputs = with self; [ ];
+    buildInputs = with pkgs; with self; [
+      SDL2 SDL2_image SDL2_ttf SDL2_mixer
+      cython libjpeg libpng ];
+
+    postInstall = ''
+      ( cd "$out"/include/python*/ ;
+        ln -s pygame-sdl2 pygame_sdl2 || true ; )
+    '';
+
+    src = pkgs.fetchFromGitHub {
+      owner = "renpy";
+      repo = "${pname}";
+      rev = "renpy-${version}";
+      sha256 = "10n6janvqh5adn7pcijqwqfh234sybjz788kb8ac6b4l11hy2lx1";
+    };
+  };
+
   pygobject2 = callPackage ../development/python-modules/pygobject { };
   pygobject3 = callPackage ../development/python-modules/pygobject/3.nix { };
 
@@ -5750,6 +5781,8 @@ in {
 
   leather = callPackage ../development/python-modules/leather { };
 
+  libais = callPackage ../development/python-modules/libais { };
+
   libtmux = buildPythonPackage rec {
     name = "libtmux-${version}";
     version = "0.6.0";
@@ -6010,23 +6043,7 @@ in {
     };
   };
 
-  dateutil = buildPythonPackage (rec {
-    name = "dateutil-${version}";
-    version = "2.5.3";
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/p/python-dateutil/python-${name}.tar.gz";
-      sha256 = "1v9j9fmf8g911yg6k01xa2db6dx3wv73zkk7fncsj7vagjqgs20l";
-    };
-
-    propagatedBuildInputs = with self; [ self.six ];
-
-    meta = {
-      description = "Powerful extensions to the standard datetime module";
-      homepage = http://pypi.python.org/pypi/python-dateutil;
-      license = "BSD-style";
-    };
-  });
+  dateutil = callPackage ../development/python-modules/dateutil { };
 
   # csvkit 0.9.1 needs dateutil==2.2
   dateutil_2_2 = buildPythonPackage (rec {
@@ -13928,6 +13945,10 @@ in {
     clblas = pkgs.clblas-cuda;
   };
 
+  libnacl = callPackage ../development/python-modules/libnacl/default.nix {
+    inherit (pkgs) libsodium;
+  };
+
   libplist = if isPy3k then throw "libplist not supported for interpreter ${python.executable}" else
     (pkgs.libplist.override{python2Packages=self; }).py;
 
@@ -13999,6 +14020,28 @@ in {
       description = "A thin python wrapper around Linode's API";
       license = licenses.mit;
       maintainers = with maintainers; [ nslqqq ];
+    };
+  };
+
+  livereload = buildPythonPackage rec {
+    name = "livereload-${version}";
+    version = "2.5.0";
+
+    src = pkgs.fetchFromGitHub {
+      owner = "lepture";
+      repo = "python-livereload";
+      rev = "v${version}";
+      sha256 = "0ixsc7wibmkfk9fnyq0d1b5d9snxfpzzzgsxvq28rn54v6q8b7m2";
+    };
+
+    buildInputs = with self; [ nose django ];
+
+    propagatedBuildInputs = with self; [ tornado six ];
+
+    meta = {
+      description = "Runs a local server that reloads as you develop";
+      homepage = "https://github.com/lepture/python-livereload";
+      license = licenses.bsd3;
     };
   };
 
@@ -18990,6 +19033,8 @@ in {
      };
   };
 
+  proselint = callPackage ../tools/text/proselint { };
+
   pylibconfig2 = buildPythonPackage rec {
     name = "pylibconfig2-${version}";
     version = "0.2.4";
@@ -19009,6 +19054,8 @@ in {
       license = licenses.gpl3;
     };
   };
+
+  pylibmc = callPackage ../development/python-modules/pylibmc {};
 
   pymetar = buildPythonPackage rec {
     name = "${pname}-${version}";
@@ -19257,12 +19304,12 @@ in {
   };
 
   powerline = buildPythonPackage rec {
-    rev  = "2.4";
+    rev  = "2.5.2";
     name = "powerline-${rev}";
     src = pkgs.fetchurl {
       url    = "https://github.com/powerline/powerline/archive/${rev}.tar.gz";
       name   = "${name}.tar.gz";
-      sha256 = "12fp3cpwgpkxcj4mfjdpsmf1h0b8pqy1icb07jdivz9kw18h0184";
+      sha256 = "064rp2jzz4vp1xqk3445qf08pq3aif00q1rjqaqx2pla15s27yrz";
     };
 
     propagatedBuildInputs = with self; [ pkgs.git pkgs.mercurial pkgs.bazaar self.psutil self.pygit2 ];
@@ -20063,7 +20110,7 @@ in {
       sha256 = "0v5w66ir3siimfzg3kc8hfrrilwwnbxq5bvipmrpyxar0kw715vf";
     };
 
-    propagatedBuildInputs = with self; [ pkgs.curl pkgs.openssl.out ];
+    buildInputs = with self; [ pkgs.curl pkgs.openssl.out ];
 
     # error: invalid command 'test'
     doCheck = false;
@@ -23951,7 +23998,7 @@ in {
       sha256 = "0kqvjb89b02wp41p650ydfspi1s8d7akx1igcrw62diidqbxp04n";
     };
 
-    propagatedBuildInputs = with self; [ pydns lockfile ];
+    propagatedBuildInputs = with self; [ bsddb3 pydns lockfile ];
 
     meta = {
       description = "Statistical anti-spam filter, initially based on the work of Paul Graham";
@@ -32149,6 +32196,9 @@ EOF
   };
 
   yenc = callPackage ../development/python-modules/yenc {
+  };
+
+  zeep = callPackage ../development/python-modules/zeep {
   };
 
   zeitgeist = if isPy3k then throw "zeitgeist not supported for interpreter ${python.executable}" else

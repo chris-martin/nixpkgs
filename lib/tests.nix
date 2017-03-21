@@ -1,3 +1,6 @@
+# to run these tests:
+# nix-instantiate --eval --strict nixpkgs/lib/tests.nix
+# if the resulting list is empty, all tests passed
 let inherit (builtins) add; in
 with import ./default.nix;
 
@@ -45,10 +48,34 @@ runTests {
     expected = ["b" "c"];
   };
 
-  testFold = {
-    expr = fold (builtins.add) 0 (range 0 100);
-    expected = 5050;
-  };
+  testFold =
+    let
+      f = op: fold: fold op 0 (range 0 100);
+      # fold with associative operator
+      assoc = f builtins.add;
+      # fold with non-associative operator
+      nonAssoc = f builtins.sub;
+    in {
+      expr = {
+        assocRight = assoc foldr;
+        # right fold with assoc operator is same as left fold
+        assocRightIsLeft = assoc foldr == assoc foldl;
+        nonAssocRight = nonAssoc foldr;
+        nonAssocLeft = nonAssoc foldl;
+        # with non-assoc operator the fold results are not the same
+        nonAssocRightIsNotLeft = nonAssoc foldl != nonAssoc foldr;
+        # fold is an alias for foldr
+        foldIsRight = nonAssoc fold == nonAssoc foldr;
+      };
+      expected = {
+        assocRight = 5050;
+        assocRightIsLeft = true;
+        nonAssocRight = 50;
+        nonAssocLeft = (-5050);
+        nonAssocRightIsNotLeft = true;
+        foldIsRight = true;
+      };
+    };
 
   testTake = testAllTrue [
     ([] == (take 0 [  1 2 3 ]))
@@ -218,6 +245,36 @@ runTests {
       expr = generators.toYAML {} val;
       # trival implementation
       expected = builtins.toJSON val;
+  };
+
+  testSplitStringsSimple = {
+    expr = strings.splitString "." "a.b.c.d";
+    expected = [ "a" "b" "c" "d" ];
+  };
+
+  testSplitStringsEmpty = {
+    expr = strings.splitString "." "a..b";
+    expected = [ "a" "" "b" ];
+  };
+
+  testSplitStringsOne = {
+    expr = strings.splitString ":" "a.b";
+    expected = [ "a.b" ];
+  };
+
+  testSplitStringsNone = {
+    expr = strings.splitString "." "";
+    expected = [ "" ];
+  };
+
+  testSplitStringsFirstEmpty = {
+    expr = strings.splitString "/" "/a/b/c";
+    expected = [ "" "a" "b" "c" ];
+  };
+
+  testSplitStringsLastEmpty = {
+    expr = strings.splitString ":" "2001:db8:0:0042::8a2e:370:";
+    expected = [ "2001" "db8" "0" "0042" "" "8a2e" "370" "" ];
   };
 
 }
