@@ -8979,6 +8979,7 @@ in {
     };
   };
 
+  podcastparser = callPackage ../development/python-modules/podcastparser { };
 
   poppler-qt4 = buildPythonPackage rec {
     name = "poppler-qt4-${version}";

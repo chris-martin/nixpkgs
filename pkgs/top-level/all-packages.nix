@@ -806,6 +806,8 @@ with pkgs;
 
   coturn = callPackage ../servers/coturn { };
 
+  coursier = callPackage ../development/tools/coursier {};
+
   crunch = callPackage ../tools/security/crunch { };
 
   crudini = callPackage ../tools/misc/crudini { };
@@ -5072,10 +5074,7 @@ with pkgs;
     isl = if !stdenv.isDarwin then isl_0_14 else null;
   }));
 
-  gfortran = if !stdenv.isDarwin then gfortran5
-             else callPackage ../development/compilers/gcc/gfortran-darwin.nix {
-    inherit (darwin) Libsystem;
-  };
+  gfortran = gfortran5;
 
   gfortran48 = wrapCC (gcc48.cc.override {
     name = "gfortran";
@@ -10844,7 +10843,9 @@ with pkgs;
 
   mongodb248 = callPackage ../servers/nosql/mongodb/2.4.8.nix { };
 
-  riak = callPackage ../servers/nosql/riak/2.2.0.nix { };
+  riak = callPackage ../servers/nosql/riak/2.2.0.nix { 
+    erlang = erlang_basho_R16B02;
+  };
 
   riak-cs = callPackage ../servers/nosql/riak-cs/2.1.1.nix {
     inherit (darwin.apple_sdk.frameworks) Carbon Cocoa;
@@ -17804,6 +17805,8 @@ with pkgs;
   crashplan = callPackage ../applications/backup/crashplan { };
 
   colort = callPackage ../applications/misc/colort { };
+
+  terminal-parrot = callPackage ../applications/misc/terminal-parrot { };
 
   e17gtk = callPackage ../misc/themes/e17gtk { };
 
