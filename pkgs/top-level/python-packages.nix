@@ -24669,6 +24669,25 @@ in {
     };
   };
 
+  sockjs-tornado = buildPythonPackage rec {
+    name = "sockjs-tornado-${version}";
+    version = "1.0.3";
+
+    src = pkgs.fetchurl {
+      url = "mirror://pypi/s/sockjs-tornado/${name}.tar.gz";
+      sha256 = "16cff40nniqsyvda1pb2j3b4zwmrw7y2g1vqq78lp20xpmhnwwkd";
+    };
+
+    propagatedBuildInputs = with self; [ tornado ];
+
+    meta = {
+      homepage = "http://github.com/mrjoes/sockjs-tornado/";
+      description = "SockJS python server implementation on top of Tornado framework";
+      license = licenses.mit;
+      maintainers = with maintainers; [ abbradar ];
+    };
+  };
+
   sorl_thumbnail = buildPythonPackage rec {
     name = "sorl-thumbnail-11.12";
 
@@ -28518,11 +28537,11 @@ EOF
 
 
   websocket_client = buildPythonPackage rec {
-    name = "websocket_client-0.32.0";
+    name = "websocket_client-0.40.0";
 
     src = pkgs.fetchurl {
       url = "mirror://pypi/w/websocket-client/${name}.tar.gz";
-      sha256 = "cb3ab95617ed2098d24723e3ad04ed06c4fde661400b96daa1859af965bfe040";
+      sha256 = "1yz67wdjijrvwpx0a0f6wdfy8ajsvr9xbj5514ld452fqnh19b20";
     };
 
     propagatedBuildInputs = with self; [ six backports_ssl_match_hostname unittest2 argparse ];

@@ -1871,6 +1871,8 @@ with pkgs;
 
   fuse-7z-ng = callPackage ../tools/filesystems/fuse-7z-ng { };
 
+  fwknop = callPackage ../tools/security/fwknop { };
+
   exfat = callPackage ../tools/filesystems/exfat { };
 
   dos2unix = callPackage ../tools/text/dos2unix { };
@@ -3729,6 +3731,8 @@ with pkgs;
   };
 
   renameutils = callPackage ../tools/misc/renameutils { };
+
+  renderdoc = libsForQt5.callPackage ../applications/graphics/renderdoc { };
 
   replace = callPackage ../tools/text/replace { };
 
@@ -6863,7 +6867,6 @@ with pkgs;
   scons = callPackage ../development/tools/build-managers/scons { };
 
   sbt = callPackage ../development/tools/build-managers/sbt { };
-  sbt_0_12_4 = callPackage ../development/tools/build-managers/sbt/0.12.4.nix { };
   simpleBuildTool = sbt;
 
   shards = callPackage ../development/tools/build-managers/shards { };
@@ -7357,6 +7360,8 @@ with pkgs;
   factor-lang = callPackage ../development/compilers/factor-lang {
     inherit (pkgs.gnome2) gtkglext;
   };
+
+  far2l = callPackage ../applications/misc/far2l { };
 
   farbfeld = callPackage ../development/libraries/farbfeld { };
 
@@ -10843,7 +10848,7 @@ with pkgs;
 
   mongodb248 = callPackage ../servers/nosql/mongodb/2.4.8.nix { };
 
-  riak = callPackage ../servers/nosql/riak/2.2.0.nix { 
+  riak = callPackage ../servers/nosql/riak/2.2.0.nix {
     erlang = erlang_basho_R16B02;
   };
 
@@ -12357,6 +12362,8 @@ with pkgs;
   arkpandora_ttf = callPackage ../data/fonts/arkpandora { };
 
   aurulent-sans = callPackage ../data/fonts/aurulent-sans { };
+
+  babelstone-han = callPackage ../data/fonts/babelstone-han { };
 
   baekmuk-ttf = callPackage ../data/fonts/baekmuk-ttf { };
 
