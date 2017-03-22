@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, makeDesktopItem, makeWrapper, patchelf, p7zip
+{ config, stdenv, fetchurl, makeDesktopItem, makeWrapper, patchelf, p7zip
 , coreutils, gnugrep, which, git, python, unzip }:
 
 { name, product, version, src, wmClass, jdk, meta } @ attrs:
@@ -63,6 +63,11 @@ with stdenv; lib.makeOverridable mkDerivation rec {
 
     makeWrapper "$out/$name/bin/${loName}.sh" "$out/bin/${execName}" \
       --prefix PATH : "$out/libexec/${name}:${stdenv.lib.makeBinPath [ jdk coreutils gnugrep which git ]}" \
+      ${
+        concatStringsSep " "
+                        (mapAttrsToList (name: value: ''--set ${name} "${value}"'')
+                                        (lib.attrByPath ["idea" "extraEnv"] {} config))
+      } \
       --set JDK_HOME "$jdk" \
       --set ${hiName}_JDK "$jdk" \
       --set ANDROID_JAVA_HOME "$jdk" \

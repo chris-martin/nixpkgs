@@ -434,6 +434,8 @@ with pkgs;
 
   argtable = callPackage ../tools/misc/argtable {};
 
+  argtable-2 = callPackage ../tools/misc/argtable-2 { };
+
   argyllcms = callPackage ../tools/graphics/argyllcms {};
 
   arp-scan = callPackage ../tools/misc/arp-scan { };
@@ -1833,6 +1835,8 @@ with pkgs;
 
   fswebcam = callPackage ../os-specific/linux/fswebcam { };
 
+  fullwidth = callPackage ../tools/text/fullwidth { };
+
   fuseiso = callPackage ../tools/filesystems/fuseiso { };
 
   fuse-7z-ng = callPackage ../tools/filesystems/fuse-7z-ng { };
@@ -2313,6 +2317,8 @@ with pkgs;
   #   packages = config.ihaskell.packages or (self: []);
   # };
 
+  inherit (python35Packages) ipython;
+
   imapproxy = callPackage ../tools/networking/imapproxy { };
 
   imapsync = callPackage ../tools/networking/imapsync { };
@@ -2642,6 +2648,8 @@ with pkgs;
   # Can be used as a user shell
   nologin = shadow;
 
+  inherit (nodePackages) npm;
+
   npm2nix = nodePackages.npm2nix;
 
   kea = callPackage ../tools/networking/kea { };
@@ -2729,6 +2737,8 @@ with pkgs;
   librdmacm = callPackage ../development/libraries/librdmacm { };
 
   libreswan = callPackage ../tools/networking/libreswan { };
+
+  libscrypt = callPackage ../development/libraries/libscrypt { };
 
   libwebsockets = callPackage ../development/libraries/libwebsockets { };
 
@@ -4319,6 +4329,8 @@ with pkgs;
 
   whois = callPackage ../tools/networking/whois { };
 
+  wordlist = callPackage ../tools/text/wordlist { };
+
   wsmancli = callPackage ../tools/system/wsmancli {};
 
   wolfebin = callPackage ../tools/networking/wolfebin {
@@ -4492,6 +4504,8 @@ with pkgs;
     inherit (perlPackages) IOSocketSSL LWP;
     libpsl = null;
   };
+
+  dummy-wget = callPackage ../tools/networking/dummy-wget { };
 
   which = callPackage ../tools/system/which { };
 
@@ -5126,6 +5140,8 @@ with pkgs;
 
   cabal-install = haskell.lib.disableSharedExecutables haskellPackages.cabal-install;
 
+  cabal = cabal-install;
+
   stack = haskell.lib.overrideCabal haskellPackages.stack (drv: {
     enableSharedExecutables = false;
     isLibrary = false;
@@ -5134,6 +5150,30 @@ with pkgs;
   });
 
   all-cabal-hashes = callPackage ../data/misc/hackage/default.nix { };
+
+  purescript = haskellPackages.purescript;
+
+  choose = haskellPackages.choose-exe;
+
+  ghc-mod = haskellPackages.ghc-mod;
+
+  hasktags = haskellPackages.hasktags;
+
+  hdevtools = haskellPackages.hdevtools;
+
+  hlint = haskellPackages.hlint;
+
+  hoogle = haskellPackages.hoogle;
+
+  hsdev = haskellPackages.hsdev;
+
+  intero = haskellPackages.intero;
+
+  pointfree = haskellPackages.pointfree;
+
+  pointful = haskellPackages.pointful;
+
+  stylish-haskell = haskellPackages.stylish-haskell;
 
   inherit (ocamlPackages) haxe;
 
@@ -5886,6 +5926,7 @@ with pkgs;
   pltScheme = racket; # just to be sure
 
   polyml = callPackage ../development/compilers/polyml { };
+  polyml_5_4 = callPackage ../development/compilers/polyml { };
 
   pure = callPackage ../development/interpreters/pure {
     llvm = llvm_35;
@@ -10225,7 +10266,11 @@ with pkgs;
 
   yuicompressor = callPackage ../development/tools/yuicompressor { };
 
+  grunt = nodePackages.grunt-cli;
+
   ### DEVELOPMENT / BOWER MODULES (JAVASCRIPT)
+
+  inherit (nodePackages) bower;
 
   buildBowerComponents = callPackage ../development/bower-modules/generic { };
 
@@ -10715,7 +10760,9 @@ with pkgs;
   newrelic-sysmond = callPackage ../servers/monitoring/newrelic-sysmond { };
 
   riemann = callPackage ../servers/monitoring/riemann { };
+  riemann-cli = callPackage ../tools/networking/riemann-cli { };
   riemann-dash = callPackage ../servers/monitoring/riemann-dash { };
+  riemannq = callPackage ../tools/networking/riemannq { };
 
   oidentd = callPackage ../servers/identd/oidentd { };
 
@@ -10971,6 +11018,8 @@ with pkgs;
     abiCompat = config.xorg.abiCompat # `config` because we have no `xorg.override`
       or (if stdenv.isDarwin then "1.18" else null); # 1.19 needs fixing on Darwin
   } // { inherit xlibsWrapper; } );
+
+  inherit (xorg) xkill;
 
   xwayland = callPackage ../servers/x11/xorg/xwayland.nix { };
 
@@ -11247,6 +11296,8 @@ with pkgs;
   htop = callPackage ../tools/system/htop {
     inherit (darwin) IOKit;
   };
+
+  inherit (python27Packages) glances;
 
   # GNU/Hurd core packages.
   gnu = recurseIntoAttrs (callPackage ../os-specific/gnu {
@@ -12879,6 +12930,8 @@ with pkgs;
 
   chatzilla = callPackage ../applications/networking/irc/chatzilla { };
 
+  inherit (gnome3) cheese;
+
   chirp = callPackage ../applications/misc/chirp {
     inherit (pythonPackages) pyserial pygtk;
   };
@@ -13058,6 +13111,8 @@ with pkgs;
   docker-proxy = callPackage ../applications/virtualization/docker/proxy.nix { };
 
   docker-gc = callPackage ../applications/virtualization/docker/gc.nix { };
+
+  docker-compose = python27Packages.docker_compose;
 
   docker-machine = callPackage ../applications/networking/cluster/docker-machine { };
   docker-machine-kvm = callPackage ../applications/networking/cluster/docker-machine/kvm.nix { };
@@ -13331,6 +13386,8 @@ with pkgs;
 
   enhanced-ctorrent = callPackage ../applications/networking/enhanced-ctorrent { };
 
+  inherit (gnome3) eog;
+
   epdfview = callPackage ../applications/misc/epdfview { };
 
   inherit (gnome3) epiphany;
@@ -13395,6 +13452,8 @@ with pkgs;
 
   fetchmail = callPackage ../applications/misc/fetchmail { };
 
+  inherit (gnome3) file-roller;
+
   flacon = callPackage ../applications/audio/flacon { };
 
   flexget = callPackage ../applications/networking/flexget { };
@@ -13433,6 +13492,8 @@ with pkgs;
   geany-with-vte = callPackage ../applications/editors/geany/with-vte.nix { };
 
   gksu = callPackage ../applications/misc/gksu { };
+
+  inherit (gnome3) gnome-screenshot;
 
   gnuradio = callPackage ../applications/misc/gnuradio {
     inherit (python2Packages) cheetah lxml matplotlib numpy python pyopengl pyqt4 scipy wxPython pygtk;
@@ -14086,6 +14147,10 @@ with pkgs;
 
   kadu = kde4.callPackage ../applications/networking/instant-messengers/kadu { };
 
+  kanboard = callPackage ../applications/misc/kanboard { };
+
+  kbtin = callPackage ../tools/networking/kbtin { };
+
   kde-telepathy = kde4.callPackage ../applications/networking/instant-messengers/telepathy/kde {};
 
   kdeApplications =
@@ -14581,6 +14646,8 @@ with pkgs;
      stdenv = stdenv_32bit;
   };
 
+  inherit (gnome3) polari;
+
   polybar = callPackage ../applications/misc/polybar { };
 
   scudcloud = callPackage ../applications/networking/instant-messengers/scudcloud { };
@@ -14857,6 +14924,8 @@ with pkgs;
   pithos = callPackage ../applications/audio/pithos {
     pythonPackages = python3Packages;
   };
+
+  pandora = callPackage ../applications/audio/pandora { };
 
   pinfo = callPackage ../applications/misc/pinfo { };
 

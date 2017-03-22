@@ -2036,6 +2036,36 @@ in {
     };
   };
 
+  base58 = buildPythonPackage rec {
+    pname = "base58";
+    version = "0.2.4";
+    name = "${pname}-${version}";
+
+    src = pkgs.fetchurl {
+     url = "mirror://pypi/b/base58/${name}.tar.gz";
+     sha256 = "130mh7sqdlfawi0vyrva88rqdi5nc9aks0s15y0gn6m8qz5lvjwp";
+    };
+
+    meta = {
+      description = "Base58 and Base58Check implementation";
+    };
+  };
+
+  base58_0_2_2 = buildPythonPackage rec {
+    pname = "base58";
+    version = "0.2.2";
+    name = "${pname}-${version}";
+
+    src = pkgs.fetchurl {
+     url = "mirror://pypi/b/base58/${name}.tar.gz";
+     sha256 = "102vxvvz5jzc2ccgaf5pwdrmgypg277d7bfy0h9mp9d0nv9s9spi";
+    };
+
+    meta = {
+      description = "Base58 and Base58Check implementation";
+    };
+  };
+
   bcdoc = buildPythonPackage rec {
     name = "bcdoc-0.14.0";
 
@@ -20458,6 +20488,36 @@ in {
       description = "3D mathematical functions using NumPy";
       homepage = https://github.com/adamlwgriffiths/Pyrr/;
       license = licenses.bsd2;
+    };
+  };
+
+  pysha3 = buildPythonPackage rec {
+    name = "pysha3-${version}";
+    version = "0.3";
+
+    src = pkgs.fetchurl {
+      url = "mirror://pypi/p/pysha3/${name}.tar.gz";
+      sha256 = "0kghj6wbxjzwfn0h6m90yxkwx09wydr5p0kcgj2gn4fyfwgmy70r";
+    };
+
+    meta = {
+      homepage = https://bitbucket.org/tiran/pykeccak;
+      description = "SHA-3 wrapper (keccak) for Python";
+    };
+  };
+
+  pysha3_0_1 = buildPythonPackage rec {
+    name = "pysha3-${version}";
+    version = "0.1";
+
+    src = pkgs.fetchurl {
+      url = "mirror://pypi/p/pysha3/${name}.tar.gz";
+      sha256 = "1zhkj2wp019amvq9hqwcsmdj4lxgzhdab78ydchag4k3d8vhkq9n";
+    };
+
+    meta = {
+      homepage = https://bitbucket.org/tiran/pykeccak;
+      description = "SHA-3 wrapper (keccak) for Python";
     };
   };
 
