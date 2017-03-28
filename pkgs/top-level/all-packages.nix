@@ -271,13 +271,15 @@ with pkgs;
 
   kdeDerivation = import ../build-support/kde/derivation.nix { inherit stdenv lib; };
 
-  kdeWrapper = import ../build-support/kde/wrapper.nix {
-    inherit stdenv lib makeWrapper buildEnv;
+  kdeWrapper = callPackage ../build-support/kde/wrapper.nix {
+    inherit (gnome3) dconf;
   };
 
   nixBufferBuilders = import ../build-support/emacs/buffer.nix { inherit (pkgs) lib writeText; inherit (emacsPackagesNg) inherit-local; };
 
   pathsFromGraph = ../build-support/kernel/paths-from-graph.pl;
+
+  setupSystemdUnits = callPackage ../build-support/setup-systemd-units.nix { };
 
   singularity-tools = callPackage ../build-support/singularity-tools { };
 
@@ -317,7 +319,7 @@ with pkgs;
   findXMLCatalogs = makeSetupHook { } ../build-support/setup-hooks/find-xml-catalogs.sh;
 
   wrapGAppsHook = makeSetupHook {
-    deps = [ makeWrapper ];
+    deps = [ gnome3.dconf gnome3.gtk makeWrapper ];
   } ../build-support/setup-hooks/wrap-gapps-hook.sh;
 
   separateDebugInfo = makeSetupHook { } ../build-support/setup-hooks/separate-debug-info.sh;
@@ -1230,37 +1232,25 @@ with pkgs;
   m17n_lib = callPackage ../tools/inputmethods/m17n-lib { };
 
   ibus = callPackage ../tools/inputmethods/ibus {
-    inherit (python3Packages) pygobject3;
     inherit (gnome3) dconf glib;
   };
 
   ibus-qt = callPackage ../tools/inputmethods/ibus/ibus-qt.nix { };
 
   ibus-engines = recurseIntoAttrs {
+    anthy = callPackage ../tools/inputmethods/ibus-engines/ibus-anthy { };
 
-    anthy = callPackage ../tools/inputmethods/ibus-engines/ibus-anthy {
-      inherit (python3Packages) pygobject3;
-    };
+    hangul = callPackage ../tools/inputmethods/ibus-engines/ibus-hangul { };
 
-    hangul = callPackage ../tools/inputmethods/ibus-engines/ibus-hangul {
-      inherit (python3Packages) pygobject3;
-    };
+    libpinyin = callPackage ../tools/inputmethods/ibus-engines/ibus-libpinyin { };
 
-    libpinyin = callPackage ../tools/inputmethods/ibus-engines/ibus-libpinyin {
-      inherit (python3Packages) pygobject3;
-    };
-
-    m17n = callPackage ../tools/inputmethods/ibus-engines/ibus-m17n {
-      inherit (python3Packages) pygobject3;
-    };
+    m17n = callPackage ../tools/inputmethods/ibus-engines/ibus-m17n { };
 
     mozc = callPackage ../tools/inputmethods/ibus-engines/ibus-mozc {
-      inherit (pythonPackages) gyp;
       protobuf = protobuf.override { stdenv = clangStdenv; };
     };
 
     table = callPackage ../tools/inputmethods/ibus-engines/ibus-table {
-      inherit (python3Packages) pygobject3;
       inherit (gnome3) dconf;
     };
 
@@ -1925,6 +1915,8 @@ with pkgs;
   gitfs = callPackage ../tools/filesystems/gitfs { };
 
   gitinspector = callPackage ../applications/version-management/gitinspector { };
+
+  gitkraken = callPackage ../applications/version-management/gitkraken { };
 
   gitlab = callPackage ../applications/version-management/gitlab { };
 
@@ -3295,14 +3287,9 @@ with pkgs;
 
   pal = callPackage ../tools/misc/pal { };
 
-  pandoc = haskell.lib.overrideCabal haskellPackages.pandoc (drv: {
+  pandoc = haskell.lib.overrideCabal (haskell.lib.justStaticExecutables haskellPackages.pandoc) (drv: {
     configureFlags = drv.configureFlags or [] ++ ["-fembed_data_files"];
     buildTools = drv.buildTools or [] ++ [haskellPackages.hsb2hs];
-    enableSharedExecutables = false;
-    enableSharedLibraries = false;
-    isLibrary = false;
-    doHaddock = false;
-    postFixup = "rm -rf $out/lib $out/nix-support $out/share";
   });
 
   panomatic = callPackage ../tools/graphics/panomatic { };
@@ -5142,38 +5129,33 @@ with pkgs;
 
   cabal = cabal-install;
 
-  stack = haskell.lib.overrideCabal haskellPackages.stack (drv: {
-    enableSharedExecutables = false;
-    isLibrary = false;
-    doHaddock = false;
-    postFixup = "rm -rf $out/lib $out/nix-support $out/share/doc";
-  });
+  stack = haskell.lib.justStaticExecutables haskellPackages.stack;
 
   all-cabal-hashes = callPackage ../data/misc/hackage/default.nix { };
 
-  purescript = haskellPackages.purescript;
+  purescript = haskell.lib.justStaticExecutables haskellPackages.purescript;
 
-  choose = haskellPackages.choose-exe;
+  choose = haskell.lib.justStaticExecutables haskellPackages.choose-exe;
 
-  ghc-mod = haskellPackages.ghc-mod;
+  ghc-mod = haskell.lib.justStaticExecutables haskellPackages.ghc-mod;
 
-  hasktags = haskellPackages.hasktags;
+  hasktags = haskell.lib.justStaticExecutables haskellPackages.hasktags;
 
-  hdevtools = haskellPackages.hdevtools;
+  hdevtools = haskell.lib.justStaticExecutables haskellPackages.hdevtools;
 
-  hlint = haskellPackages.hlint;
+  hlint = haskell.lib.justStaticExecutables haskellPackages.hlint;
 
-  hoogle = haskellPackages.hoogle;
+  hoogle = haskell.lib.justStaticExecutables haskellPackages.hoogle;
 
-  hsdev = haskellPackages.hsdev;
+  hsdev = haskell.lib.justStaticExecutables haskellPackages.hsdev;
 
-  intero = haskellPackages.intero;
+  intero = haskell.lib.justStaticExecutables haskellPackages.intero;
 
-  pointfree = haskellPackages.pointfree;
+  pointfree = haskell.lib.justStaticExecutables haskellPackages.pointfree;
 
-  pointful = haskellPackages.pointful;
+  pointful = haskell.lib.justStaticExecutables haskellPackages.pointful;
 
-  stylish-haskell = haskellPackages.stylish-haskell;
+  stylish-haskell = haskell.lib.justStaticExecutables haskellPackages.stylish-haskell;
 
   inherit (ocamlPackages) haxe;
 
@@ -6787,12 +6769,7 @@ with pkgs;
 
   shards = callPackage ../development/tools/build-managers/shards { };
 
-  shellcheck = haskell.lib.overrideCabal haskellPackages.ShellCheck (drv: {
-    isLibrary = false;
-    enableSharedExecutables = false;
-    doHaddock = false;
-    postFixup = "rm -rf $out/lib $out/nix-support $out/share/doc";
-  });
+  shellcheck = haskell.lib.justStaticExecutables haskellPackages.ShellCheck;
 
   shncpd = callPackage ../tools/networking/shncpd { };
 
@@ -7251,8 +7228,6 @@ with pkgs;
   enchant = callPackage ../development/libraries/enchant { };
 
   enet = callPackage ../development/libraries/enet { };
-
-  enginepkcs11 = callPackage ../development/libraries/enginepkcs11 { };
 
   epoxy = callPackage ../development/libraries/epoxy {};
 
@@ -8935,6 +8910,7 @@ with pkgs;
   mesa_drivers = mesaDarwinOr (
     let mo = mesa_noglu.override {
       grsecEnabled = config.grsecurity or false;
+      enableTextureFloats = true;
     };
     in mo.drivers
   );
@@ -9390,12 +9366,13 @@ with pkgs;
     mesa = mesa_noglu;
     inherit perl;
     inherit (gst_all_1) gstreamer gst-plugins-base;
+    inherit (gnome3) gtk3 dconf;
   });
 
   libsForQt57 = recurseIntoAttrs (lib.makeScope qt57.newScope mkLibsForQt5);
 
-  qt5 = qt57;
-  libsForQt5 = libsForQt57;
+  qt5 = qt56;
+  libsForQt5 = libsForQt56;
 
   qt5ct = libsForQt5.callPackage ../tools/misc/qt5ct { };
 
@@ -11442,29 +11419,6 @@ with pkgs;
       ];
   };
 
-  linux_3_12 = callPackage ../os-specific/linux/kernel/linux-3.12.nix {
-    kernelPatches = with kernelPatches;
-      [ bridge_stp_helper
-      ]
-      ++ lib.optionals ((platform.kernelArch or null) == "mips")
-      [ kernelPatches.mips_fpureg_emu
-        kernelPatches.mips_fpu_sigill
-        kernelPatches.mips_ext3_n32
-      ];
-  };
-
-  linux_4_1 = callPackage ../os-specific/linux/kernel/linux-4.1.nix {
-    kernelPatches =
-      [ kernelPatches.bridge_stp_helper
-        kernelPatches.DCCP_double_free_vulnerability_CVE-2017-6074
-      ]
-      ++ lib.optionals ((platform.kernelArch or null) == "mips")
-      [ kernelPatches.mips_fpureg_emu
-        kernelPatches.mips_fpu_sigill
-        kernelPatches.mips_ext3_n32
-      ];
-  };
-
   linux_4_4 = callPackage ../os-specific/linux/kernel/linux-4.4.nix {
     kernelPatches =
       [ kernelPatches.bridge_stp_helper
@@ -11692,8 +11646,6 @@ with pkgs;
   linuxPackages_mptcp = linuxPackagesFor pkgs.linux_mptcp;
   linuxPackages_rpi = linuxPackagesFor pkgs.linux_rpi;
   linuxPackages_3_10 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_3_10);
-  linuxPackages_3_12 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_3_12);
-  linuxPackages_4_1 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_4_1);
   linuxPackages_4_4 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_4_4);
   linuxPackages_4_9 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_4_9);
   linuxPackages_4_10 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_4_10);
@@ -13043,13 +12995,8 @@ with pkgs;
 
   cyclone = callPackage ../applications/audio/pd-plugins/cyclone  { };
 
-  darcs = haskell.lib.overrideCabal haskellPackages.darcs (drv: {
+  darcs = haskell.lib.overrideCabal (haskell.lib.justStaticExecutables haskellPackages.darcs) (drv: {
     configureFlags = (stdenv.lib.remove "-flibrary" drv.configureFlags or []) ++ ["-f-library"];
-    enableSharedExecutables = false;
-    enableSharedLibraries = false;
-    isLibrary = false;
-    doHaddock = false;
-    postFixup = "rm -rf $out/lib $out/nix-support $out/share";
   });
 
   darktable = callPackage ../applications/graphics/darktable {
@@ -14776,8 +14723,6 @@ with pkgs;
 
   omxplayer = callPackage ../applications/video/omxplayer { };
 
-  oneteam = callPackage ../applications/networking/instant-messengers/oneteam { };
-
   openbox = callPackage ../applications/window-managers/openbox { };
 
   openbox-menu = callPackage ../applications/misc/openbox-menu { };
@@ -15351,6 +15296,13 @@ with pkgs;
 
   sddm = libsForQt5.callPackage ../applications/display-managers/sddm {
     themes = [];  # extra themes, etc.
+  };
+
+  sddmPlasma5 = sddm.override {
+    themes = [
+      plasma5.plasma-workspace
+      pkgs.breeze-icons
+    ];
   };
 
   skrooge = libsForQt5.callPackage ../applications/office/skrooge {};

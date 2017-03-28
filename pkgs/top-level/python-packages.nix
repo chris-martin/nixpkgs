@@ -287,6 +287,8 @@ in {
 
   plantuml = callPackage ../tools/misc/plantuml { };
 
+  pyaes = callPackage ../development/python-modules/pyaes.nix { };
+
   pyatspi = if isPy3k then callPackage ../development/python-modules/pyatspi { } else throw "pyatspi not supported for interpreter ${python.executable}";
 
   pycairo = callPackage ../development/python-modules/pycairo { };
@@ -7047,9 +7049,10 @@ in {
     buildInputs = with self; [ fudge_9 nose ];
   };
 
-  fedora_cert = mkPythonDerivation rec {
+  fedora_cert = buildPythonPackage rec {
     name = "fedora-cert-0.5.9.2";
     meta.maintainers = with maintainers; [ mornfall ];
+    format = "other";
 
     src = pkgs.fetchurl {
       url = "https://fedorahosted.org/releases/f/e/fedora-packager/fedora-packager-0.5.9.2.tar.bz2";
@@ -13868,6 +13871,10 @@ in {
     inherit (pkgs.linuxPackages) nvidia_x11;
     cudatoolkit = pkgs.cudatoolkit75;
     clblas = pkgs.clblas-cuda;
+  };
+
+  libnacl = callPackage ../development/python-modules/libnacl/default.nix {
+    inherit (pkgs) libsodium;
   };
 
   libplist = if isPy3k then throw "libplist not supported for interpreter ${python.executable}" else
@@ -21798,8 +21805,9 @@ in {
   };
 
 
-  pysvn = mkPythonDerivation rec {
+  pysvn = buildPythonPackage rec {
     name = "pysvn-1.8.0";
+    format = "other";
 
     src = pkgs.fetchurl {
       url = "http://pysvn.barrys-emacs.org/source_kits/${name}.tar.gz";
@@ -21954,9 +21962,10 @@ in {
   });
 
 
-  pywebkitgtk = mkPythonDerivation rec {
+  pywebkitgtk = buildPythonPackage rec {
     name = "pywebkitgtk-${version}";
     version = "1.1.8";
+    format = "other";
 
     src = pkgs.fetchurl {
       url = "http://pywebkitgtk.googlecode.com/files/${name}.tar.bz2";
@@ -22289,10 +22298,11 @@ in {
 
   qscintilla = if isPy3k || isPyPy
     then throw "qscintilla-${pkgs.qscintilla.version} not supported for interpreter ${python.executable}"
-    else mkPythonDerivation rec {
+    else buildPythonPackage rec {
       # TODO: Qt5 support
       name = "qscintilla-${version}";
       version = pkgs.qscintilla.version;
+      format = "other";
 
       src = pkgs.qscintilla.src;
 
@@ -24597,6 +24607,25 @@ in {
     };
   };
 
+  sockjs-tornado = buildPythonPackage rec {
+    name = "sockjs-tornado-${version}";
+    version = "1.0.3";
+
+    src = pkgs.fetchurl {
+      url = "mirror://pypi/s/sockjs-tornado/${name}.tar.gz";
+      sha256 = "16cff40nniqsyvda1pb2j3b4zwmrw7y2g1vqq78lp20xpmhnwwkd";
+    };
+
+    propagatedBuildInputs = with self; [ tornado ];
+
+    meta = {
+      homepage = "http://github.com/mrjoes/sockjs-tornado/";
+      description = "SockJS python server implementation on top of Tornado framework";
+      license = licenses.mit;
+      maintainers = with maintainers; [ abbradar ];
+    };
+  };
+
   sorl_thumbnail = buildPythonPackage rec {
     name = "sorl-thumbnail-11.12";
 
@@ -25809,9 +25838,10 @@ in {
   # Python package.
   tkinter = let
     py = python.override{x11Support=true;};
-  in mkPythonDerivation rec {
+  in buildPythonPackage rec {
     name = "tkinter-${python.version}";
     src = py;
+    format = "other";
 
     disabled = isPy26 || isPyPy;
 
@@ -28429,11 +28459,11 @@ EOF
 
 
   websocket_client = buildPythonPackage rec {
-    name = "websocket_client-0.32.0";
+    name = "websocket_client-0.40.0";
 
     src = pkgs.fetchurl {
       url = "mirror://pypi/w/websocket-client/${name}.tar.gz";
-      sha256 = "cb3ab95617ed2098d24723e3ad04ed06c4fde661400b96daa1859af965bfe040";
+      sha256 = "1yz67wdjijrvwpx0a0f6wdfy8ajsvr9xbj5514ld452fqnh19b20";
     };
 
     propagatedBuildInputs = with self; [ six backports_ssl_match_hostname unittest2 argparse ];
@@ -30860,48 +30890,9 @@ EOF
     };
   };
 
-  mnemonic = buildPythonPackage rec{
-    version = "0.12";
-    name = "mnemonic-${version}";
+  mnemonic = callPackage ../development/python-modules/mnemonic.nix { };
 
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/m/mnemonic/${name}.tar.gz";
-      sha256 = "0j5jm4v54135qqw455fw4ix2mhxhzjqvxji9gqkpxagk31cvbnj4";
-    };
-
-    propagatedBuildInputs = with self; [ pbkdf2 ];
-
-    meta = {
-      description = "Implementation of Bitcoin BIP-0039";
-      homepage = https://github.com/trezor/python-mnemonic;
-      license = licenses.mit;
-      maintainers = with maintainers; [ np ];
-    };
-  };
-
-  trezor = buildPythonPackage rec{
-    version = "0.7.4";
-    name = "trezor-${version}";
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/t/trezor/${name}.tar.gz";
-      sha256 = "18nr76jkdg24sb3r8cfbiq12b95gnh0amc0r1wx9mmg3pwq6jx6y";
-    };
-
-    propagatedBuildInputs = with self; [ protobuf3_0 hidapi ];
-
-    buildInputs = with self; [ ecdsa mnemonic ];
-
-    # There are no actual tests: "ImportError: No module named tests"
-    doCheck = false;
-
-    meta = {
-      description = "Python library for communicating with TREZOR Bitcoin Hardware Wallet";
-      homepage = https://github.com/trezor/python-trezor;
-      license = licenses.gpl3;
-      maintainers = with maintainers; [ np ];
-    };
-  };
+  trezor = callPackage ../development/python-modules/trezor.nix { };
 
   keepkey = buildPythonPackage rec{
     version = "0.7.3";

@@ -59,7 +59,6 @@
   badi = "Badi' Abdul-Wahid <abdulwahidc@gmail.com>";
   balajisivaraman = "Balaji Sivaraman<sivaraman.balaji@gmail.com>";
   Baughn = "Svein Ove Aas <sveina@gmail.com>";
-  bbenoist = "Baptist BENOIST <return_0@live.com>";
   bcarrell = "Brandon Carrell <brandoncarrell@gmail.com>";
   bcdarwin = "Ben Darwin <bcdarwin@gmail.com>";
   bdimcheff = "Brandon Dimcheff <brandon@dimcheff.com>";
@@ -532,6 +531,7 @@
   womfoo = "Kranium Gikos Mendoza <kranium@gikos.net>";
   wscott = "Wayne Scott <wsc9tt@gmail.com>";
   wyvie = "Elijah Rum <elijahrum@gmail.com>";
+  xvapx = "Marti Serra <marti.serra.coscollano@gmail.com>";
   xwvvvvwx = "David Terry <davidterry@posteo.de>";
   yarr = "Dmitry V. <savraz@gmail.com>";
   yochai = "Yochai <yochai@titat.info>";
