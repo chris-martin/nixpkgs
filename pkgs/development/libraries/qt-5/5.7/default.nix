@@ -18,7 +18,7 @@ top-level attribute to `top-level/all-packages.nix`.
   newScope,
   stdenv, fetchurl, makeSetupHook, makeWrapper,
   bison, cups ? null, harfbuzz, mesa, perl,
-  gstreamer, gst-plugins-base,
+  gstreamer, gst-plugins-base, gtk3, dconf,
 
   # options
   developerBuild ? false,
@@ -98,21 +98,22 @@ let
 
       env = callPackage ../qt-env.nix {};
       full = env "qt-${qtbase.version}" [
-        qtconnectivity qtdeclarative qtdoc qtgraphicaleffects
-        qtimageformats qtlocation qtmultimedia qtquickcontrols qtscript
+        qtconnectivity qtdeclarative qtdoc qtgraphicaleffects qtimageformats
+        qtlocation qtmultimedia qtquickcontrols qtquickcontrols2 qtscript
         qtsensors qtserialport qtsvg qttools qttranslations qtwayland
-        qtwebsockets qtx11extras qtxmlpatterns
+        qtwebchannel qtwebengine qtwebkit qtwebsockets qtx11extras
+        qtxmlpatterns
       ];
 
       makeQtWrapper =
         makeSetupHook
-        { deps = [ makeWrapper ]; }
-        ../make-qt-wrapper.sh;
+        { deps = [ makeWrapper dconf.lib gtk3 ]; }
+        (if stdenv.isDarwin then ../make-qt-wrapper-darwin.sh else ../make-qt-wrapper.sh);
 
       qmakeHook =
         makeSetupHook
         { deps = [ self.qtbase.dev ]; }
-        ../qmake-hook.sh;
+        (if stdenv.isDarwin then ../qmake-hook-darwin.sh else ../qmake-hook.sh);
 
     };
 
