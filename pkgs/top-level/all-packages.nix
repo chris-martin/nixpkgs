@@ -2984,14 +2984,9 @@ in
 
   pal = callPackage ../tools/misc/pal { };
 
-  pandoc = haskell.lib.overrideCabal haskellPackages.pandoc (drv: {
+  pandoc = haskell.lib.overrideCabal (haskell.lib.justStaticExecutables haskellPackages.pandoc) (drv: {
     configureFlags = drv.configureFlags or [] ++ ["-fembed_data_files"];
     buildTools = drv.buildTools or [] ++ [haskellPackages.hsb2hs];
-    enableSharedExecutables = false;
-    enableSharedLibraries = false;
-    isLibrary = false;
-    doHaddock = false;
-    postFixup = "rm -rf $out/lib $out/nix-support $out/share";
   });
 
   panomatic = callPackage ../tools/graphics/panomatic { };
@@ -4732,42 +4727,39 @@ in
 
   cabal = cabal-install;
 
-  stack = haskell.lib.overrideCabal haskellPackages.stack (drv: {
-    enableSharedExecutables = false;
-    isLibrary = false;
-    doHaddock = false;
-    postFixup = "rm -rf $out/lib $out/nix-support $out/share/doc";
-  });
+  stack = haskell.lib.justStaticExecutables haskellPackages.stack;
 
   all-cabal-hashes = callPackage ../data/misc/hackage/default.nix { };
 
-  choose = haskellPackages.choose-exe;
+  choose = haskell.lib.justStaticExecutables haskellPackages.choose-exe;
 
-  inherit (haskellPackages) ghc-mod;
+  ghc-mod = haskell.lib.justStaticExecutables haskellPackages.ghc-mod;
 
-  inherit (haskellPackages) hasktags;
+  hasktags = haskell.lib.justStaticExecutables haskellPackages.hasktags;
 
-  inherit (haskellPackages) hdevtools;
+  hdevtools = haskell.lib.justStaticExecutables haskellPackages.hdevtools;
 
-  inherit (haskellPackages) hlint;
+  hlint = haskell.lib.justStaticExecutables haskellPackages.hlint;
 
-  inherit (haskellPackages) hoogle;
+  hoogle = haskell.lib.justStaticExecutables haskellPackages.hoogle;
 
-  inherit (haskellPackages) hsdev;
+  hsdev = haskell.lib.justStaticExecutables haskellPackages.hsdev;
 
-  inherit (haskellPackages) intero;
+  intero = haskell.lib.justStaticExecutables haskellPackages.intero;
 
-  inherit (haskellPackages) pointfree;
+  pointfree = haskell.lib.justStaticExecutables haskellPackages.pointfree;
 
-  inherit (haskellPackages) pointful;
+  pointful = haskell.lib.justStaticExecutables haskellPackages.pointful;
 
-  inherit (haskellPackages) purescript;
+  purescript = haskell.lib.justStaticExecutables haskellPackages.purescript;
 
-  inherit (haskellPackages) stylish-haskell;
+  stylish-haskell = haskell.lib.justStaticExecutables haskellPackages.stylish-haskell;
 
   haxe = callPackage ../development/compilers/haxe {
     inherit (ocamlPackages) camlp4;
   };
+
+  purescript = haskell.lib.justStaticExecutables haskellPackages.purescript;
 
   hxcpp = callPackage ../development/compilers/haxe/hxcpp.nix { };
 
@@ -6751,7 +6743,7 @@ in
   sbt = callPackage ../development/tools/build-managers/sbt { };
   simpleBuildTool = sbt;
 
-  shellcheck = self.haskellPackages.ShellCheck;
+  shellcheck = haskell.lib.justStaticExecutables haskellPackages.ShellCheck;
 
   shncpd = callPackage ../tools/networking/shncpd { };
 
@@ -7577,13 +7569,9 @@ in
 
   gnu-efi = callPackage ../development/libraries/gnu-efi { };
 
-  gnutls = self.gnutls34;
+  gnutls = self.gnutls35;
 
   gnutls33 = callPackage ../development/libraries/gnutls/3.3.nix {
-    guileBindings = config.gnutls.guile or false;
-  };
-
-  gnutls34 = callPackage ../development/libraries/gnutls/3.4.nix {
     guileBindings = config.gnutls.guile or false;
   };
 
@@ -12783,13 +12771,8 @@ in
 
   d4x = callPackage ../applications/misc/d4x { };
 
-  darcs = haskell.lib.overrideCabal haskellPackages.darcs (drv: {
+  darcs = haskell.lib.overrideCabal (haskell.lib.justStaticExecutables haskellPackages.darcs) (drv: {
     configureFlags = (stdenv.lib.remove "-flibrary" drv.configureFlags or []) ++ ["-f-library"];
-    enableSharedExecutables = false;
-    enableSharedLibraries = false;
-    isLibrary = false;
-    doHaddock = false;
-    postFixup = "rm -rf $out/lib $out/nix-support $out/share";
   });
 
   darktable = callPackage ../applications/graphics/darktable {
@@ -17683,6 +17666,8 @@ in
   with-shell = callPackage ../applications/misc/with-shell { };
 
   wmutils-core = callPackage ../tools/X11/wmutils-core { };
+
+  wordpress = callPackage ../servers/web-apps/wordpress { };
 
   wraith = callPackage ../applications/networking/irc/wraith { };
 
