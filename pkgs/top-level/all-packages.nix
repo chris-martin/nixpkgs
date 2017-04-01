@@ -1963,6 +1963,7 @@ with pkgs;
   gitlab = callPackage ../applications/version-management/gitlab { };
 
   gitlab-runner = callPackage ../development/tools/continuous-integration/gitlab-runner { };
+  gitlab-runner_1_11 = callPackage ../development/tools/continuous-integration/gitlab-runner/v1.nix { };
 
   gitlab-shell = callPackage ../applications/version-management/gitlab-shell { };
 
@@ -3355,8 +3356,6 @@ with pkgs;
     buildTools = drv.buildTools or [] ++ [haskellPackages.hsb2hs];
   });
 
-  panomatic = callPackage ../tools/graphics/panomatic { };
-
   pamtester = callPackage ../tools/security/pamtester { };
 
   paper-gtk-theme = callPackage ../misc/themes/paper { };
@@ -4092,8 +4091,6 @@ with pkgs;
     pythonPackages = python3Packages;
    };
 
-  sitecopy = callPackage ../tools/networking/sitecopy { };
-
   stricat = callPackage ../tools/security/stricat { };
 
   staruml = callPackage ../tools/misc/staruml { inherit (gnome2) GConf; libgcrypt = libgcrypt_1_5; };
@@ -4433,8 +4430,6 @@ with pkgs;
   };
 
   time = callPackage ../tools/misc/time { };
-
-  tkabber = callPackage ../applications/networking/instant-messengers/tkabber { };
 
   qfsm = callPackage ../applications/science/electronics/qfsm { };
 
@@ -5366,7 +5361,7 @@ with pkgs;
   jdk = jdk8;
   jre = jre8;
   jre_headless = jre8_headless;
-
+  
   openshot-qt = libsForQt56.callPackage ../applications/video/openshot-qt { };
 
   oraclejdk = pkgs.jdkdistro true false;
@@ -5579,7 +5574,9 @@ with pkgs;
   };
 
   rust = rustStable;
-  rustStable = callPackage ../development/compilers/rust {};
+  rustStable = callPackage ../development/compilers/rust {
+    inherit (llvmPackages_39) llvm;
+  };
   rustBeta = lowPrio (recurseIntoAttrs (callPackage ../development/compilers/rust/beta.nix {}));
   rustNightly = lowPrio (recurseIntoAttrs (callPackage ../development/compilers/rust/nightly.nix {
     rustPlatform = recurseIntoAttrs (makeRustPlatform rustBeta);
@@ -5656,6 +5653,8 @@ with pkgs;
   stalin = callPackage ../development/compilers/stalin { };
 
   metaBuildEnv = callPackage ../development/compilers/meta-environment/meta-build-env { };
+
+  swift = callPackage ../development/compilers/swift { };
 
   swiProlog = callPackage ../development/compilers/swi-prolog { };
 
@@ -6133,7 +6132,7 @@ with pkgs;
   self = callPackage_i686 ../development/interpreters/self { };
 
   spark = spark_21;
-  spark_16 = callPackage ../applications/networking/cluster/spark { version = "1.6.0"; };
+  spark_16 = callPackage ../applications/networking/cluster/spark { version = "1.6.3"; };
   spark_21 = callPackage ../applications/networking/cluster/spark { version = "2.1.0"; };
 
   spidermonkey_1_8_5 = callPackage ../development/interpreters/spidermonkey/1.8.5.nix { };
@@ -6552,9 +6551,7 @@ with pkgs;
     ocaml = ocaml_4_02;
   };
 
-  framac = callPackage ../development/tools/analysis/frama-c {
-    coq = coq_8_4;
-  };
+  framac = callPackage ../development/tools/analysis/frama-c { };
 
   frame = callPackage ../development/libraries/frame { };
 
@@ -7023,7 +7020,7 @@ with pkgs;
 
   ycmd = callPackage ../development/tools/misc/ycmd {
     inherit (darwin.apple_sdk.frameworks) Cocoa;
-    llvmPackages = llvmPackages_39;
+    llvmPackages = llvmPackages_4;
     python = python2;
   };
 
@@ -8120,6 +8117,8 @@ with pkgs;
   libbluedevil = callPackage ../development/libraries/libbluedevil { };
 
   libbdplus = callPackage ../development/libraries/libbdplus { };
+
+  libblocksruntime = callPackage ../development/libraries/libblocksruntime { };
 
   libbluray = callPackage ../development/libraries/libbluray { };
 
@@ -9551,7 +9550,9 @@ with pkgs;
 
     libktorrent = callPackage ../development/libraries/libktorrent { };
 
-    libopenshot = callPackage ../applications/video/openshot-qt/libopenshot.nix {};
+    libopenshot = callPackage ../applications/video/openshot-qt/libopenshot.nix { };
+
+    libopenshot-audio = callPackage ../applications/video/openshot-qt/libopenshot-audio.nix { };
 
     mlt = callPackage ../development/libraries/mlt/qt-5.nix {
       ffmpeg = ffmpeg_2;
@@ -9908,8 +9909,6 @@ with pkgs;
   };
 
   tclap = callPackage ../development/libraries/tclap {};
-
-  tclgpg = callPackage ../development/libraries/tclgpg { };
 
   tcllib = callPackage ../development/libraries/tcllib { };
 
@@ -10340,8 +10339,6 @@ with pkgs;
 
   javaCup = callPackage ../development/libraries/java/cup { };
 
-  jclasslib = callPackage ../development/tools/java/jclasslib { };
-
   jdom = callPackage ../development/libraries/java/jdom { };
 
   jflex = callPackage ../development/libraries/java/jflex { };
@@ -10419,6 +10416,15 @@ with pkgs;
     texLive = null;
   };
 
+  # QuickLisp minimal version
+  asdf_2_26 = callPackage ../development/lisp-modules/asdf/2.26.nix {
+    texLive = null;
+  };
+  # Currently most popular
+  asdf_3_1 = callPackage ../development/lisp-modules/asdf/3.1.nix {
+    texLive = null;
+  };
+
   clwrapperFunction = callPackage ../development/lisp-modules/clwrapper;
 
   wrapLisp = lisp: clwrapperFunction { inherit lisp; };
@@ -10427,10 +10433,17 @@ with pkgs;
     inherit clwrapper;
   };
 
-  lispPackagesClisp = lispPackagesFor (wrapLisp clisp);
-  lispPackagesSBCL = lispPackagesFor (wrapLisp sbcl);
-  lispPackages = recurseIntoAttrs lispPackagesSBCL;
+  lispPackages = recurseIntoAttrs (quicklispPackages_asdf_3_1 //
+    lispPackagesFor ((wrapLisp sbcl).override { asdf = asdf_3_1; }));
 
+  quicklispPackagesFor = clwrapper: callPackage ../development/lisp-modules/quicklisp-to-nix.nix {
+    inherit clwrapper;
+  };
+  quicklispPackagesClisp = quicklispPackagesFor (wrapLisp clisp);
+  quicklispPackagesSBCL = quicklispPackagesFor (wrapLisp sbcl);
+  quicklispPackages = quicklispPackagesSBCL;
+  quicklispPackages_asdf_3_1 = quicklispPackagesFor
+    ((wrapLisp sbcl).override { asdf = asdf_3_1; });
 
   ### DEVELOPMENT / PERL MODULES
 
@@ -11537,6 +11550,7 @@ with pkgs;
   linux_mptcp = callPackage ../os-specific/linux/kernel/linux-mptcp.nix {
     kernelPatches =
       [ kernelPatches.bridge_stp_helper
+        kernelPatches.p9_fixes
         kernelPatches.packet_fix_race_condition_CVE_2016_8655
         kernelPatches.DCCP_double_free_vulnerability_CVE-2017-6074
       ]
@@ -11557,6 +11571,7 @@ with pkgs;
   linux_3_10 = callPackage ../os-specific/linux/kernel/linux-3.10.nix {
     kernelPatches = with kernelPatches;
       [ bridge_stp_helper
+        p9_fixes
         lguest_entry-linkage
         packet_fix_race_condition_CVE_2016_8655
         DCCP_double_free_vulnerability_CVE-2017-6074
@@ -11571,6 +11586,7 @@ with pkgs;
   linux_4_4 = callPackage ../os-specific/linux/kernel/linux-4.4.nix {
     kernelPatches =
       [ kernelPatches.bridge_stp_helper
+        kernelPatches.p9_fixes
         kernelPatches.cpu-cgroup-v2."4.4"
       ]
       ++ lib.optionals ((platform.kernelArch or null) == "mips")
@@ -11583,6 +11599,7 @@ with pkgs;
   linux_4_9 = callPackage ../os-specific/linux/kernel/linux-4.9.nix {
     kernelPatches =
       [ kernelPatches.bridge_stp_helper
+        kernelPatches.p9_fixes
         # See pkgs/os-specific/linux/kernel/cpu-cgroup-v2-patches/README.md
         # when adding a new linux version
         # !!! 4.7 patch doesn't apply, 4.9 patch not up yet, will keep checking
@@ -11599,6 +11616,7 @@ with pkgs;
   linux_4_10 = callPackage ../os-specific/linux/kernel/linux-4.10.nix {
     kernelPatches =
       [ kernelPatches.bridge_stp_helper
+        kernelPatches.p9_fixes
         # See pkgs/os-specific/linux/kernel/cpu-cgroup-v2-patches/README.md
         # when adding a new linux version
         # !!! 4.7 patch doesn't apply, 4.9 patch not up yet, will keep checking
@@ -11615,6 +11633,7 @@ with pkgs;
   linux_testing = callPackage ../os-specific/linux/kernel/linux-testing.nix {
     kernelPatches = [
       kernelPatches.bridge_stp_helper
+      kernelPatches.p9_fixes
       kernelPatches.modinst_arg_list_too_long
     ] ++ lib.optionals ((platform.kernelArch or null) == "mips") [
       kernelPatches.mips_fpureg_emu
@@ -12615,7 +12634,7 @@ with pkgs;
   inherit (callPackages ../data/fonts/gdouros { })
     symbola aegyptus akkadian anatolian maya unidings musica analecta;
 
-  iana_etc = callPackage ../data/misc/iana-etc { };
+  iana-etc = callPackage ../data/misc/iana-etc { };
 
   poppler_data = callPackage ../data/misc/poppler-data { };
 
@@ -12707,10 +12726,16 @@ with pkgs;
 
   xlsx2csv = pythonPackages.xlsx2csv;
 
+  xorg-rgb = callPackage ../data/misc/xorg-rgb {};
+
   zeal = libsForQt5.callPackage ../data/documentation/zeal { };
 
 
   ### APPLICATIONS
+
+  "2bwm" = callPackage ../applications/window-managers/2bwm {
+    patches = config."2bwm".patches or [];
+  };
 
   a2jmidid = callPackage ../applications/audio/a2jmidid { };
 
@@ -15457,7 +15482,7 @@ with pkgs;
   bittorrentSync14 = callPackage ../applications/networking/bittorrentsync/1.4.x.nix { };
   bittorrentSync20 = callPackage ../applications/networking/bittorrentsync/2.0.x.nix { };
 
-  dropbox = callPackage ../applications/networking/dropbox { };
+  dropbox = libsForQt5.callPackage ../applications/networking/dropbox { };
 
   dropbox-cli = callPackage ../applications/networking/dropbox-cli { };
 
@@ -15560,6 +15585,8 @@ with pkgs;
   ssrc = callPackage ../applications/audio/ssrc { };
 
   stalonetray = callPackage ../applications/window-managers/stalonetray {};
+
+  inherit (ocamlPackages_4_03) stog;
 
   stp = callPackage ../applications/science/logic/stp {};
 
@@ -15667,8 +15694,6 @@ with pkgs;
 
   telepathy_mission_control = callPackage ../applications/networking/instant-messengers/telepathy/mission-control { };
 
-  telepathy_rakia = callPackage ../applications/networking/instant-messengers/telepathy/rakia { };
-
   telepathy_salut = callPackage ../applications/networking/instant-messengers/telepathy/salut {};
 
   telepathy_idle = callPackage ../applications/networking/instant-messengers/telepathy/idle {};
@@ -15763,6 +15788,8 @@ with pkgs;
   trayer = callPackage ../applications/window-managers/trayer { };
 
   tree = callPackage ../tools/system/tree {};
+
+  treesheets = callPackage ../applications/office/treesheets { wxGTK = wxGTK30; };
 
   trezor-bridge = callPackage ../applications/networking/browsers/mozilla-plugins/trezor { };
 
@@ -17098,6 +17125,8 @@ with pkgs;
 
   redshift-plasma-applet = libsForQt5.callPackage ../applications/misc/redshift-plasma-applet { };
 
+  latte-dock = libsForQt5.callPackage ../applications/misc/latte-dock { };
+
   orion = callPackage ../misc/themes/orion {};
 
   albatross = callPackage ../misc/themes/albatross { };
@@ -18159,11 +18188,11 @@ with pkgs;
   inherit (callPackage ../applications/networking/cluster/terraform {})
     terraform_0_8_5
     terraform_0_8_8
-    terraform_0_9_1;
+    terraform_0_9_2;
 
   terraform_0_8 = terraform_0_8_8;
-  terraform_0_9 = terraform_0_9_1;
-  terraform = terraform_0_8;
+  terraform_0_9 = terraform_0_9_2;
+  terraform = terraform_0_9;
 
   terragrunt = callPackage ../applications/networking/cluster/terragrunt {
     terraform = terraform_0_8;
@@ -18452,4 +18481,6 @@ with pkgs;
   hy = callPackage ../development/interpreters/hy {};
 
   ghc-standalone-archive = callPackage ../os-specific/darwin/ghc-standalone-archive { inherit (darwin) cctools; };
+
+  messenger-for-desktop = callPackage ../applications/networking/instant-messengers/messenger-for-desktop {};
 }

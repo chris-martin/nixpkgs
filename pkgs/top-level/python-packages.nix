@@ -466,15 +466,19 @@ in {
   };
 
   altair = buildPythonPackage rec {
-    name = "altair-1.0.0";
+    name = "altair-1.2.0";
 
     src = pkgs.fetchurl {
       url = "mirror://pypi/a/altair/${name}.tar.gz";
-      sha256 = "024drhmiw8w3dl7dbal0pvnlfd3sv4n1rqywv2jb488b3fzm704r";
+      sha256 = "05c47dm20p7m0017p2h38il721rxag1q0457dj7whp0k8rc7qd1n";
     };
+    buildInputs = [ self.pytest ];
 
+    checkPhase = ''
+      export LANG=en_US.UTF-8
+      py.test altair --doctest-modules
+    '';
     propagatedBuildInputs = with self; [ vega pandas ipython traitlets ];
-
     meta = {
       description = "A declarative statistical visualization library for Python.";
       homepage = https://github.com/altair-viz/altair;
@@ -491,6 +495,7 @@ in {
       sha256 = "08k92afnk0bivm07h1l5nh26xl2rfp7qn03aq17q1hr3fs5r6cdm";
     };
 
+    buildInputs = [ self.pytest ];
     propagatedBuildInputs = with self; [ jupyter_core pandas ];
 
     meta = {
@@ -3871,11 +3876,11 @@ in {
   };
 
   click = buildPythonPackage rec {
-    name = "click-6.6";
+    name = "click-6.7";
 
     src = pkgs.fetchurl {
       url = "mirror://pypi/c/click/${name}.tar.gz";
-      sha256 = "1sggipyz52crrybwbr9xvwxd4aqigvplf53k9w3ygxmzivd1jsnc";
+      sha256 = "02qkfpykbq35id8glfgwc38yc430427yd05z1wc5cnld8zgicmgi";
     };
 
     buildInputs = with self; [ pytest ];
@@ -5789,11 +5794,11 @@ in {
 
   libtmux = buildPythonPackage rec {
     name = "libtmux-${version}";
-    version = "0.6.0";
+    version = "0.6.4";
 
     src = pkgs.fetchurl {
       url = "mirror://pypi/l/libtmux/${name}.tar.gz";
-      sha256 = "117savw47c2givq9vxr5m02nyxmsk34l2ihxyy5axlaiqyxyf20s";
+      sha256 = "0kmw7x8cxb2hj2mzibmg9nxaijhsm1kcm0vdihn99fhm5kw1phh5";
     };
 
     buildInputs = with self; [ pytest_29 ];
@@ -26679,6 +26684,23 @@ in {
     };
   };
 
+  uptime = buildPythonPackage rec {
+    name = "uptime-${version}";
+    version = "3.0.1";
+
+    src = pkgs.fetchurl {
+      url = "mirror://pypi/u/uptime/${name}.tar.gz";
+      sha256 = "0wr9jkixprlywz0plyn5p42a5fd31aiwvjrxdvj7r02vfxa04c3w";
+    };
+
+    meta = with stdenv.lib; {
+      homepage = https://github.com/Cairnarvon/uptime;
+      description = "Cross-platform way to retrieve system uptime and boot time";
+      license = licenses.bsd2;
+      maintainers = with maintainers; [ rob ];
+    };
+  };
+
   urlgrabber =  buildPythonPackage rec {
     name = "urlgrabber-3.9.1";
     disabled = isPy3k;
@@ -29081,14 +29103,14 @@ EOF
 
   Logbook = buildPythonPackage rec {
     name = "Logbook-${version}";
-    version = "0.11.3";
+    version = "1.0.0";
 
     src = pkgs.fetchurl {
       url = "mirror://pypi/L/Logbook/${name}.tar.gz";
-      sha256 = "0bchn00jj0y4dmrmqsm29ffcx37g79jcxjihadmgz2aj0z6dbsrc";
+      sha256 = "0whqbx5p0zkf7gmb5ssnsnhm4kn4drd4x7fbhdi8dnxklqajbnl7";
     };
 
-    buildInputs = [ self.pytest ];
+    buildInputs = [ self.pytest ] ++ optionals (!isPy3k) [ self.mock ];
 
     checkPhase = ''
       find tests -name \*.pyc -delete
@@ -30741,12 +30763,11 @@ EOF
     propagatedBuildInputs = with self; [ scipy ];
     buildInputs = with self; [ nose ];
 
-    # Cannot be installed with Python 2.x, most likely due to the patch below.
-    disabled = !isPy3k;
-
     postPatch = ''
       cd python-package
 
+      sed "s/CURRENT_DIR = os.path.dirname(__file__)/CURRENT_DIR = os.path.abspath(os.path.dirname(__file__))/g" -i setup.py
+      sed "/^LIB_PATH.*/a LIB_PATH = [os.path.relpath(LIB_PATH[0], CURRENT_DIR)]" -i setup.py
       cat <<EOF >xgboost/libpath.py
       def find_lib_path():
         return ["${pkgs.xgboost}/lib/libxgboost.so"]

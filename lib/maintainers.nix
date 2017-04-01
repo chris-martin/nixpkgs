@@ -135,6 +135,7 @@
   dgonyeo = "Derek Gonyeo <derek@gonyeo.com>";
   dipinhora = "Dipin Hora <dipinhora+github@gmail.com>";
   dmalikov = "Dmitry Malikov <malikov.d.y@gmail.com>";
+  DmitryTsygankov = "Dmitry Tsygankov <dmitry.tsygankov@gmail.com>";
   dmjio = "David Johnson <djohnson.m@gmail.com>";
   dochang = "Desmond O. Chang <dochang@gmail.com>";
   domenkozar = "Domen Kozar <domen@dev.si>";
@@ -181,6 +182,7 @@
   ftrvxmtrx = "Siarhei Zirukin <ftrvxmtrx@gmail.com>";
   funfunctor = "Edward O'Callaghan <eocallaghan@alterapraxis.com>";
   fuuzetsu = "Mateusz Kowalczyk <fuuzetsu@fuuzetsu.co.uk>";
+  fuzzy-id = "Thomas Bach <hacking+nixos@babibo.de>";
   fxfactorial = "Edgar Aroutiounian <edgar.factorial@gmail.com>";
   gal_bolle = "Florent Becker <florent.becker@ens-lyon.org>";
   garbas = "Rok Garbas <rok@garbas.si>";
@@ -462,6 +464,7 @@
   sepi = "Raffael Mancini <raffael@mancini.lu>";
   seppeljordan = "Sebastian Jordan <sebastian.jordan.mail@googlemail.com>";
   shanemikel = "Shane Pearlman <shanemikel1@gmail.com>";
+  shawndellysse = "Shawn Dellysse <sdellysse@gmail.com>";
   sheenobu = "Sheena Artrip <sheena.artrip@gmail.com>";
   sheganinans = "Aistis Raulinaitis <sheganinans@gmail.com>";
   shell = "Shell Turner <cam.turn@gmail.com>";
