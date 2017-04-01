@@ -10273,36 +10273,8 @@ in {
 
   django = self.django_1_10;
 
-  django_1_10 = buildPythonPackage rec {
-    name = "Django-${version}";
-    version = "1.10.5";
-    disabled = pythonOlder "2.7";
-
-    src = pkgs.fetchurl {
-      url = "http://www.djangoproject.com/m/releases/1.10/${name}.tar.gz";
-      sha256 = "12szjsmnfhh2yr54sfynyjr8vl0q9gb6qak3ayqcifcinrs97f0d";
-    };
-
-    patches = [
-      (pkgs.substituteAll {
-        src = ../development/python-modules/django/1.10-gis-libs.template.patch;
-        geos = pkgs.geos;
-        gdal = self.gdal;
-      })
-    ];
-
-    # patch only $out/bin to avoid problems with starter templates (see #3134)
-    postFixup = ''
-      wrapPythonProgramsIn $out/bin "$out $pythonPath"
-    '';
-
-    # too complicated to setup
-    doCheck = false;
-
-    meta = {
-      description = "A high-level Python Web framework";
-      homepage = https://www.djangoproject.com/;
-    };
+  django_1_10 = callPackage ../development/python-modules/django/1_10.nix {
+    gdal = self.gdal;
   };
 
   django_1_9 = buildPythonPackage rec {
@@ -21241,31 +21213,9 @@ in {
     buildInputs = with self; [ pyasn1 pycrypto ];
   };
 
-  pyudev = buildPythonPackage rec {
-    name = "pyudev-${version}";
-    version = "0.16.1";
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/p/pyudev/${name}.tar.gz";
-      sha256 = "765d1c14bd9bd031f64e2612225621984cb2bbb8cbc0c03538bcc4c735ff1c95";
-    };
-
-    postPatch = ''
-      sed -i -e '/udev_library_name/,/^ *libudev/ {
-        s|CDLL([^,]*|CDLL("${pkgs.systemd.lib}/lib/libudev.so.1"|p; d
-      }' pyudev/_libudev.py
-    '';
-
-    propagatedBuildInputs = with self; [ pkgs.systemd ];
-
-    meta = {
-      homepage = "http://pyudev.readthedocs.org/";
-      description = "Pure Python libudev binding";
-      license = licenses.lgpl21Plus;
-      platforms = platforms.linux;
-    };
+  pyudev = callPackage ../development/python-modules/pyudev.nix {
+    inherit (pkgs) fetchurl systemd;
   };
-
 
   pynzb = buildPythonPackage (rec {
     name = "pynzb-0.1.0";
@@ -26622,6 +26572,23 @@ in {
     };
   };
 
+  uptime = buildPythonPackage rec {
+    name = "uptime-${version}";
+    version = "3.0.1";
+
+    src = pkgs.fetchurl {
+      url = "mirror://pypi/u/uptime/${name}.tar.gz";
+      sha256 = "0wr9jkixprlywz0plyn5p42a5fd31aiwvjrxdvj7r02vfxa04c3w";
+    };
+
+    meta = with stdenv.lib; {
+      homepage = https://github.com/Cairnarvon/uptime;
+      description = "Cross-platform way to retrieve system uptime and boot time";
+      license = licenses.bsd2;
+      maintainers = with maintainers; [ rob ];
+    };
+  };
+
   urlgrabber =  buildPythonPackage rec {
     name = "urlgrabber-3.9.1";
     disabled = isPy3k;
@@ -29060,13 +29027,13 @@ EOF
   };
 
   libvirt = let
-    version = "3.0.0";
+    version = "3.1.0";
   in assert version == pkgs.libvirt.version; pkgs.stdenv.mkDerivation rec {
     name = "libvirt-python-${version}";
 
     src = pkgs.fetchurl {
       url = "http://libvirt.org/sources/python/${name}.tar.gz";
-      sha256 = "1ha4bqf029si1lla1z7ca786w571fh3wfs4h7zaglfk4gb2w39wl";
+      sha256 = "06524dhm27fjfnmr5bqdxlmm1g9ixvzaaq572hgyy5dqwfn64spk";
     };
 
     buildInputs = with self; [ python pkgs.pkgconfig pkgs.libvirt lxml ];

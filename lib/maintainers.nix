@@ -351,6 +351,7 @@
   notthemessiah = "Brian Cohen <brian.cohen.88@gmail.com>";
   np = "Nicolas Pouillard <np.nix@nicolaspouillard.fr>";
   nslqqq = "Nikita Mikhailov <nslqqq@gmail.com>";
+  xnwdd = "Guillermo NWDD <nwdd+nixos@no.team>";
   obadz = "obadz <obadz-nixos@obadz.com>";
   ocharles = "Oliver Charles <ollie@ocharles.org.uk>";
   odi = "Oliver Dunkl <oliver.dunkl@gmail.com>";
@@ -502,7 +503,7 @@
   tvorog = "Marsel Zaripov <marszaripov@gmail.com>";
   twey = "James ‘Twey’ Kay <twey@twey.co.uk>";
   uralbash = "Svintsov Dmitry <root@uralbash.ru>";
-  urkud = "Yury G. Kudryashov <urkud+nix@ya.ru>";
+  #urkud = "Yury G. Kudryashov <urkud+nix@ya.ru>"; inactive since 2012
   uwap = "uwap <me@uwap.name>";
   vandenoever = "Jos van den Oever <jos@vandenoever.info>";
   vanzef = "Ivan Solyankin <vanzef@gmail.com>";
