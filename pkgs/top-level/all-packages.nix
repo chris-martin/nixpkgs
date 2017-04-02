@@ -3449,6 +3449,8 @@ with pkgs;
     inherit (pythonPackages) pillow;
   };
 
+  pdfshuffler = callPackage ../applications/misc/pdfshuffler { };
+
   briss = callPackage ../tools/graphics/briss { };
 
   brickd = callPackage ../servers/brickd {
@@ -4537,6 +4539,10 @@ with pkgs;
 
   venus = callPackage ../tools/misc/venus {
     python = python27;
+  };
+
+  veracrypt = callPackage ../applications/misc/veracrypt {
+    wxGUI = true;
   };
 
   vlan = callPackage ../tools/networking/vlan { };
@@ -7748,9 +7754,7 @@ with pkgs;
 
   gpac = callPackage ../applications/video/gpac { };
 
-  gpgme = callPackage ../development/libraries/gpgme {
-    gnupg1 = gnupg1orig;
-  };
+  gpgme = callPackage ../development/libraries/gpgme { };
 
   pgpdump = callPackage ../tools/security/pgpdump { };
 
@@ -8879,10 +8883,7 @@ with pkgs;
   };
 
   libv4l = lowPrio (v4l_utils.override {
-    alsaLib = null;
-    libX11 = null;
-    qt4 = null;
-    qt5 = null;
+    withUtils = false;
   });
 
   libva = callPackage ../development/libraries/libva { };
@@ -12243,9 +12244,7 @@ with pkgs;
     systemd = null;
   });
 
-  v4l_utils = callPackage ../os-specific/linux/v4l-utils {
-    qt5 = null;
-  };
+  v4l_utils = qt5.callPackage ../os-specific/linux/v4l-utils { };
 
   vndr = callPackage ../development/tools/vndr { };
 
@@ -15626,11 +15625,7 @@ with pkgs;
 
   subunit = callPackage ../development/libraries/subunit { };
 
-  surf = callPackage ../applications/networking/browsers/surf {
-    webkit = webkitgtk2;
-  };
-
-  surf-webkit2 = callPackage ../applications/networking/browsers/surf/webkit2.nix { };
+  surf = callPackage ../applications/networking/browsers/surf { gtk = gtk2; };
 
   swh_lv2 = callPackage ../applications/audio/swh-lv2 { };
 
@@ -16238,6 +16233,8 @@ with pkgs;
   xen = xenPackages.xen_4_5-vanilla;
   xen-slim = xenPackages.xen_4_5-slim;
   xen-light = xenPackages.xen_4_5-light;
+
+  xkbset = callPackage ../tools/X11/xkbset { };
 
   win-spice = callPackage ../applications/virtualization/driver/win-spice { };
   win-virtio = callPackage ../applications/virtualization/driver/win-virtio { };
