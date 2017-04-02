@@ -743,7 +743,7 @@ with pkgs;
   catclock = callPackage ../applications/misc/catclock { };
 
   cde = callPackage ../tools/package-management/cde { };
-  
+
   cdemu-daemon = callPackage ../misc/emulators/cdemu/daemon.nix { };
 
   cdemu-client = callPackage ../misc/emulators/cdemu/client.nix { };
@@ -5361,7 +5361,7 @@ with pkgs;
   jdk = jdk8;
   jre = jre8;
   jre_headless = jre8_headless;
-  
+
   openshot-qt = libsForQt56.callPackage ../applications/video/openshot-qt { };
 
   oraclejdk = pkgs.jdkdistro true false;
@@ -13591,6 +13591,8 @@ with pkgs;
   fetchmail = callPackage ../applications/misc/fetchmail { };
 
   inherit (gnome3) file-roller;
+
+  flac2all = callPackage ../tools/audio/flac2all { };
 
   flacon = callPackage ../applications/audio/flacon { };
 
