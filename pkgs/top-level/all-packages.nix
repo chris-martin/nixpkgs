@@ -3449,6 +3449,8 @@ with pkgs;
     inherit (pythonPackages) pillow;
   };
 
+  pdfshuffler = callPackage ../applications/misc/pdfshuffler { };
+
   briss = callPackage ../tools/graphics/briss { };
 
   brickd = callPackage ../servers/brickd {
@@ -4257,6 +4259,8 @@ with pkgs;
 
   u9fs = callPackage ../servers/u9fs { };
 
+  ua = callPackage ../tools/networking/ua { };
+
   ucl = callPackage ../development/libraries/ucl { };
 
   ucspi-tcp = callPackage ../tools/networking/ucspi-tcp { };
@@ -4537,6 +4541,10 @@ with pkgs;
 
   venus = callPackage ../tools/misc/venus {
     python = python27;
+  };
+
+  veracrypt = callPackage ../applications/misc/veracrypt {
+    wxGUI = true;
   };
 
   vlan = callPackage ../tools/networking/vlan { };
@@ -6251,6 +6259,8 @@ with pkgs;
   apacheKafka_0_8 = callPackage ../servers/apache-kafka { majorVersion = "0.8"; };
   apacheKafka_0_9 = callPackage ../servers/apache-kafka { majorVersion = "0.9"; };
   apacheKafka_0_10 = callPackage ../servers/apache-kafka { majorVersion = "0.10"; };
+
+  kt = callPackage ../tools/misc/kt {};
 
   asn2quickder = callPackage ../development/tools/asn2quickder {};
 
@@ -8877,10 +8887,7 @@ with pkgs;
   };
 
   libv4l = lowPrio (v4l_utils.override {
-    alsaLib = null;
-    libX11 = null;
-    qt4 = null;
-    qt5 = null;
+    withUtils = false;
   });
 
   libva = callPackage ../development/libraries/libva { };
@@ -9276,7 +9283,6 @@ with pkgs;
   wolfssl = callPackage ../development/libraries/wolfssl { };
 
   openssl = openssl_1_0_2;
-  openssl-steam = openssl_1_0_2-steam;
 
   inherit (callPackages ../development/libraries/openssl {
       fetchurl = fetchurlBoot;
@@ -9286,8 +9292,7 @@ with pkgs;
       };
     })
     openssl_1_0_2
-    openssl_1_1_0
-    openssl_1_0_2-steam;
+    openssl_1_1_0;
 
   openssl-chacha = callPackage ../development/libraries/openssl/chacha.nix {
     cryptodevHeaders = linuxPackages.cryptodev.override {
@@ -12241,9 +12246,7 @@ with pkgs;
     systemd = null;
   });
 
-  v4l_utils = callPackage ../os-specific/linux/v4l-utils {
-    qt5 = null;
-  };
+  v4l_utils = qt5.callPackage ../os-specific/linux/v4l-utils { };
 
   vndr = callPackage ../development/tools/vndr { };
 
@@ -14876,6 +14879,8 @@ with pkgs;
 
   nedit = callPackage ../applications/editors/nedit { };
 
+  nomacs = libsForQt5.callPackage ../applications/graphics/nomacs { };
+
   notepadqq = libsForQt56.callPackage ../applications/editors/notepadqq { };
 
   notmuch = callPackage ../applications/networking/mailreaders/notmuch { };
@@ -15622,11 +15627,7 @@ with pkgs;
 
   subunit = callPackage ../development/libraries/subunit { };
 
-  surf = callPackage ../applications/networking/browsers/surf {
-    webkit = webkitgtk2;
-  };
-
-  surf-webkit2 = callPackage ../applications/networking/browsers/surf/webkit2.nix { };
+  surf = callPackage ../applications/networking/browsers/surf { gtk = gtk2; };
 
   swh_lv2 = callPackage ../applications/audio/swh-lv2 { };
 
