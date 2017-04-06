@@ -1811,6 +1811,7 @@ with pkgs;
     inherit (darwin.apple_sdk.frameworks) Carbon Cocoa;
   });
   fontforge-gtk = callPackage ../tools/misc/fontforge {
+    withSpiro = true;
     withGTK = true;
     gtk2 = gtk2-x11;
     inherit (darwin.apple_sdk.frameworks) Carbon Cocoa;
@@ -3806,6 +3807,10 @@ with pkgs;
 
   rrdtool = callPackage ../tools/misc/rrdtool { };
 
+  rss2email = callPackage ../applications/networking/feedreaders/rss2email {
+    pythonPackages = python3Packages;
+  };
+
   rsstail = callPackage ../applications/networking/feedreaders/rsstail { };
 
   rtorrent = callPackage ../tools/networking/p2p/rtorrent { };
@@ -4258,6 +4263,8 @@ with pkgs;
   txtw = callPackage ../tools/misc/txtw { };
 
   u9fs = callPackage ../servers/u9fs { };
+
+  ua = callPackage ../tools/networking/ua { };
 
   ucl = callPackage ../development/libraries/ucl { };
 
@@ -6119,17 +6126,17 @@ with pkgs;
   inherit (callPackage ../development/interpreters/ruby {})
     ruby_2_0_0
     ruby_2_1_10
-    ruby_2_2_5
-    ruby_2_3_3
-    ruby_2_4_0;
+    ruby_2_2_7
+    ruby_2_3_4
+    ruby_2_4_1;
 
   # Ruby aliases
   ruby = ruby_2_3;
   ruby_2_0 = ruby_2_0_0;
   ruby_2_1 = ruby_2_1_10;
-  ruby_2_2 = ruby_2_2_5;
-  ruby_2_3 = ruby_2_3_3;
-  ruby_2_4 = ruby_2_4_0;
+  ruby_2_2 = ruby_2_2_7;
+  ruby_2_3 = ruby_2_3_4;
+  ruby_2_4 = ruby_2_4_1;
 
   scsh = callPackage ../development/interpreters/scsh { };
 
@@ -6257,6 +6264,8 @@ with pkgs;
   apacheKafka_0_8 = callPackage ../servers/apache-kafka { majorVersion = "0.8"; };
   apacheKafka_0_9 = callPackage ../servers/apache-kafka { majorVersion = "0.9"; };
   apacheKafka_0_10 = callPackage ../servers/apache-kafka { majorVersion = "0.10"; };
+
+  kt = callPackage ../tools/misc/kt {};
 
   asn2quickder = callPackage ../development/tools/asn2quickder {};
 
@@ -8118,6 +8127,10 @@ with pkgs;
 
   libb2 = callPackage ../development/libraries/libb2 { };
 
+  libbap = callPackage ../development/libraries/libbap {
+    inherit (ocamlPackages_4_02) bap ocaml findlib ctypes;
+  };
+
   libbluedevil = callPackage ../development/libraries/libbluedevil { };
 
   libbdplus = callPackage ../development/libraries/libbdplus { };
@@ -8775,6 +8788,8 @@ with pkgs;
 
   libsoup = callPackage ../development/libraries/libsoup { };
 
+  libspiro = callPackage ../development/libraries/libspiro {};
+
   libssh = callPackage ../development/libraries/libssh { };
 
   libssh2 = callPackage ../development/libraries/libssh2 { };
@@ -9163,9 +9178,7 @@ with pkgs;
   };
   libnghttp2 = nghttp2.lib;
 
-  nix-plugins = callPackage ../development/libraries/nix-plugins {
-    nix = pkgs.nixUnstable;
-  };
+  nix-plugins = callPackage ../development/libraries/nix-plugins {};
 
   nlohmann_json = callPackage ../development/libraries/nlohmann_json { };
 
@@ -9279,7 +9292,6 @@ with pkgs;
   wolfssl = callPackage ../development/libraries/wolfssl { };
 
   openssl = openssl_1_0_2;
-  openssl-steam = openssl_1_0_2-steam;
 
   inherit (callPackages ../development/libraries/openssl {
       fetchurl = fetchurlBoot;
@@ -9289,8 +9301,7 @@ with pkgs;
       };
     })
     openssl_1_0_2
-    openssl_1_1_0
-    openssl_1_0_2-steam;
+    openssl_1_1_0;
 
   openssl-chacha = callPackage ../development/libraries/openssl/chacha.nix {
     cryptodevHeaders = linuxPackages.cryptodev.override {
@@ -12081,6 +12092,8 @@ with pkgs;
 
   rt5677-firmware = callPackage ../os-specific/linux/firmware/rt5677 { };
 
+  rtl8192su-firmware = callPackage ../os-specific/linux/firmware/rtl8192su-firmware { };
+
   rtl8723bs-firmware = callPackage ../os-specific/linux/firmware/rtl8723bs-firmware { };
 
   rtlwifi_new-firmware = callPackage ../os-specific/linux/firmware/rtlwifi_new-firmware { };
@@ -13242,7 +13255,13 @@ with pkgs;
   dmtx-utils = callPackage (callPackage ../tools/graphics/dmtx-utils) {
   };
 
-  docker = callPackage ../applications/virtualization/docker { };
+  inherit (callPackage ../applications/virtualization/docker { })
+    docker_17_03
+    docker_17_04;
+
+  docker = docker_17_03;
+  docker-edge = docker_17_04;
+
   docker-proxy = callPackage ../applications/virtualization/docker/proxy.nix { };
 
   docker-gc = callPackage ../applications/virtualization/docker/gc.nix { };
@@ -14879,6 +14898,8 @@ with pkgs;
 
   nedit = callPackage ../applications/editors/nedit { };
 
+  nomacs = libsForQt5.callPackage ../applications/graphics/nomacs { };
+
   notepadqq = libsForQt56.callPackage ../applications/editors/notepadqq { };
 
   notmuch = callPackage ../applications/networking/mailreaders/notmuch { };
@@ -14956,7 +14977,10 @@ with pkgs;
 
   osmo = callPackage ../applications/office/osmo { };
 
-  palemoon = callPackage ../applications/networking/browsers/palemoon { };
+  palemoon = callPackage ../applications/networking/browsers/palemoon {
+    # https://forum.palemoon.org/viewtopic.php?f=57&t=15296#p111146
+    stdenv = overrideCC stdenv gcc49;
+  };
 
   pamix = callPackage ../applications/audio/pamix { };
 
@@ -15677,7 +15701,7 @@ with pkgs;
 
   taskserver = callPackage ../servers/misc/taskserver { };
 
-  tdesktop = qt56.callPackage ../applications/networking/instant-messengers/telegram/tdesktop {
+  tdesktop = qt5.callPackage ../applications/networking/instant-messengers/telegram/tdesktop {
     inherit (pythonPackages) gyp;
   };
 
