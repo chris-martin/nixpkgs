@@ -7,9 +7,9 @@
 { runCommand, fetchFromGitHub, git }:
 
 let
-  version = "2017-03-29";
-  rev = "d9dbb2fc117bf730d1f54b090b3af407e8e5ff20";
-  sha256 = "1vrzr4v8qp5jy3xmqrcyk9naik3rngk8hzxif42y687ncppzrsdl";
+  version = "2017-04-08";
+  rev = "9876afbb35a2fe28748990f76d91eaae827e2aae";
+  sha256 = "14wk74s0mqhxzmgaq07y75y8v4jkffzhs981y9cz806asdcxlrwh";
 
   src = fetchFromGitHub {
       inherit rev;
@@ -44,7 +44,7 @@ runCommand "rustRegistry-${version}-${builtins.substring 0 7 rev}" { inherit src
   $git config --local user.email "example@example.com"
   $git config --local user.name "example"
   $git add .
-  $git commit -m 'Rust registry commit'
+  $git commit --quiet -m 'Rust registry commit'
 
   touch $out/touch . "$out/.cargo-index-lock"
 ''
