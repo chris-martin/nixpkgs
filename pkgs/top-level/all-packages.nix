@@ -325,7 +325,7 @@ with pkgs;
   findXMLCatalogs = makeSetupHook { } ../build-support/setup-hooks/find-xml-catalogs.sh;
 
   wrapGAppsHook = makeSetupHook {
-    deps = [ gnome3.dconf.lib gnome3.gtk makeWrapper ];
+    deps = [ gnome3.dconf.lib gnome3.gtk librsvg makeWrapper ];
   } ../build-support/setup-hooks/wrap-gapps-hook.sh;
 
   separateDebugInfo = makeSetupHook { } ../build-support/setup-hooks/separate-debug-info.sh;
@@ -445,6 +445,14 @@ with pkgs;
   argtable-2 = callPackage ../tools/misc/argtable-2 { };
 
   argyllcms = callPackage ../tools/graphics/argyllcms {};
+
+  arm-frc-linux-gnueabi-eglibc = callPackage ../development/libraries/arm-frc-linux-gnueabi-eglibc {};
+
+  arm-frc-linux-gnueabi-linux-api-headers = callPackage ../development/libraries/arm-frc-linux-gnueabi-linux-api-headers {};
+
+  arm-frc-linux-gnueabi-binutils = callPackage ../development/tools/misc/arm-frc-linux-gnueabi-binutils {};
+
+  arm-frc-linux-gnueabi-gcc = callPackage ../development/compilers/arm-frc-linux-gnueabi-gcc {};
 
   arp-scan = callPackage ../tools/misc/arp-scan { };
 
@@ -1120,9 +1128,7 @@ with pkgs;
     inherit (pythonPackages) gyp;
   };
 
-  bup = callPackage ../tools/backup/bup {
-    par2Support = config.bup.par2Support or false;
-  };
+  bup = callPackage ../tools/backup/bup { };
 
   burp_1_3 = callPackage ../tools/backup/burp/1.3.48.nix { };
 
@@ -1669,6 +1675,8 @@ with pkgs;
   eot_utilities = callPackage ../tools/misc/eot-utilities { };
 
   eplot = callPackage ../tools/graphics/eplot { };
+
+  epstool = callPackage ../tools/graphics/epstool { };
 
   ethtool = callPackage ../tools/misc/ethtool { };
 
@@ -4440,6 +4448,8 @@ with pkgs;
 
   time = callPackage ../tools/misc/time { };
 
+  tweet-hs = haskell.lib.justStaticExecutables haskellPackages.tweet-hs;
+
   qfsm = callPackage ../applications/science/electronics/qfsm { };
 
   tkgate = callPackage ../applications/science/electronics/tkgate/1.x.nix { };
@@ -5459,7 +5469,7 @@ with pkgs;
   llvm_34 = llvmPackages_34.llvm;
 
   llvmPackages = recurseIntoAttrs
-    (if stdenv.isDarwin then llvmPackages_37 else llvmPackages_39);
+    (if stdenv.isDarwin then llvmPackages_4 else llvmPackages_39);
 
   llvmPackagesSelf = llvmPackages_34.override {
     stdenv = libcxxStdenv;
@@ -5473,13 +5483,9 @@ with pkgs;
     isl = isl_0_14;
   };
 
-  llvmPackages_37 = callPackage ../development/compilers/llvm/3.7 ({
+  llvmPackages_37 = callPackage ../development/compilers/llvm/3.7 {
     inherit (stdenvAdapters) overrideCC;
-  } // stdenv.lib.optionalAttrs stdenv.isDarwin {
-    cmake = cmake.override { isBootstrap = true; useSharedLibraries = false; };
-    libxml2 = libxml2.override { pythonSupport = false; };
-    python2 = callPackage ../development/interpreters/python/cpython/2.7/boot.nix { inherit (darwin) CF configd; };
-  });
+  };
 
   llvmPackages_38 = callPackage ../development/compilers/llvm/3.8 {
     inherit (stdenvAdapters) overrideCC;
@@ -5489,9 +5495,13 @@ with pkgs;
     inherit (stdenvAdapters) overrideCC;
   };
 
-  llvmPackages_4 = callPackage ../development/compilers/llvm/4 {
+  llvmPackages_4 = callPackage ../development/compilers/llvm/4 ({
     inherit (stdenvAdapters) overrideCC;
-  };
+  } // stdenv.lib.optionalAttrs stdenv.isDarwin {
+    cmake = cmake.override { isBootstrap = true; useSharedLibraries = false; };
+    libxml2 = libxml2.override { pythonSupport = false; };
+    python2 = callPackage ../development/interpreters/python/cpython/2.7/boot.nix { inherit (darwin) CF configd; };
+  });
 
   manticore = callPackage ../development/compilers/manticore { };
 
@@ -5971,17 +5981,29 @@ with pkgs;
     git = gitMinimal;
   };
 
-  octave = callPackage ../development/interpreters/octave {
-    qt = null;
-    ghostscript = null;
-    graphicsmagick = null;
-    llvm = null;
-    hdf5 = null;
-    glpk = null;
-    suitesparse = null;
-    jdk = null;
-    openblas = if stdenv.isDarwin then openblasCompat else openblas;
-  };
+  inherit (
+    let
+      defaultOctaveOptions = {
+        qt = null;
+        ghostscript = null;
+        graphicsmagick = null;
+        llvm = null;
+        hdf5 = null;
+        glpk = null;
+        suitesparse = null;
+        jdk = null;
+        openblas = if stdenv.isDarwin then openblasCompat else openblas;
+      };
+
+      hgOctaveOptions =
+        (removeAttrs defaultOctaveOptions ["ghostscript"]) // {
+          overridePlatforms = stdenv.lib.platforms.none;
+        };
+    in {
+      octave = callPackage ../development/interpreters/octave defaultOctaveOptions;
+      octaveHg = lowPrio (callPackage ../development/interpreters/octave/hg.nix hgOctaveOptions);
+  }) octave octaveHg;
+
   octaveFull = (lowPrio (callPackage ../development/interpreters/octave {
     qt = qt4;
     overridePlatforms = ["x86_64-linux" "x86_64-darwin"];
@@ -7426,7 +7448,7 @@ with pkgs;
   ffmpeg_0 = ffmpeg_0_10;
   ffmpeg_1 = ffmpeg_1_2;
   ffmpeg_2 = ffmpeg_2_8;
-  ffmpeg_3 = ffmpeg_3_1;
+  ffmpeg_3 = ffmpeg_3_2;
   ffmpeg = ffmpeg_3;
 
   ffmpeg-full = callPackage ../development/libraries/ffmpeg-full {
@@ -9485,7 +9507,7 @@ with pkgs;
     inherit newScope;
     inherit stdenv fetchurl makeSetupHook makeWrapper;
     bison = bison2; # error: too few arguments to function 'int yylex(...
-    cups = if stdenv.isLinux then cups else null;
+    inherit cups;
     harfbuzz = harfbuzz-icu;
     mesa = mesa_noglu;
     inherit perl;
@@ -9498,7 +9520,7 @@ with pkgs;
     inherit newScope;
     inherit stdenv fetchurl makeSetupHook makeWrapper;
     bison = bison2; # error: too few arguments to function 'int yylex(...
-    cups = if stdenv.isLinux then cups else null;
+    inherit cups;
     harfbuzz = harfbuzz-icu;
     mesa = mesa_noglu;
     inherit perl;
@@ -11090,6 +11112,8 @@ with pkgs;
   sipcmd = callPackage ../applications/networking/sipcmd { };
 
   sipwitch = callPackage ../servers/sip/sipwitch { };
+
+  slimserver = callPackage ../servers/slimserver { };
 
   smcroute = callPackage ../servers/smcroute { };
 
@@ -12685,6 +12709,11 @@ with pkgs;
   source-han-sans-korean = sourceHanSansPackages.korean;
   source-han-sans-simplified-chinese = sourceHanSansPackages.simplified-chinese;
   source-han-sans-traditional-chinese = sourceHanSansPackages.traditional-chinese;
+  sourceHanSerifPackages = callPackage ../data/fonts/source-han-serif { };
+  source-han-serif-japanese = sourceHanSerifPackages.japanese;
+  source-han-serif-korean = sourceHanSerifPackages.korean;
+  source-han-serif-simplified-chinese = sourceHanSerifPackages.simplified-chinese;
+  source-han-serif-traditional-chinese = sourceHanSerifPackages.traditional-chinese;
 
   inherit (callPackages ../data/fonts/tai-languages { }) tai-ahom;
 
@@ -13746,7 +13775,7 @@ with pkgs;
   inherit (callPackages ../applications/networking/browsers/firefox {
     inherit (gnome2) libIDL;
     libpng = libpng_apng;
-    enableGTK3 = false;
+    enableGTK3 = true;
     python = python2;
     gnused = gnused_422;
   }) firefox-unwrapped firefox-esr-unwrapped;
@@ -14511,10 +14540,7 @@ with pkgs;
 
   lxdvdrip = callPackage ../applications/video/lxdvdrip { };
 
-  handbrake = callPackage ../applications/video/handbrake {
-    # TODO: remove when 3.2 becomes default
-    ffmpeg = ffmpeg_3_2;
-  };
+  handbrake = callPackage ../applications/video/handbrake { };
 
   lilyterm = callPackage ../applications/misc/lilyterm {
     inherit (gnome2) vte;
@@ -15738,11 +15764,13 @@ with pkgs;
   thunderbird = callPackage ../applications/networking/mailreaders/thunderbird {
     inherit (gnome2) libIDL;
     libpng = libpng_apng;
+    enableGTK3 = true;
   };
 
   thunderbird-bin = callPackage ../applications/networking/mailreaders/thunderbird-bin {
     gconf = pkgs.gnome2.GConf;
     inherit (pkgs.gnome2) libgnome libgnomeui;
+    inherit (pkgs.gnome3) defaultIconTheme;
   };
 
   tig = gitAndTools.tig;
@@ -15863,6 +15891,10 @@ with pkgs;
   vdirsyncer = callPackage ../tools/misc/vdirsyncer { };
 
   vdpauinfo = callPackage ../tools/X11/vdpauinfo { };
+
+  verbiste = callPackage ../applications/misc/verbiste {
+    inherit (gnome2) libgnomeui;
+  };
 
   vim = callPackage ../applications/editors/vim {
     inherit (darwin.apple_sdk.frameworks) Carbon Cocoa;
@@ -17835,6 +17867,8 @@ with pkgs;
 
   cups-dymo = callPackage ../misc/cups/drivers/dymo {};
 
+  cups-toshiba-estudio = callPackage ../misc/cups/drivers/estudio {};
+
   crashplan = callPackage ../applications/backup/crashplan { };
 
   colort = callPackage ../applications/misc/colort { };
@@ -18081,7 +18115,7 @@ with pkgs;
 
   redis-desktop-manager = libsForQt56.callPackage ../applications/misc/redis-desktop-manager { };
 
-  robomongo = libsForQt5.callPackage ../applications/misc/robomongo { };
+  robomongo = callPackage ../applications/misc/robomongo { };
 
   rucksack = callPackage ../development/tools/rucksack { };
 
@@ -18467,7 +18501,7 @@ with pkgs;
 
   discord = callPackage ../applications/networking/instant-messengers/discord { };
 
-  golden-cheetah = libsForQt5.callPackage ../applications/misc/golden-cheetah {};
+  golden-cheetah = libsForQt56.callPackage ../applications/misc/golden-cheetah {};
 
   linkchecker = callPackage ../tools/networking/linkchecker { };
 

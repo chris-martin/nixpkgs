@@ -1625,11 +1625,11 @@ in {
 
   awscli = buildPythonPackage rec {
     name = "awscli-${version}";
-    version = "1.11.45";
+    version = "1.11.75";
       namePrefix = "";
       src = pkgs.fetchurl {
       url = "mirror://pypi/a/awscli/${name}.tar.gz";
-      sha256 = "0sv9dw4zsra8fm7ddbnwhlh80w534z4h8llz2p8asssaaj5nq2ya";
+      sha256 = "0bkjyrgb78f29vvr8j2id0386d30w340wrl7krwiha725c9y3pz1";
     };
 
     # No tests included
@@ -3230,11 +3230,11 @@ in {
   };
 
   botocore = buildPythonPackage rec {
-    version = "1.5.8"; # This version is required by awscli
+    version = "1.5.38"; # This version is required by awscli
     name = "botocore-${version}";
     src = pkgs.fetchurl {
       url = "mirror://pypi/b/botocore/${name}.tar.gz";
-      sha256 = "1qhrq2l9kvhi3gnrgwqhvy42aqbsk93j8mfr4ixqx18yqgbnylvz";
+      sha256 = "04cvsi8g8p3r5vr3vr2nb5ldyrsm0y4c2phimabbpk33wv718qyx";
     };
 
     propagatedBuildInputs =
@@ -10365,12 +10365,12 @@ in {
 
   django_1_9 = buildPythonPackage rec {
     name = "Django-${version}";
-    version = "1.9.12";
+    version = "1.9.13";
     disabled = pythonOlder "2.7";
 
     src = pkgs.fetchurl {
       url = "http://www.djangoproject.com/m/releases/1.9/${name}.tar.gz";
-      sha256 = "0daaz2rp1rwwpzm5l29wcgg1gbw9yqzcv9x2dsjfz29n806q685x";
+      sha256 = "079zspfsvfnv9wf6qvg8xmz1m23d0723p2nqyk8gfqb012jxn1y0";
     };
 
     # patch only $out/bin to avoid problems with starter templates (see #3134)
@@ -10389,12 +10389,12 @@ in {
 
   django_1_8 = buildPythonPackage rec {
     name = "Django-${version}";
-    version = "1.8.17";
+    version = "1.8.18";
     disabled = pythonOlder "2.7";
 
     src = pkgs.fetchurl {
       url = "http://www.djangoproject.com/m/releases/1.8/${name}.tar.gz";
-      sha256 = "01zb2l0gcdb2wgxmvvrhjj9ccdj1mfhn6zhqcdq04m7lzi4dc6q2";
+      sha256 = "1ishvbihr9pain0486qafb18dnb7v2ppq34nnx1s8f95bvfiqqf7";
     };
 
     # too complicated to setup
