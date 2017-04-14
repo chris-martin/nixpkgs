@@ -118,6 +118,8 @@ in {
     };
   };
 
+  phonenumbers = callPackage ../development/python-modules/phonenumbers { };
+
   agate-dbf = buildPythonPackage rec {
     name = "agate-dbf-0.1.0";
     disabled = isPy3k;
@@ -3014,11 +3016,10 @@ in {
         to do lots of things, you're probably outside the use cases. Either
         trust those users, or don't.
       '';
-      homepage = https://github.com/jsocol/bleach;
-      downloadPage = https://github.com/jsocol/bleach/releases;
+      homepage = https://github.com/mozilla/bleach;
+      downloadPage = https://github.com/mozilla/bleach/releases;
       license = licenses.asl20;
       maintainers = with maintainers; [ prikhi ];
-      platforms = platforms.linux;
     };
   };
 
@@ -3216,6 +3217,9 @@ in {
       nosetests -d tests/unit --verbose
       runHook postCheck
     '';
+
+    # Network access
+    doCheck = false;
 
     meta = {
       homepage = https://github.com/boto/boto3;
@@ -10411,31 +10415,6 @@ in {
     };
   };
 
-
-  django_1_7 = buildPythonPackage rec {
-    name = "Django-${version}";
-    version = "1.7.11";
-    disabled = pythonOlder "2.7";
-
-    src = pkgs.fetchurl {
-      url = "http://www.djangoproject.com/m/releases/1.7/${name}.tar.gz";
-      sha256 = "18arf0zr98q2gxhimm2fgh0avwcdax1mcnps0cyn06wgrr7i8f90";
-    };
-
-    # too complicated to setup
-    doCheck = false;
-
-    # patch only $out/bin to avoid problems with starter templates (see #3134)
-    postFixup = ''
-      wrapPythonProgramsIn $out/bin "$out $pythonPath"
-    '';
-
-    meta = {
-      description = "A high-level Python Web framework";
-      homepage = https://www.djangoproject.com/;
-    };
-  };
-
   django_1_6 = buildPythonPackage rec {
     name = "Django-${version}";
     version = "1.6.11.5";
@@ -10627,7 +10606,7 @@ in {
       sha256 = "0wxvpmjdzk0aajk33y4himn3wqjx7k0aqlka9j8ay3yfav78bdq0";
     };
 
-    propagatedBuildInputs = with self; [ django_1_7 ];
+    propagatedBuildInputs = with self; [ django ];
 
     # tests appear to be broken on 0.6.1 at least
     doCheck = ( version != "0.6.1" );
@@ -20759,11 +20738,11 @@ in {
   };
 
   PyICU = buildPythonPackage rec {
-    name = "PyICU-1.9.5";
+    name = "PyICU-1.9.6";
 
     src = pkgs.fetchurl {
       url = "mirror://pypi/P/PyICU/${name}.tar.gz";
-      sha256 = "16rmxy9y0qhqqna2v49i7nzwm09as699rbyvh4raw7w602w55c3k";
+      sha256 = "0l151zhhyiazzdz8skpxgrw1x4nqa9pq2cwni6d97anmg97i7hn5";
     };
 
     buildInputs = [ pkgs.icu ];
@@ -20933,15 +20912,17 @@ in {
 
   pyocr = buildPythonPackage rec {
     name = "pyocr-${version}";
-    version = "0.4.4";
+    version = "0.4.6";
 
     # Don't fetch from PYPI because it doesn't contain tests.
     src = pkgs.fetchFromGitHub {
       owner = "jflesch";
       repo = "pyocr";
       rev = version;
-      sha256 = "09s7dxin8ams0f3xab60f45l3nn236a8win9yfyq9aqy9mm946ak";
+      sha256 = "0amyhkkm400qzbw65ivyzrzxl2r7vxqgsgqm7ml95m7gwkwhnzz0";
     };
+
+    patches = [ ../development/python-modules/pyocr-tesseract.patch ];
 
     postPatch = ''
       sed -i \
@@ -28987,8 +28968,7 @@ EOF
     };
 
     propagatedBuildInputs = with self; [ cffi ];
-    buildInputs = [ pkgs.libspotify ]
-      ++ stdenv.lib.optional stdenv.isDarwin pkgs.install_name_tool;
+    buildInputs = [ pkgs.libspotify ];
 
     # python zip complains about old timestamps
     preConfigure = ''
@@ -32268,6 +32248,12 @@ EOF
   snakeviz = callPackage ../development/python-modules/snakeviz { };
 
   nitpick = callPackage ../applications/version-management/nitpick { };
+
+  pluginbase = callPackage ../development/python-modules/pluginbase { };
+
+  node-semver = callPackage ../development/python-modules/node-semver { };
+
+  distro = callPackage ../development/python-modules/distro { };
 
 });
 
