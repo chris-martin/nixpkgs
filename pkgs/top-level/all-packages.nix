@@ -13549,15 +13549,15 @@ with pkgs;
   flac = callPackage ../applications/audio/flac { };
 
   flashplayer = callPackage ../applications/networking/browsers/mozilla-plugins/flashplayer {
-      debug = config.flashplayer.debug or false;
+    debug = config.flashplayer.debug or false;
   };
 
   flashplayer-standalone = callPackage ../applications/networking/browsers/mozilla-plugins/flashplayer/standalone.nix {
-      debug = config.flashplayer.debug or false;
+    debug = config.flashplayer.debug or false;
   };
 
   flashplayer-standalone-debugger = flashplayer-standalone.override {
-      debug = true;
+    debug = true;
   };
 
   fluxbox = callPackage ../applications/window-managers/fluxbox { };
@@ -15179,6 +15179,8 @@ with pkgs;
   sniproxy = callPackage ../applications/networking/sniproxy { };
 
   sooperlooper = callPackage ../applications/audio/sooperlooper { };
+
+  sops = callPackage ../tools/security/sops { };
 
   sorcer = callPackage ../applications/audio/sorcer { };
 
@@ -16852,6 +16854,8 @@ with pkgs;
   };
 
   redshift-plasma-applet = libsForQt5.callPackage ../applications/misc/redshift-plasma-applet { };
+
+  latte-dock = libsForQt5.callPackage ../applications/misc/latte-dock { };
 
   orion = callPackage ../misc/themes/orion {};
 
