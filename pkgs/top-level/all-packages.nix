@@ -541,6 +541,8 @@ with pkgs;
 
   gcsfuse = callPackage ../tools/filesystems/gcsfuse { };
 
+  glyr = callPackage ../tools/audio/glyr { };
+
   lastpass-cli = callPackage ../tools/security/lastpass-cli { };
 
   pass = callPackage ../tools/security/pass { };
@@ -653,6 +655,8 @@ with pkgs;
   bitbucket-cli = python2Packages.bitbucket-cli;
 
   blink = callPackage ../applications/networking/instant-messengers/blink { };
+
+  tensor = libsForQt5.callPackage ../applications/networking/instant-messengers/tensor { };
 
   blink1-tool = callPackage ../tools/misc/blink1-tool { };
 
@@ -1716,6 +1720,8 @@ with pkgs;
     inherit (python27Packages) numpy scipy h5py scikitlearn python
       pillow;
   };
+
+  fanficfare = callPackage ../tools/text/fanficfare { };
 
   fastd = callPackage ../tools/networking/fastd { };
 
@@ -5264,6 +5270,8 @@ with pkgs;
   pointful = haskell.lib.justStaticExecutables haskellPackages.pointful;
 
   purescript = haskell.lib.justStaticExecutables haskellPackages.purescript;
+  psc-package = haskell.lib.justStaticExecutables
+    (haskellPackages.callPackage ../development/compilers/purescript/psc-package { });
 
   stylish-haskell = haskell.lib.justStaticExecutables haskellPackages.stylish-haskell;
 
@@ -6112,7 +6120,9 @@ with pkgs;
 
   pythonDocs = recurseIntoAttrs (callPackage ../development/interpreters/python/cpython/docs {});
 
-  pypi2nix = callPackage ../development/tools/pypi2nix { python = python35; };
+  pypi2nix = callPackage ../development/tools/pypi2nix {
+    pythonPackages = python3Packages;
+  };
 
   svg2tikz = python27Packages.svg2tikz;
 
@@ -6439,6 +6449,8 @@ with pkgs;
   "cl-launch" = callPackage ../development/tools/misc/cl-launch {};
 
   coan = callPackage ../development/tools/analysis/coan { };
+
+  compile-daemon = callPackage ../development/tools/compile-daemon { };
 
   complexity = callPackage ../development/tools/misc/complexity { };
 
@@ -7893,6 +7905,10 @@ with pkgs;
     gtk = gtk2;
   };
 
+  gtk-mac-integration-gtk3 = callPackage ../development/libraries/gtk-mac-integration {
+    gtk = gtk3;
+  };
+
   gtk-mac-bundler = callPackage ../development/tools/gtk-mac-bundler {};
 
   gtkspell2 = callPackage ../development/libraries/gtkspell { };
@@ -9306,7 +9322,7 @@ with pkgs;
 
   openslp = callPackage ../development/libraries/openslp {};
 
-  libressl = libressl_2_4;
+  libressl = libressl_2_5;
   libressl_2_4 = callPackage ../development/libraries/libressl/2.4.nix {
     fetchurl = fetchurlBoot;
   };
@@ -9741,6 +9757,8 @@ with pkgs;
   };
 
   sad = callPackage ../applications/science/logic/sad { };
+
+  safefile = callPackage ../development/libraries/safefile {};
 
   sbc = callPackage ../development/libraries/sbc { };
 
@@ -13825,15 +13843,15 @@ with pkgs;
   flac = callPackage ../applications/audio/flac { };
 
   flashplayer = callPackage ../applications/networking/browsers/mozilla-plugins/flashplayer {
-      debug = config.flashplayer.debug or false;
+    debug = config.flashplayer.debug or false;
   };
 
   flashplayer-standalone = callPackage ../applications/networking/browsers/mozilla-plugins/flashplayer/standalone.nix {
-      debug = config.flashplayer.debug or false;
+    debug = config.flashplayer.debug or false;
   };
 
   flashplayer-standalone-debugger = flashplayer-standalone.override {
-      debug = true;
+    debug = true;
   };
 
   fluxbox = callPackage ../applications/window-managers/fluxbox { };
@@ -13882,6 +13900,8 @@ with pkgs;
   get_iplayer = callPackage ../applications/misc/get_iplayer {};
 
   getxbook = callPackage ../applications/misc/getxbook {};
+
+  ghq = gitAndTools.ghq;
 
   gimp_2_8 = callPackage ../applications/graphics/gimp/2.8.nix {
     inherit (gnome2) libart_lgpl;
@@ -13961,7 +13981,7 @@ with pkgs;
     libart = pkgs.gnome2.libart_lgpl;
   };
 
-  idea = recurseIntoAttrs (callPackages ../applications/editors/idea { androidsdk = androidsdk_extras; });
+  jetbrains = recurseIntoAttrs (callPackages ../applications/editors/jetbrains { androidsdk = androidsdk_extras; });
 
   libquvi = callPackage ../applications/video/quvi/library.nix { };
 
@@ -14054,7 +14074,9 @@ with pkgs;
 
   gosmore = callPackage ../applications/misc/gosmore { };
 
-  gpsbabel = libsForQt5.callPackage ../applications/misc/gpsbabel { };
+  gpsbabel = libsForQt5.callPackage ../applications/misc/gpsbabel {
+    inherit (darwin) IOKit;
+  };
 
   gpscorrelate = callPackage ../applications/misc/gpscorrelate { };
 
