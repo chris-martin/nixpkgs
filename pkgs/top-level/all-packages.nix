@@ -3299,6 +3299,8 @@ with pkgs;
   paper-gtk-theme = callPackage ../misc/themes/paper { };
 
   paperwork = callPackage ../applications/office/paperwork { };
+ 
+  papertrail = callPackage ../tools/text/papertrail { };
 
   par2cmdline = callPackage ../tools/networking/par2cmdline { };
 
@@ -7776,6 +7778,7 @@ with pkgs;
   http-parser = callPackage ../development/libraries/http-parser { };
 
   hunspell = callPackage ../development/libraries/hunspell { };
+  hunspell_1_6 = callPackage ../development/libraries/hunspell/1.6.nix { };
 
   hunspellDicts = recurseIntoAttrs (callPackages ../development/libraries/hunspell/dictionaries.nix {});
 
@@ -13510,7 +13513,16 @@ with pkgs;
     enableGTK3 = false;
     python = python2;
     gnused = gnused_422;
-  }) firefox-unwrapped firefox-esr-unwrapped;
+  }) firefox-esr-unwrapped;
+
+  inherit (callPackages ../applications/networking/browsers/firefox {
+    inherit (gnome2) libIDL;
+    libpng = libpng_apng;
+    enableGTK3 = true;
+    python = python2;
+    gnused = gnused_422;
+    hunspell = hunspell_1_6;
+  }) firefox-unwrapped;
 
   firefox = wrapFirefox firefox-unwrapped { };
   firefox-esr = wrapFirefox firefox-esr-unwrapped { };
