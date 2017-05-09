@@ -5328,7 +5328,6 @@ with pkgs;
   cabal = cabal-install;
 
   stack = haskell.lib.justStaticExecutables haskellPackages.stack;
-  hlint = haskell.lib.justStaticExecutables haskellPackages.hlint;
 
   all-cabal-hashes = callPackage ../data/misc/hackage/default.nix { };
 
