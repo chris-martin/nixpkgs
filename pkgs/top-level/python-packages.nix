@@ -2649,19 +2649,7 @@ in {
 
   };
 
-  rarfile = self.buildPythonPackage rec {
-    name = "rarfile-2.6";
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/r/rarfile/rarfile-2.6.tar.gz";
-      sha256 = "326700c5450cfb367f612e918866ea27551bac02f4656f340003c88873fa1a56";
-    };
-
-    meta = {
-      description = "rarfile - RAR archive reader for Python";
-      homepage = https://github.com/markokr/rarfile;
-    };
-  };
+  rarfile = callPackage ../development/python-modules/rarfile {};
 
   proboscis = buildPythonPackage rec {
     name = "proboscis-1.2.6.0";
@@ -4100,6 +4088,8 @@ in {
       platforms = platforms.linux;
     };
   };
+
+  confluent-kafka = callPackage ../development/python-modules/confluent-kafka {};
 
 
   construct = buildPythonPackage rec {
@@ -12646,8 +12636,6 @@ in {
     };
   };
 
-  icdiff = callPackage ../tools/text/icdiff {};
-
   imageio = buildPythonPackage rec {
     name = "imageio-${version}";
     version = "1.6";
@@ -14065,6 +14053,8 @@ in {
       license = licenses.bsd3;
     };
   };
+
+  metaphone = callPackage ../development/python-modules/metaphone { };
 
   mezzanine = buildPythonPackage rec {
     version = "3.1.10";
@@ -16419,23 +16409,7 @@ in {
     buildInputs = with self; [ oslotest mock coverage simplejson oslo-i18n ];
   };
 
-  rfc3986 = buildPythonPackage rec {
-    name = "rfc3986-${version}";
-    version = "0.2.2";
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/r/rfc3986/rfc3986-0.2.2.tar.gz";
-      sha256 = "0yvzz7gp84qqdadbjdh9ch7dz4w19nmhwa704s9m11bljgp3hqmn";
-    };
-
-    LC_ALL = "en_US.UTF-8";
-    buildInputs = [ pkgs.glibcLocales ];
-
-    meta = with stdenv.lib; {
-      description = "rfc3986";
-      homepage = https://rfc3986.rtfd.org;
-    };
-  };
+  rfc3986 = callPackage ../development/python-modules/rfc3986 { };
 
   pycadf = buildPythonPackage rec {
     name = "pycadf-${version}";
@@ -18406,6 +18380,8 @@ in {
     };
   };
 
+  pika-pool = callPackage ../development/python-modules/pika-pool { };
+
   platformio =  buildPythonPackage rec {
     name = "platformio-${version}";
     version="2.10.3";
@@ -19926,7 +19902,11 @@ in {
 
   pyopencl = callPackage ../development/python-modules/pyopencl { };
 
-  pyproj = callPackage ../development/python-modules/pyproj { };
+  pyproj = callPackage ../development/python-modules/pyproj {
+    # pyproj does *work* if you want to use a system supplied proj, but with the current version(s) the tests fail by
+    # a few decimal places, so caveat emptor.
+    proj = null;
+  };
 
   pyrr = buildPythonPackage rec {
     name = "pyrr-${version}";
