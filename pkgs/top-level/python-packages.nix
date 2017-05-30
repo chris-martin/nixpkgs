@@ -640,23 +640,7 @@ in {
   };
 
 
-  alembic = buildPythonPackage rec {
-    name = "alembic-0.8.3";
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/a/alembic/${name}.tar.gz";
-      sha256 = "1sgwvwylzd5h14130mwr0cbyy0fil0a1bq0d0ki97wqvkic3db7f";
-    };
-
-    buildInputs = with self; [ pytest pytestcov mock coverage ];
-    propagatedBuildInputs = with self; [ Mako sqlalchemy python-editor ];
-
-    meta = {
-      homepage = http://bitbucket.org/zzzeek/alembic;
-      description = "A database migration tool for SQLAlchemy";
-      license = licenses.mit;
-    };
-  };
+  alembic = callPackage ../development/python-modules/alembic {};
 
   ansicolors = buildPythonPackage rec {
     name    = "ansicolors-${version}";
@@ -1154,6 +1138,8 @@ in {
       homepage = "https://github.com/kennethreitz/args";
     };
   };
+
+  argcomplete = callPackage ../development/python-modules/argcomplete { };
 
   area53 = buildPythonPackage (rec {
     name = "Area53-0.94";
@@ -10225,26 +10211,10 @@ in {
     };
   };
 
-  # This package likely needs an older version of Django.
+  # This package may need an older version of Django.
   # Override the package set and set e.g. `django = super.django_1_9`.
   # See the Nixpkgs manual for examples on how to override the package set.
-  django_hijack = buildPythonPackage rec {
-    name = "django-hijack-${version}";
-    version = "2.0.7";
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/d/django-hijack/${name}.tar.gz";
-      sha256 = "0rpi1bkfx74xfbb2nk874kfdra1jcqp2vzky1r3z7zidlc9kah04";
-    };
-
-    propagatedBuildInputs = with self; [ django django_compat ];
-
-    meta = {
-      description = "Allows superusers to hijack (=login as) and work on behalf of another user";
-      homepage = https://github.com/arteria/django-hijack;
-      license = licenses.mit;
-    };
-  };
+  django_hijack = callPackage ../development/python-modules/django-hijack { };
 
   django_nose = buildPythonPackage rec {
     name = "django-nose-${version}";
@@ -11080,30 +11050,7 @@ in {
 
   flask_ldap_login = callPackage ../development/python-modules/flask-ldap-login.nix { };
 
-  flask_migrate = buildPythonPackage rec {
-    name = "Flask-Migrate-${version}";
-    version = "1.7.0";
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/F/Flask-Migrate/Flask-Migrate-1.7.0.tar.gz";
-      sha256 = "16d7vnaj9xmxvb3qbcmhahm3ldfdhzzi6y221h62x4v1v1jayx7v";
-    };
-
-    # When tests run with python3*, tests should run commands as "python3 <args>",
-    # not "python <args>"
-    patchPhase = ''
-      substituteInPlace tests/test_migrate.py --replace "python" "${python.executable}"
-      substituteInPlace tests/test_multidb_migrate.py --replace "python" "${python.executable}"
-    '';
-
-    propagatedBuildInputs = with self ; [ flask flask_sqlalchemy flask_script alembic ];
-
-    meta = {
-      description = "SQLAlchemy database migrations for Flask applications using Alembic";
-      license = licenses.mit;
-      homepage = https://github.com/miguelgrinberg/Flask-Migrate;
-    };
-  };
+  flask_migrate = callPackage ../development/python-modules/flask-migrate { };
 
   flask_oauthlib = callPackage ../development/python-modules/flask-oauthlib.nix { };
 
@@ -22835,30 +22782,7 @@ in {
     };
   };
 
-  simplejson = buildPythonPackage (rec {
-    name = "simplejson-3.8.1";
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/s/simplejson/${name}.tar.gz";
-      sha256 = "14r4l4rcsyf87p2j4ycsbb017n4vzxfmv285rq2gny4w47rwi2j2";
-    };
-
-    meta = {
-      description = "A simple, fast, extensible JSON encoder/decoder for Python";
-
-      longDescription = ''
-        simplejson is compatible with Python 2.4 and later with no
-        external dependencies.  It covers the full JSON specification
-        for both encoding and decoding, with unicode support.  By
-        default, encoding is done in an encoding neutral fashion (plain
-        ASCII with \uXXXX escapes for unicode characters).
-      '';
-
-      homepage = http://code.google.com/p/simplejson/;
-
-      license = licenses.mit;
-    };
-  });
+  simplejson = callPackage ../development/python-modules/simplejson { };
 
   simpleldap = buildPythonPackage rec {
     version = "0.8";

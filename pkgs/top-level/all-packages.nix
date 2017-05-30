@@ -816,6 +816,8 @@ with pkgs;
 
   cloud-init = callPackage ../tools/virtualization/cloud-init { };
 
+  cloudmonkey = callPackage ../tools/virtualization/cloudmonkey { };
+
   clib = callPackage ../tools/package-management/clib { };
 
   colord-kde = libsForQt5.callPackage ../tools/misc/colord-kde {};
@@ -1388,6 +1390,8 @@ with pkgs;
 
   c14 = callPackage ../applications/networking/c14 { };
 
+  cfssl = callPackage ../tools/security/cfssl { };
+
   checkbashisms = callPackage ../development/tools/misc/checkbashisms { };
 
   clamav = callPackage ../tools/security/clamav { };
@@ -1688,6 +1692,8 @@ with pkgs;
   eid-mw = callPackage ../tools/security/eid-mw { };
 
   eid-viewer = callPackage ../tools/security/eid-viewer { };
+
+  mcrcon = callPackage ../tools/networking/mcrcon {};
 
   ### DEVELOPMENT / EMSCRIPTEN
 
@@ -4497,6 +4503,8 @@ with pkgs;
 
   vim-vint = callPackage ../development/tools/vim-vint { };
 
+  vimer = callPackage ../tools/misc/vimer { };
+
   vit = callPackage ../applications/misc/vit { };
 
   vnc2flv = callPackage ../tools/video/vnc2flv {};
@@ -7204,7 +7212,8 @@ with pkgs;
   valgrind = callPackage ../development/tools/analysis/valgrind {
     inherit (darwin) xnu bootstrap_cmds cctools;
     llvm = llvm_39;
-   };
+  };
+  valgrind-light = self.valgrind.override { gdb = null; };
 
   valkyrie = callPackage ../development/tools/analysis/valkyrie { };
 
@@ -10915,6 +10924,10 @@ with pkgs;
   dictDBCollector = callPackage ../servers/dict/dictd-db-collector.nix {};
 
   diod = callPackage ../servers/diod { lua = lua5_1; };
+
+  dkimproxy = callPackage ../servers/mail/dkimproxy {
+    inherit (perlPackages) Error MailDKIM MIMEtools NetServer;
+  };
 
   dnschain = callPackage ../servers/dnschain { };
 
@@ -17000,6 +17013,8 @@ with pkgs;
     wxGTK = wxGTK28.override { unicode = false; };
   };
 
+  galaxis = callPackage ../games/galaxis { };
+
   gambatte = callPackage ../games/gambatte { };
 
   garden-of-coloured-lights = callPackage ../games/garden-of-coloured-lights { allegro = allegro4; };
@@ -18172,6 +18187,8 @@ with pkgs;
     # For enableXM.
     motif = null; # motif or lesstif
   };
+
+  cernlib = callPackage ../development/libraries/physics/cernlib { };
 
   g4py = callPackage ../development/libraries/physics/geant4/g4py { };
 
