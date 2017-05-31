@@ -2635,7 +2635,7 @@ in {
 
   };
 
-  rarfile = callPackage ../development/python-modules/rarfile {};
+  rarfile = callPackage ../development/python-modules/rarfile { inherit (pkgs) libarchive; };
 
   proboscis = buildPythonPackage rec {
     name = "proboscis-1.2.6.0";
@@ -4106,11 +4106,11 @@ in {
 
 
   consul = buildPythonPackage (rec {
-    name = "python-consul-0.6.0";
+    name = "python-consul-0.7.0";
 
     src = pkgs.fetchurl {
       url = "mirror://pypi/p/python-consul/${name}.tar.gz";
-      sha256 = "0vfyr499sbc4nnhhijp2lznyj507nnak95bvv9w8y78ngxggskbh";
+      sha256 = "18gs5myk9wkkq5zvj0n0s68ngj3mrbdcifshxfj1j0bgb1km0wpm";
     };
 
     buildInputs = with self; [ requests six pytest ];
@@ -5311,28 +5311,7 @@ in {
 
   pytest_xdist = callPackage ../development/python-modules/pytest-xdist { };
 
-  pytest-localserver = buildPythonPackage rec {
-    name = "pytest-localserver-${version}";
-    version = "0.3.5";
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/p/pytest-localserver/${name}.tar.gz";
-      sha256 = "0dvqspjr6va55zwmnnc2mmpqc7mm65kxig9ya44x1z8aadzxpa4p";
-    };
-
-    propagatedBuildInputs = with self; [ werkzeug ];
-    buildInputs = with self; [ pytest six requests ];
-
-    checkPhase = ''
-      py.test
-    '';
-
-    meta = {
-      description = "Plugin for the pytest testing framework to test server connections locally";
-      homepage = https://pypi.python.org/pypi/pytest-localserver;
-      license = licenses.mit;
-    };
-  };
+  pytest-localserver = callPackage ../development/python-modules/pytest-localserver { };
 
   pytest-subtesthack = buildPythonPackage rec {
     name = "pytest-subtesthack-${version}";

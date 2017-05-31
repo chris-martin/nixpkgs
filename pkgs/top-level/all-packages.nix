@@ -1059,6 +1059,10 @@ with pkgs;
 
   nfdump = callPackage ../tools/networking/nfdump { };
 
+  patdiff = callPackage ../tools/misc/patdiff {
+    ocamlPackages = ocamlPackages_4_03;
+  };
+
   playerctl = callPackage ../tools/audio/playerctl { };
 
   socklog = callPackage ../tools/system/socklog { };
@@ -1729,6 +1733,7 @@ with pkgs;
 
   elasticsearch = callPackage ../servers/search/elasticsearch { };
   elasticsearch2 = callPackage ../servers/search/elasticsearch/2.x.nix { };
+  elasticsearch5 = callPackage ../servers/search/elasticsearch/5.x.nix { };
 
   elasticsearchPlugins = recurseIntoAttrs (
     callPackage ../servers/search/elasticsearch/plugins.nix { }
@@ -3804,6 +3809,8 @@ with pkgs;
   quicktun = callPackage ../tools/networking/quicktun { };
 
   quilt = callPackage ../development/tools/quilt { };
+
+  wiggle = callPackage ../development/tools/wiggle { };
 
   radamsa = callPackage ../tools/security/radamsa { };
 
@@ -6894,6 +6901,8 @@ with pkgs;
   jenkins = callPackage ../development/tools/continuous-integration/jenkins { };
 
   jenkins-job-builder = pythonPackages.jenkins-job-builder;
+
+  kati = callPackage ../development/tools/build-managers/kati { };
 
   kconfig-frontends = callPackage ../development/tools/misc/kconfig-frontends {
     gperf = gperf_3_0;
@@ -18633,10 +18642,10 @@ with pkgs;
   inherit (callPackage ../applications/networking/cluster/terraform {})
     terraform_0_8_5
     terraform_0_8_8
-    terraform_0_9_4;
+    terraform_0_9_6;
 
   terraform_0_8 = terraform_0_8_8;
-  terraform_0_9 = terraform_0_9_4;
+  terraform_0_9 = terraform_0_9_6;
   terraform = terraform_0_9;
 
   terraform-inventory = callPackage ../applications/networking/cluster/terraform-inventory {};
