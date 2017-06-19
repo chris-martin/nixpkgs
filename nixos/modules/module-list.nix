@@ -99,7 +99,9 @@
   ./programs/wvdial.nix
   ./programs/xfs_quota.nix
   ./programs/xonsh.nix
+  ./programs/zsh/oh-my-zsh.nix
   ./programs/zsh/zsh.nix
+  ./programs/zsh/zsh-syntax-highlighting.nix
   ./rename.nix
   ./security/acme.nix
   ./security/apparmor.nix
@@ -456,6 +458,7 @@
   ./services/networking/radvd.nix
   ./services/networking/rdnssd.nix
   ./services/networking/redsocks.nix
+  ./services/networking/resilio.nix
   ./services/networking/rpcbind.nix
   ./services/networking/sabnzbd.nix
   ./services/networking/searx.nix
