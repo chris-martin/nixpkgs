@@ -45,6 +45,11 @@ in stdenv.mkDerivation rec {
       done
     '';
 
+  preConfigure =
+    ''
+      rm aws-cpp-sdk-core-tests/aws/auth/AWSCredentialsProviderTest.cpp
+    '';
+
   NIX_LDFLAGS = lib.concatStringsSep " " (
     (map (pkg: "-rpath ${lib.getOutput "lib" pkg}/lib"))
       [ curl openssl zlib stdenv.cc.cc ]);
