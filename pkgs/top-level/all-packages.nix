@@ -6131,6 +6131,7 @@ with pkgs;
 
   ansible  = python2Packages.ansible2;
   ansible2 = python2Packages.ansible2;
+  ansible_2_3 = lowPrio (python2Packages.ansible_2_3);
 
   antlr = callPackage ../development/tools/parsing/antlr/2.7.7.nix { };
 
