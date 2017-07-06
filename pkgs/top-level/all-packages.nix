@@ -1713,6 +1713,8 @@ with pkgs;
 
   mcrcon = callPackage ../tools/networking/mcrcon {};
 
+  zabbix-cli = callPackage ../tools/misc/zabbix-cli { };
+
   ### DEVELOPMENT / EMSCRIPTEN
 
   buildEmscriptenPackage = callPackage ../development/em-modules/generic { };
@@ -2261,6 +2263,12 @@ with pkgs;
     zfsSupport = false;
   };
 
+  grub2_xen = callPackage ../tools/misc/grub/2.0x.nix {
+    xenSupport = true;
+  };
+
+  grub2_pvgrub_image = callPackage ../tools/misc/grub/pvgrub_image { };
+
   grub4dos = callPackage ../tools/misc/grub4dos {
     stdenv = stdenv_32bit;
   };
@@ -2366,7 +2374,9 @@ with pkgs;
 
   hddtemp = callPackage ../tools/misc/hddtemp { };
 
-  hdf4 = callPackage ../tools/misc/hdf4 { };
+  hdf4 = callPackage ../tools/misc/hdf4 {
+    szip = null;
+  };
 
   hdf5 = callPackage ../tools/misc/hdf5 {
     gfortran = null;
@@ -2736,6 +2746,8 @@ with pkgs;
   kippo = callPackage ../servers/kippo { };
 
   kzipmix = callPackage_i686 ../tools/compression/kzipmix { };
+
+  mailcatcher = callPackage ../development/web/mailcatcher { };
 
   makebootfat = callPackage ../tools/misc/makebootfat { };
 
@@ -3329,6 +3341,8 @@ with pkgs;
   ngrep = callPackage ../tools/networking/ngrep { };
 
   ngrok = callPackage ../tools/networking/ngrok { };
+
+  noice = callPackage ../applications/misc/noice { };
 
   noip = callPackage ../tools/networking/noip { };
 
@@ -4537,6 +4551,8 @@ with pkgs;
 
   uriparser = callPackage ../development/libraries/uriparser {};
 
+  urlscan = callPackage ../applications/misc/urlscan { };
+
   urlview = callPackage ../applications/misc/urlview {};
 
   usbmuxd = callPackage ../tools/misc/usbmuxd {};
@@ -5507,9 +5523,10 @@ with pkgs;
 
   stylish-haskell = haskell.lib.justStaticExecutables haskellPackages.stylish-haskell;
 
-  inherit (ocamlPackages) haxe;
-
-  hxcpp = callPackage ../development/compilers/haxe/hxcpp.nix { };
+  inherit (ocamlPackages.haxe) haxe_3_2 haxe_3_4;
+  haxe = haxe_3_4;
+  haxePackages = recurseIntoAttrs (callPackage ./haxe-packages.nix { });
+  inherit (haxePackages) hxcpp;
 
   hhvm = callPackage ../development/compilers/hhvm {
     boost = boost160;
@@ -5775,6 +5792,11 @@ with pkgs;
   });
 
   mono46 = lowPrio (callPackage ../development/compilers/mono/4.6.nix {
+    inherit (darwin) libobjc;
+    inherit (darwin.apple_sdk.frameworks) Foundation;
+  });
+
+  mono50 = lowPrio (callPackage ../development/compilers/mono/5.0.nix {
     inherit (darwin) libobjc;
     inherit (darwin.apple_sdk.frameworks) Foundation;
   });
@@ -6562,6 +6584,8 @@ with pkgs;
   bison3 = callPackage ../development/tools/parsing/bison/3.x.nix { };
   bison = bison3;
 
+  blackmagic = callPackage ../development/tools/misc/blackmagic { };
+
   bloaty = callPackage ../development/tools/bloaty { };
 
   bossa = callPackage ../development/tools/misc/bossa {
@@ -6698,6 +6722,13 @@ with pkgs;
   };
 
   cscope = callPackage ../development/tools/misc/cscope { };
+
+  csmith = callPackage ../development/tools/misc/csmith {
+    inherit (perlPackages) perl SysCPU;
+    # Workaround optional dependency on libbsd that's
+    # currently broken on Darwin.
+    libbsd = if stdenv.isDarwin then null else libbsd;
+  };
 
   csslint = callPackage ../development/web/csslint { };
 
@@ -7014,6 +7045,8 @@ with pkgs;
 
   noweb = callPackage ../development/tools/literate-programming/noweb { };
   nuweb = callPackage ../development/tools/literate-programming/nuweb { tex = texlive.combined.scheme-small; };
+
+  obuild = callPackage ../development/tools/ocaml/obuild { };
 
   omake = callPackage ../development/tools/ocaml/omake {
     inherit (ocamlPackages_4_02) ocaml;
@@ -7561,6 +7594,7 @@ with pkgs;
   db53 = callPackage ../development/libraries/db/db-5.3.nix { };
   db6 = db60;
   db60 = callPackage ../development/libraries/db/db-6.0.nix { };
+  db62 = callPackage ../development/libraries/db/db-6.2.nix { };
 
   dbus = callPackage ../development/libraries/dbus { };
   dbus_cplusplus  = callPackage ../development/libraries/dbus-cplusplus { };
@@ -12028,6 +12062,22 @@ with pkgs;
       ];
   };
 
+  linux_4_12 = callPackage ../os-specific/linux/kernel/linux-4.12.nix {
+    kernelPatches =
+      [ kernelPatches.bridge_stp_helper
+        kernelPatches.p9_fixes
+        # See pkgs/os-specific/linux/kernel/cpu-cgroup-v2-patches/README.md
+        # when adding a new linux version
+        kernelPatches.cpu-cgroup-v2."4.11"
+        kernelPatches.modinst_arg_list_too_long
+      ]
+      ++ lib.optionals ((platform.kernelArch or null) == "mips")
+      [ kernelPatches.mips_fpureg_emu
+        kernelPatches.mips_fpu_sigill
+        kernelPatches.mips_ext3_n32
+      ];
+  };
+
   linux_testing = callPackage ../os-specific/linux/kernel/linux-testing.nix {
     kernelPatches = [
       kernelPatches.bridge_stp_helper
@@ -12198,7 +12248,7 @@ with pkgs;
   linux = linuxPackages.kernel;
 
   # Update this when adding the newest kernel major version!
-  linuxPackages_latest = linuxPackages_4_11;
+  linuxPackages_latest = linuxPackages_4_12;
   linux_latest = linuxPackages_latest.kernel;
 
   # Build the kernel modules for the some of the kernels.
@@ -12209,6 +12259,7 @@ with pkgs;
   linuxPackages_4_4 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_4_4);
   linuxPackages_4_9 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_4_9);
   linuxPackages_4_11 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_4_11);
+  linuxPackages_4_12 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_4_12);
   # Don't forget to update linuxPackages_latest!
 
   # Intentionally lacks recurseIntoAttrs, as -rc kernels will quite likely break out-of-tree modules and cause failed Hydra builds.
@@ -12224,7 +12275,7 @@ with pkgs;
   linuxPackages_latest_xen_dom0 = recurseIntoAttrs (linuxPackagesFor (pkgs.linux_latest.override { features.xen_dom0=true; }));
 
   # Hardened linux
-  linux_hardened = let linux = pkgs.linux_4_11; in linux.override {
+  linux_hardened = let linux = pkgs.linuxPackages_latest.kernel; in linux.override {
     extraConfig = import ../os-specific/linux/kernel/hardened-config.nix {
       inherit stdenv;
       inherit (linux) version;
@@ -12985,6 +13036,8 @@ with pkgs;
 
   paper-icon-theme = callPackage ../data/icons/paper-icon-theme { };
 
+  papirus-icon-theme = callPackage ../data/icons/papirus-icon-theme { };
+
   pecita = callPackage ../data/fonts/pecita {};
 
   paratype-pt-mono = callPackage ../data/fonts/paratype-pt/mono.nix {};
@@ -13264,7 +13317,7 @@ with pkgs;
   audio-recorder = callPackage ../applications/audio/audio-recorder { };
 
   autotrace = callPackage ../applications/graphics/autotrace {};
-  
+
   milkytracker = callPackage ../applications/audio/milkytracker { };
 
   schismtracker = callPackage ../applications/audio/schismtracker { };
@@ -13674,6 +13727,8 @@ with pkgs;
   docker-distribution = callPackage ../applications/virtualization/docker-distribution { };
 
   doodle = callPackage ../applications/search/doodle { };
+
+  dr14_tmeter = callPackage ../applications/audio/dr14_tmeter { };
 
   draftsight = callPackage ../applications/graphics/draftsight { };
 
@@ -16207,6 +16262,8 @@ with pkgs;
 
   thinkingRock = callPackage ../applications/misc/thinking-rock { };
 
+  nylas-mail-bin = callPackage ../applications/networking/mailreaders/nylas-mail-bin { };
+
   thunderbird = callPackage ../applications/networking/mailreaders/thunderbird {
     inherit (gnome2) libIDL;
     libpng = libpng_apng;
@@ -17629,7 +17686,9 @@ with pkgs;
   gnome3 = gnome3_22;
 
   gnomeExtensions = {
+    caffeine = callPackage ../desktops/gnome-3/extensions/caffeine { };
     dash-to-dock = callPackage ../desktops/gnome-3/extensions/dash-to-dock { };
+    topicons-plus = callPackage ../desktops/gnome-3/extensions/topicons-plus { };
   };
 
   hsetroot = callPackage ../tools/X11/hsetroot { };
@@ -18506,6 +18565,8 @@ with pkgs;
 
   greybird = callPackage ../misc/themes/greybird { };
 
+  guetzli = callPackage ../applications/graphics/guetzli { };
+
   gxemul = callPackage ../misc/emulators/gxemul { };
 
   hatari = callPackage ../misc/emulators/hatari { };
@@ -18762,10 +18823,10 @@ with pkgs;
   inherit (callPackage ../applications/networking/cluster/terraform {})
     terraform_0_8_5
     terraform_0_8_8
-    terraform_0_9_10;
+    terraform_0_9_11;
 
   terraform_0_8 = terraform_0_8_8;
-  terraform_0_9 = terraform_0_9_10;
+  terraform_0_9 = terraform_0_9_11;
   terraform = terraform_0_9;
 
   terraform-inventory = callPackage ../applications/networking/cluster/terraform-inventory {};
@@ -18940,6 +19001,8 @@ with pkgs;
   wxsqliteplus = callPackage ../development/libraries/wxsqliteplus {
     wxGTK = wxGTK30;
   };
+
+  x11idle = callPackage ../tools/misc/x11idle {};
 
   x2x = callPackage ../tools/X11/x2x { };
 
