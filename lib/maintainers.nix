@@ -16,6 +16,7 @@
   acowley = "Anthony Cowley <acowley@gmail.com>";
   adelbertc = "Adelbert Chang <adelbertc@gmail.com>";
   adev = "Adrien Devresse <adev@adev.name>";
+  adisbladis = "Adam Hose <adis@blad.is>";
   Adjective-Object = "Maxwell Huang-Hobbs <mhuan13@gmail.com>";
   adnelson = "Allen Nelson <ithinkican@gmail.com>";
   adolfogc = "Adolfo E. García Castro <adolfo.garcia.cr@gmail.com>";
@@ -261,12 +262,14 @@
   joelmo = "Joel Moberg <joel.moberg@gmail.com>";
   joelteon = "Joel Taylor <me@joelt.io>";
   johbo = "Johannes Bornhold <johannes@bornhold.name>";
+  johnramsden = "John Ramsden <johnramsden@riseup.net>";
   joko = "Ioannis Koutras <ioannis.koutras@gmail.com>";
   jonafato = "Jon Banafato <jon@jonafato.com>";
   jpbernardy = "Jean-Philippe Bernardy <jeanphilippe.bernardy@gmail.com>";
   jpierre03 = "Jean-Pierre PRUNARET <nix@prunetwork.fr>";
   jpotier = "Martin Potier <jpo.contributes.to.nixos@marvid.fr>";
   jraygauthier = "Raymond Gauthier <jraygauthier@gmail.com>";
+  jtojnar = "Jan Tojnar <jtojnar@gmail.com>";
   juliendehos = "Julien Dehos <dehos@lisic.univ-littoral.fr>";
   jwiegley = "John Wiegley <johnw@newartisans.com>";
   jwilberding = "Jordan Wilberding <jwilberding@afiniate.com>";

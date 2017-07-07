@@ -3839,6 +3839,8 @@ in {
     };
   };
 
+  codecov = callPackage ../development/python-modules/codecov {};
+
   cogapp = buildPythonPackage rec {
     version = "2.3";
     name    = "cogapp-${version}";
@@ -7088,6 +7090,18 @@ in {
       homepage = https://github.com/gitpython-developers/GitPython;
       license = licenses.bsd3;
     };
+  };
+
+  google-compute-engine = buildPythonPackage rec {
+    version = "2.3.0";
+    name    = "google-compute-engine-${version}";
+
+    src = pkgs.fetchurl {
+      url    = "mirror://pypi/g/google-compute-engine/google-compute-engine-${version}.tar.gz";
+      sha256 = "1pjj95b3l61h8xz5kjfcgnql066cr8bq5wl480a6dxd2inw8mynf";
+    };
+
+    propagatedBuildInputs = with self; [ boto ];
   };
 
   googlecl = buildPythonPackage rec {
@@ -13436,6 +13450,8 @@ in {
       homepage = http://www.freewisdom.org/projects/python-markdown;
     };
   };
+
+  markdownsuperscript = callPackage ../development/python-modules/markdownsuperscript {};
 
   markdown-macros = buildPythonPackage rec {
     name = "markdown-macros-${version}";
@@ -30363,8 +30379,6 @@ EOF
   };
 
   uranium = callPackage ../development/python-modules/uranium { };
-
-  urlscan = callPackage ../applications/misc/urlscan { };
 
   vine = buildPythonPackage rec {
     name = "vine-${version}";
