@@ -20,7 +20,7 @@ let
   common = rec {
     src = fetchurl {
       url = # "ftp://tug.org/historic/systems/texlive/${year}/"
-        "http://lipa.ms.mff.cuni.cz/~cunav5am/nix/texlive-2016" # FIXME: a proper mirror
+        "http://146.185.144.154/texlive-2016" # FIXME: a proper mirror
         + "/texlive-${year}0523b-source.tar.xz";
       sha256 = "1v91vahxlxkdra0qz3f132vvx5d9cx2jy84yl1hkch0agyj2rcx8";
     };
