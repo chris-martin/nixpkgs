@@ -9778,6 +9778,8 @@ with pkgs;
 
   re2 = callPackage ../development/libraries/re2 { };
 
+  qbs = callPackage ../development/tools/build-managers/qbs { };
+
   qca2 = callPackage ../development/libraries/qca2 { qt = qt4; };
   qca2-qt5 = callPackage ../development/libraries/qca2 { qt = qt5.qtbase; };
 
@@ -14606,8 +14608,6 @@ with pkgs;
 
   i3 = callPackage ../applications/window-managers/i3 {
     xcb-util-cursor = if stdenv.isDarwin then xcb-util-cursor-HEAD else xcb-util-cursor;
-
-    configFile = config.i3.configFile or null;
   };
 
   i3-gaps = callPackage ../applications/window-managers/i3/gaps.nix { };
