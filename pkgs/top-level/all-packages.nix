@@ -3269,6 +3269,8 @@ with pkgs;
 
   ndjbdns = callPackage ../tools/networking/ndjbdns { };
 
+  ndppd = callPackage ../applications/networking/ndppd { };
+
   neofetch = callPackage ../tools/misc/neofetch { };
 
   nerdfonts = callPackage ../data/fonts/nerdfonts { };
@@ -6994,6 +6996,8 @@ with pkgs;
 
   libtool_2 = callPackage ../development/tools/misc/libtool/libtool2.nix { };
 
+  linuxkit = callPackage ../development/tools/misc/linuxkit { };
+
   lit = callPackage ../development/tools/misc/lit { };
 
   lsof = callPackage ../development/tools/misc/lsof { };
@@ -7018,6 +7022,8 @@ with pkgs;
   minizinc = callPackage ../development/tools/minizinc { };
 
   mk = callPackage ../development/tools/build-managers/mk { };
+
+  moby = callPackage ../development/tools/misc/moby { };
 
   msgpack-tools = callPackage ../development/tools/msgpack-tools { };
 
@@ -11939,6 +11945,8 @@ with pkgs;
 
   libaio = callPackage ../os-specific/linux/libaio { };
 
+  libargon2 = callPackage ../development/libraries/libargon2 { };
+
   libatasmart = callPackage ../os-specific/linux/libatasmart { };
 
   libcgroup = callPackage ../os-specific/linux/libcgroup { };
@@ -13731,11 +13739,10 @@ with pkgs;
   };
 
   inherit (callPackage ../applications/virtualization/docker { })
-    docker_17_03
-    docker_17_05;
+    docker_17_06;
 
-  docker = docker_17_03;
-  docker-edge = docker_17_05;
+  docker = docker_17_06;
+  docker-edge = docker_17_06;
 
   docker-proxy = callPackage ../applications/virtualization/docker/proxy.nix { };
 
@@ -15192,6 +15199,8 @@ with pkgs;
   mopidy-soundcloud = callPackage ../applications/audio/mopidy-soundcloud { };
 
   mopidy-musicbox-webclient = callPackage ../applications/audio/mopidy-musicbox-webclient { };
+
+  mopidy-iris = callPackage ../applications/audio/mopidy-iris { };
 
   motif = callPackage ../development/libraries/motif { };
 
@@ -18070,12 +18079,14 @@ with pkgs;
     };
     coqPackages = coqPackages_8_5;
 
+    autosubst = callPackage ../development/coq-modules/autosubst {};
     coq-ext-lib = callPackage ../development/coq-modules/coq-ext-lib {};
     coquelicot = callPackage ../development/coq-modules/coquelicot {};
     dpdgraph = callPackage ../development/coq-modules/dpdgraph {};
     flocq = callPackage ../development/coq-modules/flocq {};
     interval = callPackage ../development/coq-modules/interval {};
     mathcomp = callPackage ../development/coq-modules/mathcomp { };
+    paco = callPackage ../development/coq-modules/paco {};
     math-classes = callPackage ../development/coq-modules/math-classes { };
     ssreflect = callPackage ../development/coq-modules/ssreflect { };
     QuickChick = callPackage ../development/coq-modules/QuickChick {};
@@ -18087,12 +18098,15 @@ with pkgs;
     coq = callPackage ../applications/science/logic/coq {};
     coqPackages = coqPackages_8_6;
 
+    autosubst = callPackage ../development/coq-modules/autosubst {};
     coq-ext-lib = callPackage ../development/coq-modules/coq-ext-lib {};
     coquelicot = callPackage ../development/coq-modules/coquelicot {};
     dpdgraph = callPackage ../development/coq-modules/dpdgraph {};
     flocq = callPackage ../development/coq-modules/flocq {};
+    heq = callPackage ../development/coq-modules/heq {};
     interval = callPackage ../development/coq-modules/interval {};
     mathcomp = callPackage ../development/coq-modules/mathcomp { };
+    paco = callPackage ../development/coq-modules/paco {};
     ssreflect = callPackage ../development/coq-modules/ssreflect { };
     QuickChick = callPackage ../development/coq-modules/QuickChick {};
     fiat_HEAD = callPackage ../development/coq-modules/fiat/HEAD.nix {};
