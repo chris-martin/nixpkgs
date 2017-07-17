@@ -8211,13 +8211,17 @@ in {
 
   pex = buildPythonPackage rec {
     name = "pex-${version}";
-    version = "1.2.2";
+    version = "1.2.7";
 
     src = self.fetchPypi {
       pname  = "pex";
-      sha256 = "1nwrf03cd6jw24lxyaalj59fdm2infr9glabznkpaq65mjzwshl3";
+      sha256 = "1m0gx9182w1dybkyjwwjyd6i87x2dzv252ks2fj8yn6avlcp5z4q";
       inherit version;
     };
+
+    prePatch = ''
+      substituteInPlace setup.py --replace 'SETUPTOOLS_REQUIREMENT,' '"setuptools"'
+    '';
 
     # A few more dependencies I don't want to handle right now...
     doCheck = false;
@@ -10791,6 +10795,8 @@ in {
       platforms = platforms.linux;
     };
   };
+
+  pytorch = callPackage ../development/python-modules/pytorch { };
 
   python_tvrage = buildPythonPackage (rec {
     version = "0.4.1";
@@ -23722,26 +23728,6 @@ in {
       homepage = "https://github.com/agrover/targetcli-fb";
       platforms = platforms.linux;
     };
-  };
-
-  tarsnapper = buildPythonPackage rec {
-    name = "tarsnapper-0.2.1";
-    disabled = isPy3k;
-
-    src = pkgs.fetchgit {
-      url = https://github.com/miracle2k/tarsnapper.git;
-      rev = "620439bca68892f2ffaba1079a34b18496cc6596";
-      sha256 = "1n2k2r9x11r1ph9jcjhlk44hsghfnl1pl3aakbx121qc5dg7b0yn";
-    };
-
-    propagatedBuildInputs = with self; [ argparse pyyaml ];
-
-    patches = [ ../development/python-modules/tarsnapper-path.patch ];
-
-    preConfigure = ''
-      substituteInPlace src/tarsnapper/script.py \
-        --replace '@NIXTARSNAPPATH@' '${pkgs.tarsnap}/bin/tarsnap'
-    '';
   };
 
   taskcoach = buildPythonPackage rec {
