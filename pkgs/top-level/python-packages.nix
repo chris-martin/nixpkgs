@@ -515,33 +515,7 @@ in {
     };
   };
 
-  python-gnupg = buildPythonPackage rec {
-    name    = "python-gnupg-${version}";
-    version = "0.4.0";
-
-    src = pkgs.fetchurl {
-      url    = "mirror://pypi/p/python-gnupg/${name}.tar.gz";
-      sha256 = "1yd88acafs9nwk6gzpbxjzpx0zd04qrvc6hmwhj1i89ghm2g7ap6";
-    };
-
-    propagatedBuildInputs = [ pkgs.gnupg1 ];
-
-    # Let's make the library default to our gpg binary
-    patchPhase = ''
-      substituteInPlace gnupg.py \
-        --replace "gpgbinary='gpg'" "gpgbinary='${pkgs.gnupg1}/bin/gpg'"
-    '';
-
-    doCheck = false;
-
-    meta = {
-      description = "A wrapper for the Gnu Privacy Guard";
-      homepage    = "https://pypi.python.org/pypi/python-gnupg";
-      license     = licenses.bsd3;
-      maintainers = with maintainers; [ copumpkin ];
-      platforms   = platforms.unix;
-    };
-  };
+  python-gnupg = callPackage ../development/python-modules/python-gnupg {};
 
   python-uinput = buildPythonPackage rec {
     name = "python-uinput-${version}";
@@ -8020,7 +7994,6 @@ in {
 
   # These used to be here but were moved to all-packages, but I'll leave them around for a while.
   pants = pkgs.pants;
-  pants13-pre = pkgs.pants13-pre;
 
   paperwork-backend = buildPythonPackage rec {
     name = "paperwork-backend-${version}";
@@ -12418,6 +12391,9 @@ in {
     };
   };
 
+  journalwatch = callPackage ../tools/system/journalwatch {
+    inherit (self) systemd pytest;
+  };
 
   jrnl = buildPythonPackage rec {
     name = "jrnl-1.9.7";
