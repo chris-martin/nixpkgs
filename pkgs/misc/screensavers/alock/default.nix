@@ -5,6 +5,8 @@ stdenv.mkDerivation rec {
   date = "20170720";
   name = "alock-${date}";
 
+  # Please consider https://github.com/Arkq/alock/issues/5
+  # before upgrading past this revision.
   src = fetchgit {
     url = https://github.com/Arkq/alock;
     rev = "2035e1d4a2293432f5503e82d10f899232eb0f38";
