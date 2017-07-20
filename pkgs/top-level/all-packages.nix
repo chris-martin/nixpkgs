@@ -537,6 +537,8 @@ with pkgs;
 
   bonnie = callPackage ../tools/filesystems/bonnie { };
 
+  container-linux-config-transpiler = callPackage ../development/tools/container-linux-config-transpiler { };
+
   djmount = callPackage ../tools/filesystems/djmount { };
 
   dgsh = callPackage ../shells/dgsh { };
@@ -1934,6 +1936,8 @@ with pkgs;
 
   fdk_aac = callPackage ../development/libraries/fdk-aac { };
 
+  flac123 = callPackage ../applications/audio/flac123 { };
+
   flamegraph = callPackage ../development/tools/flamegraph { };
 
   # Awkward historical capitalization for flamegraph. Remove eventually
@@ -2200,6 +2204,8 @@ with pkgs;
   google-cloud-sdk = callPackage ../tools/admin/google-cloud-sdk { };
 
   google-fonts = callPackage ../data/fonts/google-fonts { };
+
+  google-compute-engine = callPackage ../tools/virtualization/google-compute-engine {  };
 
   gource = callPackage ../applications/version-management/gource { };
 
@@ -4953,8 +4959,8 @@ with pkgs;
     gnome_python = gnome2.gnome_python;
   };
 
-  xfsprogs = callPackage ../tools/filesystems/xfsprogs { };
-  libxfs = xfsprogs.dev; # outputs TODO
+  xfsprogs = callPackage ../tools/filesystems/xfsprogs { utillinux = utillinuxMinimal; };
+  libxfs = xfsprogs.dev;
 
   xml2 = callPackage ../tools/text/xml/xml2 { };
 
@@ -5060,6 +5066,7 @@ with pkgs;
     interactive = stdenv.isCygwin; # patch for cygwin requires readline support
   });
 
+  # WARNING: this attribute is used by nix-shell so it shouldn't be removed/renamed
   bashInteractive = appendToName "interactive" (callPackage ../shells/bash/4.4.nix {
     interactive = true;
   });
@@ -9667,14 +9674,11 @@ with pkgs;
 
   openslp = callPackage ../development/libraries/openslp {};
 
-  libressl = libressl_2_5;
-  libressl_2_4 = callPackage ../development/libraries/libressl/2.4.nix {
-    fetchurl = fetchurlBoot;
-  };
-  libressl_2_5 = callPackage ../development/libraries/libressl/2.5.nix {
-    fetchurl = fetchurlBoot;
-  };
+  inherit (callPackages ../development/libraries/libressl { })
+    libressl_2_5
+    libressl_2_6;
 
+  libressl = libressl_2_5;
 
   boringssl = callPackage ../development/libraries/boringssl { };
 
@@ -14662,6 +14666,8 @@ with pkgs;
 
   ht = callPackage ../applications/editors/ht { };
 
+  hue-cli = callPackage ../tools/networking/hue-cli { };
+
   hugin = callPackage ../applications/graphics/hugin { };
 
   hugo = callPackage ../applications/misc/hugo { };
@@ -18059,6 +18065,10 @@ with pkgs;
     fftw = fftw;
     cmake = cmakeCurses;
   });
+
+  ### SCIENCE/MEDICINE
+
+  aliza = callPackage ../applications/science/medicine/aliza { };
 
   ### PHYSICS
 
