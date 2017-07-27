@@ -106,6 +106,10 @@ in {
 
   astropy = callPackage ../development/python-modules/astropy {  };
 
+  augeas = callPackage ../development/python-modules/augeas {
+    inherit (pkgs) augeas;
+  };
+
   automat = callPackage ../development/python-modules/automat { };
 
   # packages defined elsewhere
@@ -189,6 +193,10 @@ in {
   pycrypto = callPackage ../development/python-modules/pycrypto { };
 
   pycryptodome = callPackage ../development/python-modules/pycryptodome { };
+
+  PyChromecast = callPackage ../development/python-modules/pychromecast {
+    protobuf = self.protobuf3_2;
+  };
 
   pyexiv2 = if (!isPy3k) then callPackage ../development/python-modules/pyexiv2 {} else throw "pyexiv2 not supported for interpreter ${python.executable}";
 
@@ -763,28 +771,7 @@ in {
   };
 
 
-  arrow = buildPythonPackage rec {
-    name = "arrow-${version}";
-    version = "0.7.0";
-
-    src = pkgs.fetchurl {
-      url    = "mirror://pypi/a/arrow/${name}.tar.gz";
-      sha256 = "0yx10dz3hp825fcq9w15zbp26v622npcjscb91da05zig8036lra";
-    };
-
-    checkPhase = ''
-      nosetests
-    '';
-
-    buildInputs = with self; [ nose chai simplejson ];
-    propagatedBuildInputs = with self; [ dateutil ];
-
-    meta = {
-      description = "Python library for date manipulation";
-      license     = "apache";
-      maintainers = with maintainers; [ thoughtpolice ];
-    };
-  };
+  arrow = callPackage ../development/python-modules/arrow { };
 
   async = buildPythonPackage rec {
     name = "async-0.6.1";
@@ -9046,49 +9033,6 @@ in {
     };
   };
 
-  substanced = buildPythonPackage rec {
-    # no release yet
-    rev = "089818bc61c3dc5eca023254e37a280b041ea8cc";
-    name = "substanced-${rev}";
-
-    src = pkgs.fetchgit {
-      inherit rev;
-      url = "https://github.com/Pylons/substanced.git";
-      sha256 = "1fb8m5aylw8kig13fvldchgkxi4s2xlvwralrzinyma3imbznd3q";
-    };
-
-    buildInputs = with self; [ mock ];
-    patchPhase = ''
-      sed -i 's/assert_call(/assert_called_with(/' substanced/workflow/tests/test_workflow.py
-    '';
-
-    propagatedBuildInputs = with self; [
-      pyramid
-      pytz
-      zodb
-      venusian
-      colander
-      deform
-      python_magic
-      pyyaml
-      cryptacular
-      hypatia
-      zope_copy
-      zope_component
-      zope_deprecation
-      statsd
-      pyramid_zodbconn
-      pyramid_mailer
-      pyramid_chameleon
-      ZEO
-    ];
-
-    meta = {
-      maintainers = with maintainers; [ domenkozar ];
-    };
-  };
-
-
   svg-path = buildPythonPackage rec {
     name = "svg.path-${version}";
     version = "2.0b1";
@@ -11432,6 +11376,8 @@ in {
 
     propagatedBuildInputs = with self; [ requests webob ];
   };
+
+  hmmlearn = callPackage ../development/python-modules/hmmlearn { };
 
   hcs_utils = buildPythonPackage rec {
     name = "hcs_utils-1.5";
@@ -14052,6 +13998,8 @@ in {
      substituteInPlace ./test/asizeof/test_asizeof.py --replace "self.assert_(n," "#self.assert_(n,"
      substituteInPlace ./test/asizeof/test_asizeof.py --replace "self.assert_(not e" "#self.assert_(not e"
     '';
+
+    doCheck = stdenv.hostPlatform.isLinux;
 
     meta = {
       description = "Tool to measure, monitor and analyze memory behavior";
@@ -22020,6 +21968,8 @@ in {
       license = licenses.mit;
     };
   };
+
+  sphfile = callPackage ../development/python-modules/sphfile { };
 
   sqlite3dbm = buildPythonPackage rec {
     name = "sqlite3dbm-0.1.4";
