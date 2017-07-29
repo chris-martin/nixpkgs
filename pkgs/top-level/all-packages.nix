@@ -513,6 +513,8 @@ with pkgs;
 
   awless = callPackage ../tools/virtualization/awless { };
 
+  aws-auth = callPackage ../tools/admin/aws-auth { };
+
   ec2_api_tools = callPackage ../tools/virtualization/ec2-api-tools { };
 
   ec2_ami_tools = callPackage ../tools/virtualization/ec2-ami-tools { };
@@ -1070,6 +1072,8 @@ with pkgs;
   jbuilder = callPackage ../development/tools/ocaml/jbuilder { };
 
   kapacitor = callPackage ../servers/monitoring/kapacitor { };
+
+  lcdproc = callPackage ../servers/monitoring/lcdproc { };
 
   languagetool = callPackage ../tools/text/languagetool {  };
 
@@ -3081,6 +3085,7 @@ with pkgs;
   mailpile = callPackage ../applications/networking/mailreaders/mailpile { };
 
   mailutils = callPackage ../tools/networking/mailutils {
+    guile = guile_2_0;  # compilation fails with guile 2.2
     sasl = gsasl;
   };
 
@@ -7397,7 +7402,9 @@ with pkgs;
 
   grabserial = callPackage ../development/tools/grabserial { };
 
-  mypy = callPackage ../development/tools/mypy { };
+  mypy = callPackage ../development/tools/mypy {
+    inherit (python3Packages) fetchPypi buildPythonApplication lxml typed-ast;
+  };
 
 
   ### DEVELOPMENT / LIBRARIES
@@ -7501,6 +7508,7 @@ with pkgs;
   boost160 = callPackage ../development/libraries/boost/1.60.nix { };
   boost162 = callPackage ../development/libraries/boost/1.62.nix { };
   boost163 = callPackage ../development/libraries/boost/1.63.nix { };
+  boost164 = callPackage ../development/libraries/boost/1.64.nix { };
   boost = boost162;
 
   boost_process = callPackage ../development/libraries/boost-process { };
