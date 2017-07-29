@@ -347,6 +347,8 @@ with pkgs;
 
   separateDebugInfo = makeSetupHook { } ../build-support/setup-hooks/separate-debug-info.sh;
 
+  setupDebugInfoDirs = makeSetupHook { } ../build-support/setup-hooks/setup-debug-info-dirs.sh;
+
   useOldCXXAbi = makeSetupHook { } ../build-support/setup-hooks/use-old-cxx-abi.sh;
 
   iconConvTools = callPackage ../build-support/icon-conv-tools {};
@@ -724,6 +726,8 @@ with pkgs;
 
   bochs = callPackage ../applications/virtualization/bochs { };
 
+  bubblewrap = callPackage ../tools/admin/bubblewrap { };
+
   borgbackup = callPackage ../tools/backup/borg {
     python3Packages = python34Packages;
   };
@@ -991,6 +995,8 @@ with pkgs;
 
   esptool-ck = callPackage ../tools/misc/esptool-ck { };
 
+  ephemeralpg = callPackage ../applications/misc/ephemeralpg {};
+
   f3 = callPackage ../tools/filesystems/f3 { };
 
   facter = callPackage ../tools/system/facter {
@@ -1254,6 +1260,8 @@ with pkgs;
 
   ori = callPackage ../tools/backup/ori { };
 
+  anydesk = callPackage ../applications/networking/remote/anydesk { };
+
   atool = callPackage ../tools/archivers/atool { };
 
   bsc = callPackage ../tools/compression/bsc { };
@@ -1332,6 +1340,10 @@ with pkgs;
   ciopfs = callPackage ../tools/filesystems/ciopfs { };
 
   citrix_receiver = callPackage ../applications/networking/remote/citrix-receiver { };
+
+  citra = libsForQt5.callPackage ../misc/emulators/citra {
+    boost = boost163;
+  };
 
   cmst = libsForQt5.callPackage ../tools/networking/cmst { };
 
@@ -3296,6 +3308,8 @@ with pkgs;
 
   nasty = callPackage ../tools/security/nasty { };
 
+  nawk = callPackage ../tools/text/nawk { };
+
   nbd = callPackage ../tools/networking/nbd { };
 
   ndjbdns = callPackage ../tools/networking/ndjbdns { };
@@ -4806,6 +4820,8 @@ with pkgs;
   xbanish = callPackage ../tools/X11/xbanish { };
 
   xbrightness = callPackage ../tools/X11/xbrightness { };
+
+  xkbvalidate = callPackage ../tools/X11/xkbvalidate { };
 
   xfstests = callPackage ../tools/misc/xfstests { };
 
@@ -6432,6 +6448,7 @@ with pkgs;
   bundix = callPackage ../development/ruby-modules/bundix { };
   bundler = callPackage ../development/ruby-modules/bundler { };
   bundlerEnv = callPackage ../development/ruby-modules/bundler-env { };
+  bundlerApp = callPackage ../development/ruby-modules/bundler-app { };
 
   inherit (callPackage ../development/interpreters/ruby {})
     ruby_2_0_0
@@ -6746,6 +6763,8 @@ with pkgs;
   conan = callPackage ../development/tools/build-managers/conan { };
 
   cookiecutter = pythonPackages.cookiecutter;
+
+  corundum = callPackage ../development/tools/corundum { };
 
   ctags = callPackage ../development/tools/misc/ctags { };
 
@@ -7492,7 +7511,7 @@ with pkgs;
   beecrypt = callPackage ../development/libraries/beecrypt { };
 
   beignet = callPackage ../development/libraries/beignet {
-    inherit (llvmPackages) llvm clang-unwrapped;
+    inherit (llvmPackages_39) llvm clang-unwrapped;
   };
 
   belle-sip = callPackage ../development/libraries/belle-sip { };
@@ -12290,12 +12309,10 @@ with pkgs;
 
     sch_cake = callPackage ../os-specific/linux/sch_cake { };
 
-    inherit (callPackage ../os-specific/linux/spl {
+    spl = callPackage ../os-specific/linux/spl {
       configFile = "kernel";
       inherit kernel;
-    }) splStable splUnstable;
-
-    spl = splStable;
+    };
 
     sysdig = callPackage ../os-specific/linux/sysdig {};
 
@@ -12319,12 +12336,10 @@ with pkgs;
 
     x86_energy_perf_policy = callPackage ../os-specific/linux/x86_energy_perf_policy { };
 
-    inherit (callPackage ../os-specific/linux/zfs {
+    zfs = callPackage ../os-specific/linux/zfs {
       configFile = "kernel";
       inherit kernel spl;
-    }) zfsStable zfsUnstable;
-
-    zfs = zfsStable;
+    };
   });
 
   # The current default kernel / kernel modules.
@@ -12633,11 +12648,9 @@ with pkgs;
 
   statifier = callPackage ../os-specific/linux/statifier { };
 
-  inherit (callPackage ../os-specific/linux/spl {
+  spl = callPackage ../os-specific/linux/spl {
     configFile = "user";
-  }) splStable splUnstable;
-
-  spl = splStable;
+  };
 
   sysdig = callPackage ../os-specific/linux/sysdig {
     kernel = null;
@@ -12842,11 +12855,9 @@ with pkgs;
 
   zd1211fw = callPackage ../os-specific/linux/firmware/zd1211 { };
 
-  inherit (callPackage ../os-specific/linux/zfs {
+  zfs = callPackage ../os-specific/linux/zfs {
     configFile = "user";
-  }) zfsStable zfsUnstable;
-
-  zfs = zfsStable;
+  };
 
   ### DATA
 
@@ -16046,8 +16057,6 @@ with pkgs;
 
   siproxd = callPackage ../applications/networking/siproxd { };
 
-  skype = callPackage_i686 ../applications/networking/instant-messengers/skype { };
-
   skypeforlinux = callPackage ../applications/networking/instant-messengers/skypeforlinux { };
 
   skype4pidgin = callPackage ../applications/networking/instant-messengers/pidgin-plugins/skype4pidgin { };
@@ -18603,6 +18612,7 @@ with pkgs;
   dell-530cdn = callPackage ../misc/drivers/dell-530cdn {};
 
   dosbox = callPackage ../misc/emulators/dosbox { };
+  dosbox-unstable = callPackage ../misc/emulators/dosbox/unstable.nix { };
 
   dpkg = callPackage ../tools/package-management/dpkg { };
 
