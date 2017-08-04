@@ -314,6 +314,7 @@
   lihop = "Leroy Hopson <nixos@leroy.geek.nz>";
   linquize = "Linquize <linquize@yahoo.com.hk>";
   linus = "Linus Arver <linusarver@gmail.com>";
+  lluchs = "Lukas Werling <lukas.werling@gmail.com>";
   lnl7 = "Daiderd Jordan <daiderd@gmail.com>";
   loskutov = "Ignat Loskutov <ignat.loskutov@gmail.com>";
   lovek323 = "Jason O'Conal <jason@oconal.id.au>";
@@ -510,6 +511,7 @@
   samuelrivas = "Samuel Rivas <samuelrivas@gmail.com>";
   sander = "Sander van der Burg <s.vanderburg@tudelft.nl>";
   sargon = "Daniel Ehlers <danielehlers@mindeye.net>";
+  sauyon = "Sauyon Lee <s@uyon.co>";
   schmitthenner = "Fabian Schmitthenner <development@schmitthenner.eu>";
   schneefux = "schneefux <schneefux+nixos_pkg@schneefux.xyz>";
   schristo = "Scott Christopher <schristopher@konputa.com>";
