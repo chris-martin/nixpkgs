@@ -6678,14 +6678,14 @@ in {
 
   ipfsapi = buildPythonPackage rec {
     name = "ipfsapi-${version}";
-    version = "0.4.5-pre";
+    version = "0.4.2.post1";
     disabled = isPy26 || isPy27;
 
     src = pkgs.fetchFromGitHub {
       owner = "ipfs";
       repo = "py-ipfs-api";
-      rev = "bcce00e4a9b674d062729d82bd49a9ffbf76486f";
-      sha256 = "0cdmzpk5wvi6fyfmmn96vynqkb1p59wjqjdijhm1ixf7bfl9r126";
+      rev = "0c485544a114f580c65e2ffbb5782efbf7fd9f61";
+      sha256 = "1v7f77cv95yv0v80gisdh71mj7jcq41xcfip6bqm57zfdbsa0xpn";
     };
 
     propagatedBuildInputs = with self; [ six requests ];
@@ -6954,6 +6954,8 @@ in {
     buildInputs = with self; [ django ];
 
     propagatedBuildInputs = with self; [ six pycrypto ];
+
+    doCheck = false;
 
     meta = {
       description = "libthumbor is the python extension to thumbor";
@@ -16169,6 +16171,8 @@ in {
       '';
     };
   };
+
+  paramz = callPackage ../development/python-modules/paramz { };
 
   parsel = buildPythonPackage rec {
     name = "parsel-${version}";
@@ -25533,7 +25537,7 @@ EOF
       substituteInPlace setup.py \
         --replace pypng>=0.0.18 purepng \
         --replace 'numpy>=1.9.2, <= 1.10.0.post2' 'numpy' \
-        --replace 'argparse==1.2.1' 'argparse' \
+        --replace 'argparse==1.2.1' "" \
         --replace 'protobuf==3.0.0a3' 'protobuf' \
         --replace 'noise==1.2.2' 'noise' \
         --replace 'PyPlatec==1.4.0' 'PyPlatec' \

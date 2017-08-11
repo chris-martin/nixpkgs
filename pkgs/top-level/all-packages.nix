@@ -50,7 +50,6 @@ with pkgs;
   inherit lib config;
 
   inherit (lib) lowPrio hiPrio appendToName makeOverridable;
-  inherit (misc) versionedDerivation;
 
   # Applying this to an attribute set will cause nix-env to look
   # inside the set for derivations.
@@ -99,6 +98,8 @@ with pkgs;
   };
 
   diffPlugins = (callPackage ../build-support/plugins.nix {}).diffPlugins;
+
+  dieHook = makeSetupHook {} ../build-support/setup-hooks/die.sh;
 
   dockerTools = callPackage ../build-support/docker { };
 
@@ -287,7 +288,8 @@ with pkgs;
       inherit contents compressor prepend;
     };
 
-  makeWrapper = makeSetupHook { } ../build-support/setup-hooks/make-wrapper.sh;
+  makeWrapper = makeSetupHook { deps = [ dieHook ]; }
+                              ../build-support/setup-hooks/make-wrapper.sh;
 
   makeModulesClosure = { kernel, rootModules, allowMissing ? false }:
     callPackage ../build-support/kernel/modules-closure.nix {
@@ -1385,6 +1387,8 @@ with pkgs;
     libsigrok = libsigrok-0-3-0; # not compatible with >= 0.4.0 yet
   };
 
+  collectd-data = callPackage ../tools/system/collectd/data.nix { };
+
   colormake = callPackage ../development/tools/build-managers/colormake { };
 
   cpuminer = callPackage ../tools/misc/cpuminer { };
@@ -2382,6 +2386,8 @@ with pkgs;
   gvpe = callPackage ../tools/networking/gvpe { };
 
   gvolicon = callPackage ../tools/audio/gvolicon {};
+
+  gwyddion = callPackage ../applications/science/chemistry/gwyddion {};
 
   gzip = callPackage ../tools/compression/gzip { };
 
@@ -3562,8 +3568,6 @@ with pkgs;
   openssh_with_kerberos = pkgs.appendToName "with-kerberos" (openssh.override { withKerberos = true; });
 
   opensp = callPackage ../tools/text/sgml/opensp { };
-
-  spCompat = callPackage ../tools/text/sgml/opensp/compat.nix { };
 
   opentracker = callPackage ../applications/networking/p2p/opentracker { };
 
@@ -5626,9 +5630,18 @@ with pkgs;
 
   glslang = callPackage ../development/compilers/glslang { };
 
-  go_bootstrap = callPackage ../development/compilers/go/1.4.nix {
-    inherit (darwin.apple_sdk.frameworks) Security;
-  };
+  go_bootstrap = if stdenv.isAarch64 then
+    srcOnly {
+      name = "go-1.8-linux-arm64-bootstrap";
+      src = fetchurl {
+        url = "https://cache.xor.us/go-1.8-linux-arm64-bootstrap.tar.xz";
+        sha256 = "0sk6g03x9gbxk2k1djnrgy8rzw1zc5f6ssw0hbxk6kjr85lpmld6";
+      };
+    }
+  else
+    callPackage ../development/compilers/go/1.4.nix {
+      inherit (darwin.apple_sdk.frameworks) Security;
+    };
 
   go_1_6 = callPackage ../development/compilers/go/1.6.nix {
     inherit (darwin.apple_sdk.frameworks) Security Foundation;
@@ -11986,7 +11999,6 @@ with pkgs;
   iproute = callPackage ../os-specific/linux/iproute { };
 
   iputils = callPackage ../os-specific/linux/iputils {
-    sp = spCompat;
     inherit (perlPackages) SGMLSpm;
   };
 
@@ -12051,14 +12063,6 @@ with pkgs;
 
   lkl = callPackage ../applications/virtualization/lkl { };
 
-  linuxHeaders_2_4 = callPackage ../os-specific/linux/kernel-headers/2.4.nix {
-    cross = if targetPlatform != hostPlatform then targetPlatform else null;
-  };
-
-  linuxHeaders_2_6 = callPackage ../os-specific/linux/kernel-headers/4.4.nix {
-    cross = if targetPlatform != hostPlatform then targetPlatform else null;
-  };
-
   linuxHeaders_4_4 = callPackage ../os-specific/linux/kernel-headers/4.4.nix {
     cross = if targetPlatform != hostPlatform then targetPlatform else null;
   };
@@ -12068,8 +12072,6 @@ with pkgs;
     if targetPlatform != hostPlatform
     then
       { # switch
-        "2.4" = linuxHeaders_2_4;
-        "2.6" = linuxHeaders_2_6;
         "4.4" = linuxHeaders_4_4;
       }.${targetPlatform.platform.kernelMajor}
         or (throw "Unknown linux kernel version")
@@ -12113,34 +12115,6 @@ with pkgs;
     kernelPatches = with kernelPatches; [
       bridge_stp_helper
     ];
-  };
-
-  linux_3_10 = callPackage ../os-specific/linux/kernel/linux-3.10.nix {
-    kernelPatches = with kernelPatches;
-      [ bridge_stp_helper
-        p9_fixes
-        lguest_entry-linkage
-        packet_fix_race_condition_CVE_2016_8655
-        DCCP_double_free_vulnerability_CVE-2017-6074
-      ]
-      ++ lib.optionals ((platform.kernelArch or null) == "mips")
-      [ kernelPatches.mips_fpureg_emu
-        kernelPatches.mips_fpu_sigill
-        kernelPatches.mips_ext3_n32
-      ];
-  };
-
-  linux_4_4 = callPackage ../os-specific/linux/kernel/linux-4.4.nix {
-    kernelPatches =
-      [ kernelPatches.bridge_stp_helper
-        kernelPatches.p9_fixes
-        kernelPatches.cpu-cgroup-v2."4.4"
-      ]
-      ++ lib.optionals ((platform.kernelArch or null) == "mips")
-      [ kernelPatches.mips_fpureg_emu
-        kernelPatches.mips_fpu_sigill
-        kernelPatches.mips_ext3_n32
-      ];
   };
 
   linux_4_9 = callPackage ../os-specific/linux/kernel/linux-4.9.nix {
@@ -12358,8 +12332,6 @@ with pkgs;
   linuxPackages_hardened_copperhead = linuxPackagesFor pkgs.linux_hardened_copperhead;
   linuxPackages_mptcp = linuxPackagesFor pkgs.linux_mptcp;
   linuxPackages_rpi = linuxPackagesFor pkgs.linux_rpi;
-  linuxPackages_3_10 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_3_10);
-  linuxPackages_4_4 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_4_4);
   linuxPackages_4_9 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_4_9);
   linuxPackages_4_12 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_4_12);
   # Don't forget to update linuxPackages_latest!
@@ -13179,7 +13151,7 @@ with pkgs;
   stix-two = callPackage ../data/fonts/stix-two { };
 
   inherit (callPackages ../data/fonts/gdouros { })
-    symbola aegyptus akkadian anatolian maya unidings musica analecta;
+    symbola aegyptus akkadian anatolian maya unidings musica analecta textfonts aegan abydos;
 
   iana-etc = callPackage ../data/misc/iana-etc { };
 
@@ -17400,6 +17372,8 @@ with pkgs;
 
   minecraft-server = callPackage ../games/minecraft-server { };
 
+  moon-buggy = callPackage ../games/moon-buggy {};
+
   multimc = libsForQt5.callPackage ../games/multimc { };
 
   minetest = callPackage ../games/minetest {
@@ -19291,6 +19265,8 @@ with pkgs;
   simplenote = callPackage ../applications/misc/simplenote { };
 
   hy = callPackage ../development/interpreters/hy {};
+
+  check-uptime = callPackage ../servers/monitoring/plugins/uptime.nix { };
 
   ghc-standalone-archive = callPackage ../os-specific/darwin/ghc-standalone-archive { inherit (darwin) cctools; };
 
