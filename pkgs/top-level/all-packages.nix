@@ -1051,6 +1051,8 @@ with pkgs;
 
   genromfs = callPackage ../tools/filesystems/genromfs { };
 
+  gh-ost = callPackage ../tools/misc/gh-ost { };
+
   gist = callPackage ../tools/text/gist { };
 
   glide = callPackage ../development/tools/glide { };
@@ -3835,9 +3837,7 @@ with pkgs;
 
   postscript-lexmark = callPackage ../misc/drivers/postscript-lexmark { };
 
-  povray = callPackage ../tools/graphics/povray {
-    automake = automake113x; # fails with 14
-  };
+  povray = callPackage ../tools/graphics/povray { };
 
   ppl = callPackage ../development/libraries/ppl { };
 
@@ -6374,6 +6374,7 @@ with pkgs;
   python = python2;
   python2 = python27;
   python3 = python36;
+  pypy = pypy27;
 
   # Python interpreter that is build with all modules, including tkinter.
   # These are for compatibility and should not be used inside Nixpkgs.
@@ -6407,16 +6408,21 @@ with pkgs;
     self = python36;
   };
 
-  # Should eventually be moved inside Python interpreters.
-  python-setup-hook = callPackage ../development/interpreters/python/setup-hook.nix { };
-
-  pypy = pypy27;
-
   pypy27 = callPackage ../development/interpreters/python/pypy/2.7 {
     self = pypy27;
     python = python27.override{x11Support=true;};
     db = db.override { dbmSupport = true; };
   };
+
+  # Python package sets.
+  python27Packages = lib.hiPrioSet (recurseIntoAttrs python27.pkgs);
+  python34Packages = python34.pkgs;
+  python35Packages = python35.pkgs;
+  python36Packages = recurseIntoAttrs python36.pkgs;
+  pypyPackages = pypy.pkgs;
+
+  # Should eventually be moved inside Python interpreters.
+  python-setup-hook = callPackage ../development/interpreters/python/setup-hook.nix { };
 
   python2nix = callPackage ../tools/package-management/python2nix { };
 
@@ -6640,12 +6646,6 @@ with pkgs;
   automake = automake115x;
 
   automake111x = callPackage ../development/tools/misc/automake/automake-1.11.x.nix { };
-
-  automake112x = callPackage ../development/tools/misc/automake/automake-1.12.x.nix { };
-
-  automake113x = callPackage ../development/tools/misc/automake/automake-1.13.x.nix { };
-
-  automake114x = callPackage ../development/tools/misc/automake/automake-1.14.x.nix { };
 
   automake115x = callPackage ../development/tools/misc/automake/automake-1.15.x.nix { };
 
@@ -8233,6 +8233,11 @@ with pkgs;
   cairomm = callPackage ../development/libraries/cairomm { };
 
   pango = callPackage ../development/libraries/pango { };
+
+  pangolin = callPackage ../development/libraries/pangolin {
+    inherit (darwin.apple_sdk.frameworks) Carbon Cocoa;
+  };
+
   pangomm = callPackage ../development/libraries/pangomm {
     inherit (darwin.apple_sdk.frameworks) ApplicationServices;
   };
@@ -9264,9 +9269,7 @@ with pkgs;
 
   libtap = callPackage ../development/libraries/libtap { };
 
-  libtsm = callPackage ../development/libraries/libtsm {
-    automake = automake114x;
-  };
+  libtsm = callPackage ../development/libraries/libtsm { };
 
   libtunepimp = callPackage ../development/libraries/libtunepimp { };
 
@@ -10959,20 +10962,6 @@ with pkgs;
     sqitchModule = perlPackages.AppSqitch;
   };
 
-  ### DEVELOPMENT / PYTHON MODULES
-
-  # Python package sets.
-
-  python27Packages = lib.hiPrioSet (recurseIntoAttrs python27.pkgs);
-
-  python34Packages = python34.pkgs;
-
-  python35Packages = python35.pkgs;
-
-  python36Packages = recurseIntoAttrs python36.pkgs;
-
-  pypyPackages = pypy.pkgs;
-
   ### DEVELOPMENT / R MODULES
 
   R = callPackage ../applications/science/math/R {
@@ -11525,8 +11514,6 @@ with pkgs;
 
   restic = callPackage ../tools/backup/restic { };
 
-  restund = callPackage ../servers/restund {};
-
   rethinkdb = callPackage ../servers/nosql/rethinkdb {
     libtool = darwin.cctools;
   };
@@ -11534,8 +11521,6 @@ with pkgs;
   rippled = callPackage ../servers/rippled {
     boost = boost159;
   };
-
-  #ripple-rest = callPackage ../servers/rippled/ripple-rest.nix { };
 
   s6 = callPackage ../tools/system/s6 { };
 
@@ -12048,6 +12033,8 @@ with pkgs;
   libnl = callPackage ../os-specific/linux/libnl { };
 
   linuxConsoleTools = callPackage ../os-specific/linux/consoletools { };
+
+  openelec-dvb-firmware = callPackage ../os-specific/linux/firmware/openelec-dvb-firmware { };
 
   openiscsi = callPackage ../os-specific/linux/open-iscsi { };
 
@@ -13500,6 +13487,8 @@ with pkgs;
   bevelbar = callPackage ../applications/window-managers/bevelbar { };
 
   bibletime = callPackage ../applications/misc/bibletime { };
+
+  bitcoinarmory = callPackage ../applications/misc/bitcoinarmory { pythonPackages = python2Packages; };
 
   bitkeeper = callPackage ../applications/version-management/bitkeeper {
     gperf = gperf_3_0;
@@ -17288,8 +17277,6 @@ with pkgs;
 
   gl117 = callPackage ../games/gl-117 {};
 
-  glestae = callPackage ../games/glestae {};
-
   globulation2 = callPackage ../games/globulation {
     boost = boost155;
   };
@@ -17630,14 +17617,7 @@ with pkgs;
 
   ultrastar-manager = libsForQt5.callPackage ../tools/misc/ultrastar-manager { };
 
-  ultrastardx = callPackage ../games/ultrastardx/1.1.nix {
-    ffmpeg = ffmpeg_0;
-    lua = lua5;
-  };
-  ultrastardx-beta = callPackage ../games/ultrastardx/1.3-beta.nix {
-    ffmpeg = ffmpeg_0;
-    lua = lua5;
-  };
+  ultrastardx = callPackage ../games/ultrastardx/default.nix { };
 
   unnethack = callPackage ../games/unnethack { };
 
@@ -18653,8 +18633,6 @@ with pkgs;
 
   foomatic-filters = callPackage ../misc/drivers/foomatic-filters {};
 
-  freestyle = callPackage ../misc/freestyle { };
-
   gajim = callPackage ../applications/networking/instant-messengers/gajim { };
 
   gammu = callPackage ../applications/misc/gammu { };
@@ -18807,7 +18785,6 @@ with pkgs;
   mnemonicode = callPackage ../misc/mnemonicode { };
 
   mysql-workbench = newScope gnome2 ../applications/misc/mysql-workbench (let mysql = mysql57; in {
-    automake = automake113x;
     gdal = gdal.override {mysql = mysql // {lib = {dev = mysql;};};};
     mysql = mysql;
     pcre = pcre-cpp;
@@ -18824,6 +18801,8 @@ with pkgs;
   opkg = callPackage ../tools/package-management/opkg { };
 
   opkg-utils = callPackage ../tools/package-management/opkg-utils { };
+
+  postage = callPackage ../applications/misc/postage { };
 
   pgadmin = callPackage ../applications/misc/pgadmin { };
 
@@ -19201,8 +19180,6 @@ with pkgs;
   higan = callPackage ../misc/emulators/higan {
     inherit (gnome2) gtksourceview;
   };
-
-  misc = callPackage ../misc/misc.nix { };
 
   bullet = callPackage ../development/libraries/bullet {};
   bullet283 = callPackage ../development/libraries/bullet/bullet283.nix {};
