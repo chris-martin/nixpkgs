@@ -5553,7 +5553,8 @@ with pkgs;
     sha256 = "1r0rqbnw7rf94f5bsa3gi8bick4xb7qnp1dkvdjfbvqjvysvc44r";
     ncurses = pkgsi686Linux.ncurses5;
   };
-  gcc-arm-embedded = gcc-arm-embedded-5;
+  gcc-arm-embedded-6 = callPackage ../development/compilers/gcc-arm-embedded/6 {};
+  gcc-arm-embedded = gcc-arm-embedded-6;
 
   gforth = callPackage ../development/compilers/gforth {};
 
@@ -6452,6 +6453,8 @@ with pkgs;
   };
 
   rascal = callPackage ../development/interpreters/rascal { };
+
+  red = callPackage ../development/interpreters/red { };
 
   regina = callPackage ../development/interpreters/regina { };
 
@@ -15950,6 +15953,7 @@ with pkgs;
 
   rxvt_unicode-with-plugins = callPackage ../applications/misc/rxvt_unicode/wrapper.nix {
     plugins = [
+      urxvt_autocomplete_all_the_things
       urxvt_perl
       urxvt_perls
       urxvt_tabbedex
@@ -15960,6 +15964,7 @@ with pkgs;
   };
 
   # urxvt plugins
+  urxvt_autocomplete_all_the_things = callPackage ../applications/misc/rxvt_unicode-plugins/urxvt-autocomplete-all-the-things { };
   urxvt_perl = callPackage ../applications/misc/rxvt_unicode-plugins/urxvt-perl { };
   urxvt_perls = callPackage ../applications/misc/rxvt_unicode-plugins/urxvt-perls { };
   urxvt_tabbedex = callPackage ../applications/misc/rxvt_unicode-plugins/urxvt-tabbedex { };
@@ -16246,6 +16251,8 @@ with pkgs;
   syncthing013 = callPackage ../applications/networking/syncthing013 { };
 
   syncthing-inotify = callPackage ../applications/networking/syncthing/inotify.nix { };
+
+  syncthing-tray = callPackage ../applications/misc/syncthing-tray { };
 
   # linux only by now
   synergy = callPackage ../applications/misc/synergy { };
