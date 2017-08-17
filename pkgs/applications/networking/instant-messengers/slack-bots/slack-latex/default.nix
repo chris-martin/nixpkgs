@@ -1,5 +1,5 @@
 { lib, stdenv, fetchFromGitHub, makeWrapper
-, python3Packages, imagemagick, texlive
+, python3, imagemagick, texlive
 }:
 
 let
@@ -19,9 +19,7 @@ let
 
   deps = [ python-env latex imagemagick ];
 
-  python-env = python3Packages.python.buildEnv.override {
-    extraLibs = with python3Packages; [ flask requests ];
-  };
+  python-env = python3.withPackages (p: with p; [ flask requests ]);
 
   latex = texlive.combine {
     inherit (texlive)
