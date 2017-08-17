@@ -13318,6 +13318,8 @@ with pkgs;
     tcl = tcl-8_5;
   };
 
+  msgviewer = callPackage ../applications/networking/mailreaders/msgviewer { };
+
   amarok = kde4.callPackage ../applications/audio/amarok {
     ffmpeg = ffmpeg_2;
   };
