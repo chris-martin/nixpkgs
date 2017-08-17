@@ -10,14 +10,12 @@ let
     homepage = https://github.com/chris-martin/slacklatex;
   };
 
-  src-tmp = fetchFromGitHub {
+  src = fetchFromGitHub {
     owner = "chris-martin";
     repo = "slacklatex";
     rev = "11bd0f6067d624f8c4bf4acb5dbc5bee003973c2";
     sha256 = "100w2413fiwkkrw7xa4aq3cf7ki4sy7zlfpg1nbx3cxawzygqhdz";
   };
-
-  src = /home/chris/code/slacklatex;
 
   deps = [ python-env latex imagemagick ];
 
