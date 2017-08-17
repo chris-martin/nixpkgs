@@ -1,5 +1,5 @@
 { lib, stdenv, fetchFromGitHub, makeWrapper
-, python3, imagemagick, texlive
+, python3, texlive, imagemagick, ghostscript
 }:
 
 let
@@ -17,7 +17,7 @@ let
     sha256 = "0i7am3ykfl3qrq7ymgnhd00mbrzdbalc5swl68yw3rn2vp602mhp";
   };
 
-  deps = [ python-env latex imagemagick ];
+  deps = [ python-env latex imagemagick ghostscript ];
 
   python-env = python3.withPackages (p: with p; [ flask requests ]);
 
