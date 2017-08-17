@@ -13,8 +13,8 @@ let
   src = fetchFromGitHub {
     owner = "chris-martin";
     repo = "slacklatex";
-    rev = "11bd0f6067d624f8c4bf4acb5dbc5bee003973c2";
-    sha256 = "100w2413fiwkkrw7xa4aq3cf7ki4sy7zlfpg1nbx3cxawzygqhdz";
+    rev = "77ddf178b394be6be7a0cfab12cb5973ee9f592b";
+    sha256 = "0i7am3ykfl3qrq7ymgnhd00mbrzdbalc5swl68yw3rn2vp602mhp";
   };
 
   deps = [ python-env latex imagemagick ];
