@@ -19,7 +19,7 @@ let
 
   deps = [ python-env latex imagemagick ];
 
-  python-env = python3.withPackages (p: with p; [ flask requests ]);
+  python-env = python3.withPackages (p: with p; [ flask requests2 ]);
 
   latex = texlive.combine {
     inherit (texlive)
