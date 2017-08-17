@@ -14749,6 +14749,8 @@ with pkgs;
 
   slack = callPackage ../applications/networking/instant-messengers/slack { };
 
+  slack-latex = callPackage ../applications/networking/instant-messengers/slack-bots/slack-latex { };
+
   singularity = callPackage ../applications/virtualization/singularity { };
 
   spectrwm = callPackage ../applications/window-managers/spectrwm { };
