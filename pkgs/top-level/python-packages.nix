@@ -2100,7 +2100,7 @@ in {
   blaze = callPackage ../development/python-modules/blaze { };
 
   # Needed for FlexGet 1.2.337 and calibre 2.76.0
-  html5lib_0_9999999 = self.html5lib.override rec {
+  html5lib_0_9999999 = self.html5lib.overridePythonAttrs rec {
     name = "html5lib-${version}";
     buildInputs = with self; [ nose flake8 ];
     propagatedBuildInputs = with self; [ six ];
@@ -2114,6 +2114,8 @@ in {
       sha256 = "1s6wdbrjzw5jhyfbskf4nj1i5bjpjqq9f89a7r1rl59rhpwmfhhq";
     };
   };
+
+  html5-parser = callPackage ../development/python-modules/html5-parser {};
 
   httpserver = callPackage ../development/python-modules/httpserver {};
 
@@ -5438,12 +5440,12 @@ in {
 
   dropbox = buildPythonPackage rec {
     name = "dropbox-${version}";
-    version = "3.37";
-    #doCheck = false; # python 2.7.9 does verify ssl certificates
+    version = "8.0.0";
+    doCheck = false; # Set DROPBOX_TOKEN environment variable to a valid token.
 
     src = pkgs.fetchurl {
       url = "mirror://pypi/d/dropbox/${name}.tar.gz";
-      sha256 = "f65c12bd97f09e29a951bc7cb30a74e005fc4b2f8bb48778796be3f73866b173";
+      sha256 = "0bixx80zjq0286dwm4zhg8bdhc8pqlrqy4n2jg7i6m6a4gv4gak5";
     };
 
     propagatedBuildInputs = with self; [ requests urllib3 mock setuptools ];
@@ -5486,6 +5488,8 @@ in {
       license = licenses.bsd3;
     };
   };
+
+  easydict = callPackage ../development/python-modules/easydict { };
 
   EasyProcess = buildPythonPackage rec {
     name = "EasyProcess-0.2.3";
@@ -6249,6 +6253,8 @@ in {
       substituteInPlace gnutls/library/__init__.py --replace "/usr/local/lib" "${pkgs.gnutls.out}/lib"
     '';
   };
+
+  gpy = callPackage ../development/python-modules/gpy { };
 
   gitdb = buildPythonPackage rec {
     name = "gitdb-0.6.4";
@@ -7309,6 +7315,28 @@ in {
       url = git://github.com/etsy/logster;
       rev = "7475c53822";
       sha256 = "0565wxxiwksnly8rakb2r77k7lwzniq16kv861qd2ns9hgsjgy31";
+    };
+  };
+
+  logfury = buildPythonPackage rec {
+    name = "logfury-${version}";
+    version = "0.1.2";
+
+    src = pkgs.fetchurl {
+      url = "mirror://pypi/l/logfury/${name}.tar.gz";
+      sha256 = "1lywirv3d1lw691mc4mfpz7ak6r49klri43bbfgdnvsfppxminj2";
+    };
+
+    buildInputs =
+      [ self.funcsigs
+        self.six
+      ];
+
+    meta = with pkgs.stdenv.lib; {
+      description = "Logfury is for python library maintainers. It allows for responsible, low-boilerplate logging of method calls.";
+      homepage = "https://github.com/ppolewicz/logfury";
+      license = licenses.bsd3;
+      maintainers = with maintainers; [ jwiegley ];
     };
   };
 
@@ -12251,11 +12279,11 @@ in {
 
 
   lxml = buildPythonPackage ( rec {
-    name = "lxml-3.7.2";
+    name = "lxml-3.8.0";
 
     src = pkgs.fetchurl {
       url = "mirror://pypi/l/lxml/${name}.tar.gz";
-      sha256 = "02j1wf3sh2qmswcz3rh0xvsb8jm63ifaiz2bkng93hyvc1iignar";
+      sha256 = "15nvf6n285n282682qyw3wihsncb0x5amdhyi4b83bfa2nz74vvk";
     };
 
     buildInputs = with self; [ pkgs.libxml2 pkgs.libxslt ];
@@ -12543,6 +12571,7 @@ in {
     inherit (pkgs.darwin.apple_sdk.frameworks) Cocoa;
   };
 
+  matrix-client = callPackage ../development/python-modules/matrix-client/default.nix { };
 
   mccabe = callPackage ../development/python-modules/mccabe { };
 
@@ -14591,12 +14620,16 @@ in {
       sha256 = "04ja1cl8xzqnwrd2gi6nlnxbmjri141bzwa5gybvr44d8h3k2nfa";
     };
 
-    patchPhase = ''
+    postPatch = ''
       substituteInPlace setup.py --replace "version=versioneer.get_version()" "version='${version}'"
+      substituteInPlace setup.py --replace "argparse" ""
     '';
 
     propagatedBuildInputs = with self;
       [ pyptlib argparse twisted pycrypto pyyaml ];
+
+    # No tests in archive
+    doCheck = false;
 
     meta = {
       description = "A pluggable transport proxy";
@@ -21453,22 +21486,6 @@ in {
     };
   };
 
-  sqlmap = buildPythonPackage {
-    name = "sqlmap-1.0.11";
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/s/sqlmap/sqlmap-1.0.11.tar.gz";
-      sha256 = "1x4amyjqnd9j5g2kp9nvg8pr5sqzbhr8gd0m6d671bshvgj568vr";
-    };
-
-    meta = with pkgs.stdenv.lib; {
-      homepage = "http://sqlmap.org";
-      license = licenses.gpl2;
-      description = "Automatic SQL injection and database takeover tool";
-      maintainers = with stdenv.lib.maintainers; [ bennofs ];
-    };
-  };
-
   pgpdump = self.buildPythonPackage rec {
     name = "pgpdump-1.5";
 
@@ -26143,11 +26160,13 @@ EOF
   # Should be bumped along with EFL!
   pythonefl = buildPythonPackage rec {
     name = "python-efl-${version}";
-    version = "1.19.0";
+    version = "1.20.0";
     src = pkgs.fetchurl {
       url = "http://download.enlightenment.org/rel/bindings/python/${name}.tar.xz";
-      sha256 = "105qykdd04mlyzwzyscw6mlc7ajl4wbwhq87ncy1jvw8jjh6jads";
+      sha256 = "18qfqdkkjydqjk0nxs7wnnzdnqlbj3fhkjm0bbd927myzbihxpkh";
     };
+
+    hardeningDisable = [ "format" ];
 
     preConfigure = ''
       export NIX_CFLAGS_COMPILE="$(pkg-config --cflags efl) -I${self.dbus-python}/include/dbus-1.0 $NIX_CFLAGS_COMPILE"
@@ -27121,6 +27140,8 @@ EOF
       license = licenses.gpl2;
     };
   };
+
+  torchvision = callPackage ../development/python-modules/torchvision { };
 
   jenkinsapi = buildPythonPackage rec {
     name = "jenkinsapi-${version}";
@@ -28648,6 +28669,9 @@ EOF
     };
   };
 
+  # We need "normal" libxml2 and not the python package by the same name.
+  pywbem = callPackage ../development/python-modules/pywbem { libxml2 = pkgs.libxml2; };
+
   unicorn = buildPythonPackage rec {
     name  = "unicorn-${version}";
     version = "1.0.1";
@@ -28756,6 +28780,8 @@ EOF
     };
   };
 
+  todoist = callPackage ../development/python-modules/todoist { };
+
   zxcvbn-python = callPackage ../development/python-modules/zxcvbn-python { };
 
   incremental = callPackage ../development/python-modules/incremental { };
@@ -28780,17 +28806,17 @@ EOF
 
   cymem = callPackage ../development/python-modules/cymem { };
 
-  ftfy = callPackage ../development/python-modules/ftfy { };    
+  ftfy = callPackage ../development/python-modules/ftfy { };
 
-  murmurhash = callPackage ../development/python-modules/murmurhash { };      
+  murmurhash = callPackage ../development/python-modules/murmurhash { };
 
-  plac = callPackage ../development/python-modules/plac { };        
-  
+  plac = callPackage ../development/python-modules/plac { };
+
   preshed = callPackage ../development/python-modules/preshed { };
 
-  thinc = callPackage ../development/python-modules/thinc { };  
+  thinc = callPackage ../development/python-modules/thinc { };
 
-  spacy = callPackage ../development/python-modules/spacy { };  
+  spacy = callPackage ../development/python-modules/spacy { };
 });
 
 in fix' (extends overrides packages)

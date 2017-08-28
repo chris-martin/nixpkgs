@@ -154,6 +154,14 @@ rmdir /var/lib/ipfs/.ipfs
       variables as parameters.
     </para>
   </listitem>
+  <listitem>
+    <para>
+      <literal>services.firefox.syncserver</literal> now runs by default as a
+      non-root user. To accomodate this change, the default sqlite database
+      location has also been changed. Migration should work automatically.
+      Refer to the description of the options for more details.
+    </para>
+  </listitem>
 </itemizedlist>
 
 <para>Other notable improvements:</para>
@@ -194,6 +202,17 @@ rmdir /var/lib/ipfs/.ipfs
       allows changing the timezone of a system imperatively using
       <command>timedatectl set-timezone</command>. The default timezone
       is still UTC.
+    </para>
+  </listitem>
+  <listitem>
+    <para>
+      Nixpkgs overlays may now be specified with a file as well as a directory. The
+      value of <literal>&lt;nixpkgs-overlays></literal> may be a file, and 
+      <filename>~/.config/nixpkgs/overlays.nix</filename> can be used instead of the
+      <filename>~/.config/nixpkgs/overalys</filename> directory.
+    </para>
+    <para>
+      See the overlays chapter of the Nixpkgs manual for more details.
     </para>
   </listitem>
 
