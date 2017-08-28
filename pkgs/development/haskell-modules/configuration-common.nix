@@ -36,7 +36,7 @@ self: super: {
   jailbreak-cabal = (disableSharedExecutables super.jailbreak-cabal).override { Cabal = self.Cabal_1_20_0_4; };
 
   # enable using a local hoogle with extra packagages in the database
-  # nix-shell -p "haskellPackages.hoogleLocal (with haskellPackages; [ mtl lens ])"
+  # nix-shell -p "haskellPackages.hoogleLocal { packages = with haskellPackages; [ mtl lens ]; }"
   # $ hoogle server
   hoogleLocal = { packages ? [] }: self.callPackage ./hoogle.nix { inherit packages; };
 
@@ -86,6 +86,11 @@ self: super: {
     fdo-notify = if pkgs.stdenv.isLinux then self.fdo-notify else null;
     hinotify = if pkgs.stdenv.isLinux then self.hinotify else self.fsnotify;
   };
+
+  # Fix test trying to access /home directory
+  shell-conduit = (overrideCabal super.shell-conduit (drv: {
+    postPatch = "sed -i s/home/tmp/ test/Spec.hs";
+  }));
 
   # https://github.com/froozen/kademlia/issues/2
   kademlia = dontCheck super.kademlia;
@@ -416,6 +421,9 @@ self: super: {
 
   # https://github.com/basvandijk/threads/issues/10
   threads = dontCheck super.threads;
+
+  # https://github.com/purescript/purescript/pull/3041
+  purescript = doJailbreak super.purescript;
 
   # Missing module.
   rematch = dontCheck super.rematch;            # https://github.com/tcrayford/rematch/issues/5

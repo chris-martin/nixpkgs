@@ -2100,7 +2100,7 @@ in {
   blaze = callPackage ../development/python-modules/blaze { };
 
   # Needed for FlexGet 1.2.337 and calibre 2.76.0
-  html5lib_0_9999999 = self.html5lib.override rec {
+  html5lib_0_9999999 = self.html5lib.overridePythonAttrs rec {
     name = "html5lib-${version}";
     buildInputs = with self; [ nose flake8 ];
     propagatedBuildInputs = with self; [ six ];
@@ -5487,6 +5487,8 @@ in {
     };
   };
 
+  easydict = callPackage ../development/python-modules/easydict { };
+  
   EasyProcess = buildPythonPackage rec {
     name = "EasyProcess-0.2.3";
 
@@ -8385,6 +8387,7 @@ in {
     };
   };
 
+  hyperlink = callPackage ../development/python-modules/hyperlink {};
 
   zope_copy = buildPythonPackage rec {
     name = "zope.copy-4.0.2";
@@ -26142,11 +26145,13 @@ EOF
   # Should be bumped along with EFL!
   pythonefl = buildPythonPackage rec {
     name = "python-efl-${version}";
-    version = "1.19.0";
+    version = "1.20.0";
     src = pkgs.fetchurl {
       url = "http://download.enlightenment.org/rel/bindings/python/${name}.tar.xz";
-      sha256 = "105qykdd04mlyzwzyscw6mlc7ajl4wbwhq87ncy1jvw8jjh6jads";
+      sha256 = "18qfqdkkjydqjk0nxs7wnnzdnqlbj3fhkjm0bbd927myzbihxpkh";
     };
+
+    hardeningDisable = [ "format" ];
 
     preConfigure = ''
       export NIX_CFLAGS_COMPILE="$(pkg-config --cflags efl) -I${self.dbus-python}/include/dbus-1.0 $NIX_CFLAGS_COMPILE"
@@ -28646,6 +28651,9 @@ EOF
       maintainers = with maintainers; [ bennofs ];
     };
   };
+
+  # We need "normal" libxml2 and not the python package by the same name.
+  pywbem = callPackage ../development/python-modules/pywbem { libxml2 = pkgs.libxml2; };
 
   unicorn = buildPythonPackage rec {
     name  = "unicorn-${version}";
