@@ -519,13 +519,6 @@ in {
 
   amqplib = callPackage ../development/python-modules/amqplib {};
 
-  ansible  = self.ansible2;
-  ansible2 = self.ansible_2_3;
-
-  ansible_2_1 = callPackage ../development/python-modules/ansible/2.1.nix {};
-  ansible_2_2 = callPackage ../development/python-modules/ansible/2.2.nix {};
-  ansible_2_3 = callPackage ../development/python-modules/ansible/2.3.nix {};
-
   apipkg = callPackage ../development/python-modules/apipkg {};
 
   appdirs = callPackage ../development/python-modules/appdirs { };
@@ -1686,28 +1679,7 @@ in {
     };
   };
 
-  cgroup-utils = buildPythonPackage rec {
-    version = "0.6";
-    name = "cgroup-utils-${version}";
-
-    propagatedBuildInputs = with self; [ argparse ];
-    buildInputs = with self; [ pep8 nose ];
-    # Pep8 tests fail...
-    doCheck = false;
-
-    src = pkgs.fetchFromGitHub {
-      owner = "peo3";
-      repo = "cgroup-utils";
-      rev = "v${version}";
-      sha256 = "1ck0aijzrg9xf6hjdxnynkapnyxw0y385jb0q7wyq4jf77ayfszc";
-    };
-
-    meta = {
-      description = "Utility tools for control groups of Linux";
-      maintainers = with maintainers; [ layus ];
-      license = licenses.gpl2;
-    };
-  };
+  cgroup-utils = callPackage ../development/python-modules/cgroup-utils {};
 
   channels = callPackage ../development/python-modules/channels {};
 
@@ -7415,23 +7387,6 @@ in {
     };
   };
 
-  oger = buildPythonPackage rec {
-    name = "oger-${version}";
-    version = "1.1.3";
-    src = pkgs.fetchurl {
-      url = "http://organic.elis.ugent.be/sites/organic.elis.ugent.be/files/Oger-${version}.tar.gz";
-      sha256 = "1k02ys812lz0x0yymljp102amkm8bvfgqsrphnk235xbcrb0akg5";
-    };
-
-    propagatedBuildInputs = with self; [ MDP scipy numpy matplotlib ];
-
-    meta = {
-      homepage = http://organic.elis.ugent.be/organic/engine;
-      description = "Rapidly build, train, and evalue modular learning architectures";
-      maintainers = with maintainers; [ nico202 ];
-      license = licenses.lgpl3;
-    };
-  };
 
   pamela = buildPythonPackage rec {
     name = "pamela-${version}";
@@ -8018,23 +7973,7 @@ in {
 
   };
 
-
-  pyramid_beaker = buildPythonPackage rec {
-    name = "pyramid_beaker-0.8";
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/p/pyramid_beaker/${name}.tar.gz";
-      sha256 = "0hflx3qkcdml1mwpq53sz46s7jickpfn0zy0ns2c7j445j66bp3p";
-    };
-
-    propagatedBuildInputs = with self; [ beaker pyramid ];
-
-    meta = {
-      maintainers = with maintainers; [ domenkozar ];
-      platforms = platforms.all;
-    };
-  };
-
+  pyramid_beaker = callPackage ../development/python-modules/pyramid_beaker { };
 
   pyramid_chameleon = buildPythonPackage rec {
     name = "pyramid_chameleon-0.3";
@@ -13067,24 +13006,7 @@ in {
     };
   });
 
-  moretools = buildPythonPackage rec {
-    name = "moretools-0.1a41";
-
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/m/moretools/${name}.tar.gz";
-      sha256 = "1n442wprbl3cmg08233m1sr3g4z0i8hv9g6bhch7kzdmbl21399f";
-    };
-
-    buildInputs = with self; [ six pathpy setuptools ];
-    propagatedBuildInputs = with self; [ decorator ];
-
-    meta = {
-      description = "Many more basic tools for python 2/3 extending itertools, functools, operator and collections";
-      homepage = https://bitbucket.org/userzimmermann/python-moretools;
-      license = licenses.gpl3Plus;
-      platforms = platforms.linux;
-    };
-  };
+  moretools = callPackage ../development/python-modules/moretools { };
 
   moto = buildPythonPackage rec {
     version = "0.4.25";
@@ -22980,43 +22902,7 @@ in {
     };
   };
 
-  keystoneclient = buildPythonPackage rec {
-    name = "keystoneclient-${version}";
-    version = "1.8.1";
-
-    src = pkgs.fetchurl {
-      url = "https://github.com/openstack/python-keystoneclient/archive/${version}.tar.gz";
-      sha256 = "0lijri0xa5fvmynvq148z13kw4xd3bam4zrfd8aj0gb3lnzh9y6v";
-    };
-
-    PBR_VERSION = "${version}";
-
-    buildInputs = with self; [
-        pbr testtools testresources testrepository requests-mock fixtures pkgs.openssl
-        oslotest pep8 ];
-    propagatedBuildInputs = with self; [
-        oslo-serialization oslo-config oslo-i18n oslo-utils
-        Babel argparse prettytable requests six iso8601 stevedore
-        netaddr debtcollector bandit webob mock pycrypto ];
-
-    patchPhase = ''
-      sed -i 's@python@${python.interpreter}@' .testr.conf
-    '';
-
-    doCheck = false; # The checkPhase below is broken
-
-    checkPhase = ''
-      patchShebangs run_tests.sh
-      ./run_tests.sh
-    '';
-
-    meta = {
-      homepage = https://github.com/openstack/python-novaclient/;
-      description = "Client library and command line tool for the OpenStack Nova API";
-      license = stdenv.lib.licenses.asl20;
-      platforms = stdenv.lib.platforms.linux;
-    };
-  };
+  keystoneclient = callPackage ../development/python-modules/keystoneclient { };
 
   keystonemiddleware = buildPythonPackage rec {
     name = "keystonemiddleware-${version}";
@@ -23230,6 +23116,8 @@ in {
       license = licenses.lgpl2;
     };
   };
+
+  tiros = callPackage ../development/python-modules/tiros { };
 
   # Tkinter/tkinter is part of the Python standard library.
   # The Python interpreters in Nixpkgs come without tkinter by default.
@@ -24710,6 +24598,8 @@ EOF
       platforms = platforms.all;
     };
   };
+
+  zetup = callPackage ../development/python-modules/zetup { };
 
   zope_broken = buildPythonPackage rec {
     name = "zope.broken-3.6.0";

@@ -573,6 +573,8 @@ with pkgs;
 
   genymotion = callPackage ../development/mobile/genymotion { };
 
+  git-fire = callPackage ../tools/misc/git-fire { };
+
   grc = callPackage ../tools/misc/grc { };
 
   green-pdfviewer = callPackage ../applications/misc/green-pdfviewer {
@@ -2438,7 +2440,6 @@ with pkgs;
   haveged = callPackage ../tools/security/haveged { };
 
   habitat = callPackage ../applications/networking/cluster/habitat { };
-  habitat-sh = callPackage ../applications/networking/cluster/habitat/chroot-env.nix { };
 
   hardlink = callPackage ../tools/system/hardlink { };
 
@@ -3421,6 +3422,8 @@ with pkgs;
   newsbeuter-dev = callPackage ../applications/networking/feedreaders/newsbeuter/dev.nix { };
 
   nextcloud = callPackage ../servers/nextcloud { };
+
+  nextcloud-client = libsForQt56.callPackage ../applications/networking/nextcloud-client { };
 
   nextcloud-news-updater = callPackage ../servers/nextcloud/news-updater.nix { };
 
@@ -5780,7 +5783,7 @@ with pkgs;
   jre = jre8;
   jre_headless = jre8_headless;
 
-  openshot-qt = libsForQt56.callPackage ../applications/video/openshot-qt { };
+  openshot-qt = libsForQt5.callPackage ../applications/video/openshot-qt { };
 
   oraclejdk = pkgs.jdkdistro true false;
 
@@ -6652,8 +6655,11 @@ with pkgs;
 
   augeas = callPackage ../tools/system/augeas { };
 
-  ansible  = python2Packages.ansible2;
-  ansible2 = python2Packages.ansible2;
+  ansible_2_1 = callPackage ../tools/admin/ansible/2.1.nix {};
+  ansible_2_2 = callPackage ../tools/admin/ansible/2.2.nix {};
+  ansible_2_3 = callPackage ../tools/admin/ansible/2.3.nix {};
+  ansible  = ansible_2_3;
+  ansible2 = ansible_2_3;
 
   antlr = callPackage ../development/tools/parsing/antlr/2.7.7.nix { };
 
@@ -7254,6 +7260,8 @@ with pkgs;
 
   postiats-utilities = callPackage ../development/tools/postiats-utilities {};
 
+  pprof = callPackage ../development/tools/profiling/pprof { };
+
   prelink = callPackage ../development/tools/misc/prelink { };
 
   premake3 = callPackage ../development/tools/misc/premake/3.nix { };
@@ -7431,8 +7439,6 @@ with pkgs;
     inherit (gnu) mig;
   };
 
-  gdbGuile = lowPrio (gdb.override { inherit guile; });
-
   gdb-multitarget = lowPrio (gdb.override { multitarget = true; });
 
   valgrind = callPackage ../development/tools/analysis/valgrind {
@@ -7472,7 +7478,7 @@ with pkgs;
   xxdiff = callPackage ../development/tools/misc/xxdiff {
     bison = bison2;
   };
-  xxdiff-tip = callPackage ../development/tools/misc/xxdiff/tip.nix { };
+  xxdiff-tip = qt56.callPackage ../development/tools/misc/xxdiff/tip.nix { };
 
   yacc = bison;
 
@@ -12793,10 +12799,6 @@ with pkgs;
 
   upower = callPackage ../os-specific/linux/upower { };
 
-  upstart = callPackage ../os-specific/linux/upstart { };
-
-  upstart-check-config = callPackage ../os-specific/linux/upstart/check-config.nix {};
-
   usbguard = libsForQt5.callPackage ../os-specific/linux/usbguard {
     libgcrypt = null;
   };
@@ -17018,9 +17020,7 @@ with pkgs;
 
   apvlv = callPackage ../applications/misc/apvlv { };
 
-  xpdf = callPackage ../applications/misc/xpdf {
-    base14Fonts = "${ghostscript}/share/ghostscript/fonts";
-  };
+  xpdf = libsForQt5.callPackage ../applications/misc/xpdf { };
 
   xkb_switch = callPackage ../tools/X11/xkb-switch { };
 
@@ -17072,6 +17072,8 @@ with pkgs;
   };
 
   xss-lock = callPackage ../misc/screensavers/xss-lock { };
+
+  xssproxy = callPackage ../misc/screensavers/xssproxy { };
 
   xsynth_dssi = callPackage ../applications/audio/xsynth-dssi { };
 
