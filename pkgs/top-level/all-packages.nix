@@ -1617,6 +1617,8 @@ with pkgs;
 
   debootstrap = callPackage ../tools/misc/debootstrap { };
 
+  deer = callPackage ../shells/zsh-deer { };
+
   detox = callPackage ../tools/misc/detox { };
 
   devilspie2 = callPackage ../applications/misc/devilspie2 {
@@ -2661,6 +2663,8 @@ with pkgs;
   ipmiview = callPackage ../applications/misc/ipmiview {};
 
   ipcalc = callPackage ../tools/networking/ipcalc {};
+
+  netmask = callPackage ../tools/networking/netmask {};
 
   ipv6calc = callPackage ../tools/networking/ipv6calc {};
 
@@ -7609,10 +7613,12 @@ with pkgs;
 
   boost155 = callPackage ../development/libraries/boost/1.55.nix { };
   boost159 = callPackage ../development/libraries/boost/1.59.nix { };
+  boost15x = boost159;
   boost160 = callPackage ../development/libraries/boost/1.60.nix { };
   boost162 = callPackage ../development/libraries/boost/1.62.nix { };
   boost163 = callPackage ../development/libraries/boost/1.63.nix { };
   boost164 = callPackage ../development/libraries/boost/1.64.nix { };
+  boost16x = boost164;
   boost = boost162;
 
   boost_process = callPackage ../development/libraries/boost-process { };
@@ -9529,6 +9535,8 @@ with pkgs;
   luabind = callPackage ../development/libraries/luabind { lua = lua5_1; };
 
   luabind_luajit = callPackage ../development/libraries/luabind { lua = luajit; };
+
+  luaffi = callPackage ../development/libraries/luaffi { lua = lua5_1; };
 
   lzo = callPackage ../development/libraries/lzo { };
 
@@ -12227,6 +12235,21 @@ with pkgs;
     ];
   };
 
+  linux_testing_bcachefs = callPackage ../os-specific/linux/kernel/linux-testing-bcachefs.nix {
+    kernelPatches =
+      [ kernelPatches.bridge_stp_helper
+        kernelPatches.p9_fixes
+        # See pkgs/os-specific/linux/kernel/cpu-cgroup-v2-patches/README.md
+        # when adding a new linux version
+        kernelPatches.cpu-cgroup-v2."4.11"
+        kernelPatches.modinst_arg_list_too_long
+      ]
+      ++ lib.optionals ((platform.kernelArch or null) == "mips")
+      [ kernelPatches.mips_fpureg_emu
+        kernelPatches.mips_fpu_sigill
+        kernelPatches.mips_ext3_n32
+      ];
+  };
 
   linux_samus_4_12 = callPackage ../os-specific/linux/kernel/linux-samus-4.12.nix {
     kernelPatches =
@@ -12412,6 +12435,9 @@ with pkgs;
       inherit version src configfile stdenv;
       allowImportFromDerivation = true;
     }));
+
+  # Build a kernel with bcachefs module
+  linuxPackages_testing_bcachefs = recurseIntoAttrs (linuxPackagesFor pkgs.linux_testing_bcachefs);
 
   # Build a kernel for Xen dom0
   linuxPackages_latest_xen_dom0 = recurseIntoAttrs (linuxPackagesFor (pkgs.linux_latest.override { features.xen_dom0=true; }));
@@ -15134,7 +15160,9 @@ with pkgs;
   linuxband = callPackage ../applications/audio/linuxband { };
 
   ledger2 = callPackage ../applications/office/ledger/2.6.3.nix { };
-  ledger3 = callPackage ../applications/office/ledger { };
+  ledger3 = callPackage ../applications/office/ledger {
+    boost = boost15x;
+  };
   ledger = ledger3;
   ledger-web = callPackage ../applications/office/ledger-web { };
 
@@ -15706,7 +15734,7 @@ with pkgs;
 
   pflask = callPackage ../os-specific/linux/pflask {};
 
-  photoqt = libsForQt5.callPackage ../applications/graphics/photoqt { };
+  photoqt = libsForQt56.callPackage ../applications/graphics/photoqt { };
 
   phototonic = libsForQt5.callPackage ../applications/graphics/phototonic { };
 
@@ -16752,6 +16780,10 @@ with pkgs;
     inherit (darwin) libobjc;
     inherit (darwin) libresolv;
     guile = guile_2_0;
+  };
+
+  weechat-matrix-bridge = callPackage ../applications/networking/instant-messengers/weechat-matrix-bridge {
+    inherit (luaPackages) cjson;
   };
 
   westonLite = callPackage ../applications/window-managers/weston {
@@ -17902,9 +17934,7 @@ with pkgs;
     inherit (lib) makeScope;
   });
 
-  mate = recurseIntoAttrs (callPackage ../desktops/mate {
-    callPackage = newScope pkgs.mate;
-  });
+  mate = recurseIntoAttrs (callPackage ../desktops/mate { });
 
   maxx = callPackage ../desktops/maxx { };
 
@@ -18755,12 +18785,13 @@ with pkgs;
 
   gensgs = callPackage_i686 ../misc/emulators/gens-gs { };
 
-  ghostscript = callPackage ../misc/ghostscript {
-    x11Support = false;
+  ghostscript = callPackage ../misc/ghostscript rec {
     cupsSupport = config.ghostscript.cups or (!stdenv.isDarwin);
+    x11Support = cupsSupport; # with CUPS, X11 only adds very little
   };
 
   ghostscriptX = appendToName "with-X" (ghostscript.override {
+    cupsSupport = true;
     x11Support = true;
   });
 
@@ -19048,6 +19079,10 @@ with pkgs;
     terraform_0_9
     terraform_0_10
     ;
+
+  # Terraform with all the plugins, both to get Hydra to build all plugins for us and for
+  # convenience if someone doesn't want to have to think about which plugins to use.
+  terraform_0_10-full = terraform_0_10.withPlugins lib.attrValues;
 
   terraform = terraform_0_9;
 
