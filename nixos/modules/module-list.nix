@@ -121,7 +121,6 @@
   ./security/chromium-suid-sandbox.nix
   ./security/dhparams.nix
   ./security/duosec.nix
-  ./security/grsecurity.nix
   ./security/hidepid.nix
   ./security/lock-kernel-modules.nix
   ./security/oath.nix
@@ -205,6 +204,7 @@
   ./services/desktops/gnome3/gnome-online-miners.nix
   ./services/desktops/gnome3/gnome-terminal-server.nix
   ./services/desktops/gnome3/gnome-user-share.nix
+  ./services/desktops/gnome3/gpaste.nix
   ./services/desktops/gnome3/gvfs.nix
   ./services/desktops/gnome3/seahorse.nix
   ./services/desktops/gnome3/sushi.nix
@@ -226,6 +226,7 @@
   ./services/hardware/brltty.nix
   ./services/hardware/freefall.nix
   ./services/hardware/illum.nix
+  ./services/hardware/interception-tools.nix
   ./services/hardware/irqbalance.nix
   ./services/hardware/nvidia-optimus.nix
   ./services/hardware/pcscd.nix
@@ -457,7 +458,6 @@
   ./services/networking/lldpd.nix
   ./services/networking/logmein-hamachi.nix
   ./services/networking/mailpile.nix
-  ./services/networking/mfi.nix
   ./services/networking/mjpg-streamer.nix
   ./services/networking/minidlna.nix
   ./services/networking/miniupnpd.nix
@@ -587,6 +587,7 @@
   ./services/web-apps/frab.nix
   ./services/web-apps/mattermost.nix
   ./services/web-apps/nixbot.nix
+  ./services/web-apps/nexus.nix
   ./services/web-apps/pgpkeyserver-lite.nix
   ./services/web-apps/piwik.nix
   ./services/web-apps/pump.io.nix
