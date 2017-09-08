@@ -1206,7 +1206,7 @@ in {
     };
 
     meta = {
-      description = "A backport of the get_terminal_size function from Python 3.3���s shutil.";
+      description = "A backport of the get_terminal_size function from Python 3.3???s shutil.";
       homepage = https://github.com/chrippa/backports.shutil_get_terminal_size;
       license = with licenses; [ mit ];
     };
@@ -3903,7 +3903,7 @@ in {
         written in the PKG-INFO file inside a source distriubtion (an sdist)
         or a binary distribution (e.g., created by running bdist_egg). It can
         also query the EGG-INFO directory of an installed distribution, and the
-        *.egg-info stored in a ���development checkout��� (e.g, created by running
+        *.egg-info stored in a ???development checkout??? (e.g, created by running
         setup.py develop).
       '';
     };
@@ -4215,7 +4215,7 @@ in {
     '';
 
     meta = {
-      description = "Simple configuration objects for Py.test fixtures. Allows you to skip tests when their required config variables aren���t set.";
+      description = "Simple configuration objects for Py.test fixtures. Allows you to skip tests when their required config variables aren???t set.";
       homepage = https://github.com/manahl/pytest-plugins;
       license = licenses.mit;
       maintainers = with maintainers; [ ryansydnor ];
@@ -4474,7 +4474,7 @@ in {
     propagatedBuildInputs = with self; [ pytest-fixture-config pytest-shutil ];
     checkPhase = '' py.test tests/unit '';
     meta = {
-      description = "Create a Python virtual environment in your test that cleans up on teardown. The fixture has utility methods to install packages and list what���s installed.";
+      description = "Create a Python virtual environment in your test that cleans up on teardown. The fixture has utility methods to install packages and list what???s installed.";
       homepage = https://github.com/manahl/pytest-plugins;
       license = licenses.mit;
       maintainers = with maintainers; [ ryansydnor ];
@@ -9443,7 +9443,7 @@ in {
         code to be developed that will work with both libraries. It was developed
         initially for the openpyxl project but is now a standalone module.
 
-        The code was written by Elias Rabel as part of the Python D��sseldorf
+        The code was written by Elias Rabel as part of the Python D??sseldorf
         openpyxl sprint in September 2014.
       '';
       homepage = "https://pypi.python.org/pypi/et_xmlfile";
@@ -17833,21 +17833,6 @@ in {
 
   pyrr = callPackage ../development/python-modules/pyrr { };
 
-    src = pkgs.fetchurl {
-      url = "mirror://pypi/p/pyrr/pyrr-${version}.tar.gz";
-      sha256 = "04a65a9fb5c746b41209f55b21abf47a0ef80a4271159d670ca9579d9be3b4fa";
-    };
-
-    buildInputs = with self; [ setuptools ];
-    propagatedBuildInputs = with self; [ multipledispatch numpy ];
-
-    meta = {
-      description = "3D mathematical functions using NumPy";
-      homepage = https://github.com/adamlwgriffiths/Pyrr/;
-      license = licenses.bsd2;
-    };
-  };
-
   pysha3 = buildPythonPackage rec {
     name = "pysha3-${version}";
     version = "0.3";
@@ -21396,7 +21381,7 @@ in {
       sha256 = "17v80qb98p1gv4j9mq6wb55cv7hc4j1hzw5y2f4s5hrpxs3w3a2q";
     };
 
-    # A��test fail within chroot builds.
+    # A??test fail within chroot builds.
     doCheck = false;
 
     buildInputs = with self; [ mock testscenarios ];
@@ -25478,7 +25463,7 @@ EOF
 
     meta = {
       homepage    = http://pyspotify.mopidy.com;
-      description = "A Python interface to Spotify���s online music streaming service";
+      description = "A Python interface to Spotify???s online music streaming service";
       license     = licenses.unfree;
       maintainers = with maintainers; [ lovek323 rickynils ];
       platforms   = platforms.unix;
@@ -27451,7 +27436,7 @@ EOF
 
     meta = {
       homepage = https://github.com/quandl/quandl-python;
-      description = "A Python library for Quandl���s RESTful API";
+      description = "A Python library for Quandl???s RESTful API";
       maintainers = with maintainers; [ NikolaMandic ];
     };
   };
