@@ -1754,11 +1754,15 @@ let self = _self // overrides; _self = with self; {
     };
   };
 
-  ClassAutouse = buildPerlPackage {
-    name = "Class-Autouse-1.99_02";
+  ClassAutouse = buildPerlPackage rec {
+    name = "Class-Autouse-2.01";
     src = fetchurl {
-      url = mirror://cpan/authors/id/A/AD/ADAMK/Class-Autouse-1.99_02.tar.gz;
-      sha256 = "1jkhczx2flxrz154ps90fj9wcchkpmnp5sapwc0l92rpn7jpsf08";
+      url = "mirror://cpan/authors/id/A/AD/ADAMK/${name}.tar.gz";
+      sha256 = "c05b3236c05719d819c20db0fdeb6d0954747e43d7a738294eed7fbcf36ecf1b";
+    };
+    meta = {
+      description = "Run-time load a class the first time you call a method in it";
+      license = with stdenv.lib.licenses; [ artistic1 gpl1Plus ];
     };
   };
 
@@ -2827,11 +2831,15 @@ let self = _self // overrides; _self = with self; {
     };
   };
 
-  DataDumper = buildPerlPackage {
-    name = "Data-Dumper-2.154";
+  DataDumper = buildPerlPackage rec {
+    name = "Data-Dumper-2.161";
     src = fetchurl {
-      url = mirror://cpan/authors/id/S/SM/SMUELLER/Data-Dumper-2.154.tar.gz;
-      sha256 = "e30fcb6dea290cda85b67fc46d227a2ea890a8bd36c213557adec9c99ebd212f";
+      url = "mirror://cpan/authors/id/S/SM/SMUELLER/${name}.tar.gz";
+      sha256 = "3aa4ac1b042b3880438165fb2b2139d377564a8e9928ffe689ede5304ee90558";
+    };
+    outputs = [ "out" ];
+    meta = {
+      license = with stdenv.lib.licenses; [ artistic1 gpl1Plus ];
     };
   };
 
@@ -5233,11 +5241,16 @@ let self = _self // overrides; _self = with self; {
     };
   };
 
-  FileModified = buildPerlPackage {
-    name = "File-Modified-0.07";
+  FileModified = buildPerlPackage rec {
+    name = "File-Modified-0.10";
     src = fetchurl {
-      url = mirror://cpan/authors/id/C/CO/CORION/File-Modified-0.07.tar.gz;
-      sha256 = "11zkg171fa5vdbyrbfcay134hhgyf4yaincjxwspwznrfmkpi49h";
+      url = "mirror://cpan/authors/id/N/NE/NEILB/${name}.tar.gz";
+      sha256 = "6b50b1aab6ec6998a017f6403c2735b3bc1e1cf46187bd134d7eb6df3fc45144";
+    };
+    meta = {
+      homepage = https://github.com/neilbowers/File-Modified;
+      description = "Checks intelligently if files have changed";
+      license = with stdenv.lib.licenses; [ artistic1 gpl1Plus ];
     };
   };
 
@@ -5445,10 +5458,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   FilterSimple = buildPerlPackage {
-    name = "Filter-Simple-0.91";
+    name = "Filter-Simple-0.94";
     src = fetchurl {
-      url = mirror://cpan/authors/id/S/SM/SMUELLER/Filter-Simple-0.91.tar.gz;
-      sha256 = "c75a4945e94ecfe97e1409f49df036700d2e072e288497e205c4d319a80f694d";
+      url = mirror://cpan/authors/id/S/SM/SMUELLER/Filter-Simple-0.94.tar.gz;
+      sha256 = "1lkrgsqaxf595ha1y29gxqqf4kf8cpm5yzr4gg7zngbq1nb0pz6g";
     };
     meta = {
       description = "Simplified source filtering";
