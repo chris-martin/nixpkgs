@@ -175,6 +175,12 @@ lib.mapAttrs (n: v: v // { shortName = n; }) rec {
     fullName = "DOC License";
   };
 
+  eapl = {
+    fullName = "EPSON AVASYS PUBLIC LICENSE";
+    url = http://avasys.jp/hp/menu000000700/hpg000000603.htm;
+    free = false;
+  };
+
   efl10 = spdx {
     spdxId = "EFL-1.0";
     fullName = "Eiffel Forum License v1.0";
@@ -198,7 +204,7 @@ lib.mapAttrs (n: v: v // { shortName = n; }) rec {
 
   eupl11 = spdx {
     spdxId = "EUPL-1.1";
-    fullname = "European Union Public License 1.1";
+    fullName = "European Union Public License 1.1";
   };
 
   fdl12 = spdx {
@@ -209,6 +215,11 @@ lib.mapAttrs (n: v: v // { shortName = n; }) rec {
   fdl13 = spdx {
     spdxId = "GFDL-1.3";
     fullName = "GNU Free Documentation License v1.3";
+  };
+
+  ffsl = {
+    fullName = "Floodgap Free Software License";
+    url = http://www.floodgap.com/software/ffsl/license.html;
   };
 
   free = {
@@ -363,7 +374,7 @@ lib.mapAttrs (n: v: v // { shortName = n; }) rec {
   };
 
   miros = {
-    fullname = "MirOS License";
+    fullName = "MirOS License";
     url = https://opensource.org/licenses/MirOS;
   };
 
