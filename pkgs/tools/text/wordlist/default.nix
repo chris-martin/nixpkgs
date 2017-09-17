@@ -13,13 +13,13 @@ let
   src = fetchFromGitHub {
     owner = "chris-martin";
     repo = "wordlist";
-    rev = "492e26fa4fdf5bda4ef3ea15939a0bc191fcbb71";
-    sha256 = "1q5isydifcfjp5bykg15p46vvx8223bx166pi30znl5v6mb4ajw1";
+    rev = "8f52db02096e37be56fb8f7bc62ed081cb72708b";
+    sha256 = "1mchlw9sh7qbfh1nsiylkxlv3n4qshnv9ljfdinszfcyr861x0la";
   };
 
   haskellAndPackages = haskell.packages.ghc802.ghcWithPackages (p: with p; [
     base containers MonadRandom optparse-applicative stdenv text
-    ghc cabal-install hpack
+    hpack
   ]);
 
 in stdenv.mkDerivation {
@@ -27,8 +27,10 @@ in stdenv.mkDerivation {
   inherit src;
   buildInputs = [ makeWrapper haskellAndPackages ];
   installPhase = ''
+    cd wordlist
     hpack
-    HOME="$TMP" cabal build
+    runhaskell Setup.hs configure
+    runhaskell Setup.hs build
     mkdir -p $out/bin
     cp ./dist/build/wordlist/wordlist $out/bin
     wrapProgram $out/bin/wordlist --set WORD_LIST_PATH ${data}
