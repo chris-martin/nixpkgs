@@ -1,3 +1,4 @@
+{ ...}:
 /* List of NixOS maintainers. The format is:
 
     handle = "Real Name <address@example.org>";
@@ -237,6 +238,7 @@
   guillaumekoenig = "Guillaume Koenig <guillaume.edward.koenig@gmail.com>";
   guyonvarch = "Joris Guyonvarch <joris@guyonvarch.me>";
   hakuch = "Jesse Haber-Kucharsky <hakuch@gmail.com>";
+  hamhut1066 = "Hamish Hutchings <github@hamhut1066.com>";
   havvy = "Ryan Scheel <ryan.havvy@gmail.com>";
   hbunke = "Hendrik Bunke <bunke.hendrik@gmail.com>";
   hce = "Hans-Christian Esperer <hc@hcesperer.org>";
@@ -661,4 +663,5 @@
   zoomulator = "Kim Simmons <zoomulator@gmail.com>";
   zraexy = "David Mell <zraexy@gmail.com>";
   zx2c4 = "Jason A. Donenfeld <Jason@zx2c4.com>";
+  zzamboni = "Diego Zamboni <diego@zzamboni.org>";
 }
