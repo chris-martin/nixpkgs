@@ -820,6 +820,7 @@ with pkgs;
   });
 
   caddy = callPackage ../servers/caddy { };
+  traefik = callPackage ../servers/traefik { };
 
   capstone = callPackage ../development/libraries/capstone { };
 
@@ -1233,6 +1234,8 @@ with pkgs;
   asunder = callPackage ../applications/audio/asunder { };
 
   autossh = callPackage ../tools/networking/autossh { };
+
+  assh = callPackage ../tools/networking/assh { };
 
   asynk = callPackage ../tools/networking/asynk { };
 
@@ -1831,7 +1834,7 @@ with pkgs;
   evemu = callPackage ../tools/system/evemu { };
 
   # The latest version used by elasticsearch, logstash, kibana and the the beats from elastic.
-  elk5Version = "5.5.2";
+  elk5Version = "5.6.1";
 
   elasticsearch = callPackage ../servers/search/elasticsearch { };
   elasticsearch2 = callPackage ../servers/search/elasticsearch/2.x.nix { };
@@ -4535,6 +4538,8 @@ with pkgs;
 
   textadept = callPackage ../applications/editors/textadept { };
 
+  texworks = callPackage ../applications/editors/texworks { };
+
   thc-hydra = callPackage ../tools/security/thc-hydra { };
 
   thefuck = callPackage ../tools/misc/thefuck { };
@@ -5326,10 +5331,7 @@ with pkgs;
 
   cmucl_binary = callPackage_i686 ../development/compilers/cmucl/binary.nix { };
 
-  compcert = callPackage ../development/compilers/compcert {
-    # Pin the version of coq used in compcert to 8.6 until the next release
-    coq = callPackage ../applications/science/logic/coq { version = "8.6"; };
-  };
+  compcert = callPackage ../development/compilers/compcert { };
 
 
   # Users installing via `nix-env` will likely be using the REPL,
@@ -6289,15 +6291,10 @@ with pkgs;
   beam = callPackage ./beam-packages.nix { };
 
   inherit (beam.interpreters)
-    erlang erlang_odbc erlang_javac erlang_odbc_javac
+    erlang erlangR17 erlangR18 erlangR19 erlangR20
+    erlang_odbc erlang_javac erlang_odbc_javac erlang_basho_R16B02
     elixir elixir_1_5 elixir_1_4 elixir_1_3
-    lfe lfe_1_2
-    erlangR16 erlangR16_odbc
-    erlang_basho_R16B02 erlang_basho_R16B02_odbc
-    erlangR17 erlangR17_odbc erlangR17_javac erlangR17_odbc_javac
-    erlangR18 erlangR18_odbc erlangR18_javac erlangR18_odbc_javac
-    erlangR19 erlangR19_odbc erlangR19_javac erlangR19_odbc_javac
-    erlangR20 erlangR20_odbc erlangR20_javac erlangR20_odbc_javac;
+    lfe lfe_1_2;
 
   inherit (beam.packages.erlang)
     rebar rebar3-open rebar3
@@ -7905,7 +7902,9 @@ with pkgs;
 
   eigen2 = callPackage ../development/libraries/eigen/2.0.nix {};
 
-  vmmlib = callPackage ../development/libraries/vmmlib {};
+  vmmlib = callPackage ../development/libraries/vmmlib {
+    inherit (darwin.apple_sdk.frameworks) Accelerate CoreGraphics CoreVideo;
+  };
 
   elastix = callPackage ../development/libraries/science/biology/elastix { };
 
@@ -9704,6 +9703,8 @@ with pkgs;
 
   mpeg2dec = libmpeg2;
 
+  mqtt-bench = callPackage ../applications/misc/mqtt-bench {};
+
   msilbc = callPackage ../development/libraries/msilbc { };
 
   mp4v2 = callPackage ../development/libraries/mp4v2 { };
@@ -9741,6 +9742,8 @@ with pkgs;
   nanomsg = callPackage ../development/libraries/nanomsg { };
 
   ndpi = callPackage ../development/libraries/ndpi { };
+
+  nifticlib = callPackage ../development/libraries/science/biology/nifticlib { };
 
   notify-sharp = callPackage ../development/libraries/notify-sharp { };
 
@@ -12040,9 +12043,12 @@ with pkgs;
     inherit (linuxPackages) kernel;
   };
 
-  fuse = callPackage ../os-specific/linux/fuse {
+  fusePackages = callPackage ../os-specific/linux/fuse {
     utillinux = utillinuxMinimal;
   };
+  fuse = lowPrio fusePackages.fuse_2;
+  fuse3 = fusePackages.fuse_3;
+  fuse-common = hiPrio fusePackages.fuse_3.common;
 
   fusionio-util = callPackage ../os-specific/linux/fusionio/util.nix { };
 
@@ -14606,7 +14612,12 @@ with pkgs;
     libart = pkgs.gnome2.libart_lgpl;
   };
 
-  jetbrains = recurseIntoAttrs (callPackages ../applications/editors/jetbrains { androidsdk = androidsdk_extras; });
+  jetbrains = (recurseIntoAttrs (callPackages ../applications/editors/jetbrains {
+    jdk = jetbrains.jdk;
+    androidsdk = androidsdk_extras;
+  }) // {
+    jdk = callPackage ../development/compilers/jetbrains-jdk {  };
+  });
 
   libquvi = callPackage ../applications/video/quvi/library.nix { };
 
@@ -15713,7 +15724,7 @@ with pkgs;
 
   pavucontrol = callPackage ../applications/audio/pavucontrol { };
 
-  paraview = callPackage ../applications/graphics/paraview { };
+  paraview = libsForQt5.callPackage ../applications/graphics/paraview { };
 
   packet = callPackage ../development/tools/packet { };
 
@@ -16514,6 +16525,8 @@ with pkgs;
     quazip = quazip_qt4;
   };
 
+  topydo = callPackage ../applications/misc/topydo {};
+
   torchPackages = recurseIntoAttrs ( callPackage ../applications/science/machine-learning/torch {
     lua = luajit ;
   } );
@@ -17189,7 +17202,9 @@ with pkgs;
 
   zed = callPackage ../applications/editors/zed { };
 
-  zeroc_ice = callPackage ../development/libraries/zeroc-ice { };
+  zeroc_ice = callPackage ../development/libraries/zeroc-ice {
+    inherit (darwin.apple_sdk.frameworks) Security;
+  };
 
   zexy = callPackage ../applications/audio/pd-plugins/zexy  { };
 
@@ -17742,10 +17757,7 @@ with pkgs;
 
   tome4 = callPackage ../games/tome4 { };
 
-  trackballs = callPackage ../games/trackballs {
-    debug = false;
-    guile = guile_1_8;
-  };
+  trackballs = callPackage ../games/trackballs { };
 
   tremulous = callPackage ../games/tremulous { };
 
@@ -17789,7 +17801,9 @@ with pkgs;
 
   vapor = callPackage ../games/vapor { love = love_0_8; };
 
-  vapoursynth = callPackage ../development/libraries/vapoursynth { };
+  vapoursynth = callPackage ../development/libraries/vapoursynth {
+    inherit (darwin.apple_sdk.frameworks) ApplicationServices;
+  };
 
   vapoursynth-mvtools = callPackage ../development/libraries/vapoursynth-mvtools { };
 
@@ -18508,9 +18522,12 @@ with pkgs;
     inherit (gnome3) gtksourceview;
   };
 
-  singular = callPackage ../applications/science/math/singular {};
+  singular = callPackage ../applications/science/math/singular {
+    stdenv = overrideCC stdenv gcc5;
+  };
   libsingular = callPackage ../applications/science/math/singular {
     asLibsingular = true;
+    stdenv = overrideCC stdenv gcc5;
   };
 
   scilab = callPackage ../applications/science/math/scilab {
