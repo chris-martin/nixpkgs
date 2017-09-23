@@ -513,6 +513,8 @@ with pkgs;
 
   awscli = pythonPackages.awscli; # Should be moved out of python-packages.nix
 
+  awsebcli = callPackage ../tools/virtualization/awsebcli {};
+
   awslogs = callPackage ../tools/admin/awslogs { };
 
   aws_shell = python2Packages.aws_shell; # Should be moved out of python-packages.nix
@@ -4065,6 +4067,8 @@ with pkgs;
   radarr = callPackage ../servers/radarr { };
 
   radeon-profile = libsForQt5.callPackage ../tools/misc/radeon-profile { };
+
+  radsecproxy = callPackage ../tools/networking/radsecproxy { };
 
   radvd = callPackage ../tools/networking/radvd { };
 
@@ -12099,10 +12103,6 @@ with pkgs;
 
   facetimehd-firmware = callPackage ../os-specific/linux/firmware/facetimehd-firmware { };
 
-  fanctl = callPackage ../os-specific/linux/fanctl {
-    iproute = iproute.override { enableFan = true; };
-  };
-
   fatrace = callPackage ../os-specific/linux/fatrace { };
 
   ffadoFull = callPackage ../os-specific/linux/ffado {
@@ -18629,9 +18629,12 @@ with pkgs;
     inherit (gnome3) gtksourceview;
   };
 
-  singular = callPackage ../applications/science/math/singular {};
+  singular = callPackage ../applications/science/math/singular {
+    stdenv = overrideCC stdenv gcc5;
+  };
   libsingular = callPackage ../applications/science/math/singular {
     asLibsingular = true;
+    stdenv = overrideCC stdenv gcc5;
   };
 
   scilab = callPackage ../applications/science/math/scilab {
