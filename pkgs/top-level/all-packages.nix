@@ -5669,6 +5669,8 @@ with pkgs;
 
   cabal-install = haskell.lib.justStaticExecutables haskellPackages.cabal-install;
 
+  cabal = cabal-install;
+
   stack = haskell.lib.justStaticExecutables haskellPackages.stack;
 
   all-cabal-hashes = callPackage ../data/misc/hackage/default.nix { };
@@ -5678,6 +5680,26 @@ with pkgs;
     (haskellPackages.callPackage ../development/compilers/purescript/psc-package { });
 
   choose = haskellPackages.choose-exe;
+
+  ghc-mod = haskell.lib.justStaticExecutables haskellPackages.ghc-mod;
+
+  hasktags = haskell.lib.justStaticExecutables haskellPackages.hasktags;
+
+  hdevtools = haskell.lib.justStaticExecutables haskellPackages.hdevtools;
+
+  hlint = haskell.lib.justStaticExecutables haskellPackages.hlint;
+
+  hoogle = haskell.lib.justStaticExecutables haskellPackages.hoogle;
+
+  hsdev = haskell.lib.justStaticExecutables haskellPackages.hsdev;
+
+  intero = haskell.lib.justStaticExecutables haskellPackages.intero;
+
+  pointfree = haskell.lib.justStaticExecutables haskellPackages.pointfree;
+
+  pointful = haskell.lib.justStaticExecutables haskellPackages.pointful;
+
+  stylish-haskell = haskell.lib.justStaticExecutables haskellPackages.stylish-haskell;
 
   inherit (ocamlPackages.haxe) haxe_3_2 haxe_3_4;
   haxe = haxe_3_4;
@@ -11001,7 +11023,11 @@ with pkgs;
 
   yuicompressor = callPackage ../development/tools/yuicompressor { };
 
+  grunt = nodePackages.grunt-cli;
+
   ### DEVELOPMENT / BOWER MODULES (JAVASCRIPT)
+
+  inherit (nodePackages) bower;
 
   buildBowerComponents = callPackage ../development/bower-modules/generic { };
 
@@ -13687,6 +13713,8 @@ with pkgs;
 
   chatzilla = callPackage ../applications/networking/irc/chatzilla { };
 
+  inherit (gnome3) cheese;
+
   chirp = callPackage ../applications/misc/chirp {
     inherit (pythonPackages) pyserial pygtk;
   };
@@ -13874,6 +13902,8 @@ with pkgs;
   docker-proxy = callPackage ../applications/virtualization/docker/proxy.nix { };
 
   docker-gc = callPackage ../applications/virtualization/docker/gc.nix { };
+
+  docker-compose = python27Packages.docker_compose;
 
   docker-machine = callPackage ../applications/networking/cluster/docker-machine { };
   docker-machine-kvm = callPackage ../applications/networking/cluster/docker-machine/kvm.nix { };
@@ -14155,6 +14185,8 @@ with pkgs;
 
   enhanced-ctorrent = callPackage ../applications/networking/enhanced-ctorrent { };
 
+  inherit (gnome3) eog;
+
   epdfview = callPackage ../applications/misc/epdfview { };
 
   inherit (gnome3) epiphany;
@@ -14220,6 +14252,8 @@ with pkgs;
   fehlstart = callPackage ../applications/misc/fehlstart { };
 
   fetchmail = callPackage ../applications/misc/fetchmail { };
+
+  inherit (gnome3) file-roller;
 
   flacon = callPackage ../applications/audio/flacon { };
 
