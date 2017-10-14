@@ -1886,6 +1886,8 @@ with pkgs;
 
   enblend-enfuse = callPackage ../tools/graphics/enblend-enfuse { };
 
+  cryfs = callPackage ../tools/filesystems/cryfs { };
+
   encfs = callPackage ../tools/filesystems/encfs {
     tinyxml2 = tinyxml-2;
   };
@@ -3224,7 +3226,9 @@ with pkgs;
 
   mailhog = callPackage ../servers/mail/mailhog {};
 
-  mailnag = callPackage ../applications/networking/mailreaders/mailnag { };
+  mailnag = callPackage ../applications/networking/mailreaders/mailnag {
+    pythonPackages = python2Packages;
+  };
 
   mailsend = callPackage ../tools/networking/mailsend { };
 
@@ -7427,6 +7431,8 @@ with pkgs;
 
   ninja = callPackage ../development/tools/build-managers/ninja { };
 
+  gn = callPackage ../development/tools/build-managers/gn { };
+
   nixbang = callPackage ../development/tools/misc/nixbang {
       pythonPackages = python3Packages;
   };
@@ -10136,8 +10142,7 @@ with pkgs;
 
   pcg_c = callPackage ../development/libraries/pcg-c { };
 
-  pcl = callPackage ../development/libraries/pcl {
-    vtk = vtkWithQt4;
+  pcl = libsForQt5.callPackage ../development/libraries/pcl {
     inherit (darwin) cf-private;
     inherit (darwin.apple_sdk.frameworks) Cocoa AGL OpenGL;
   };
@@ -10876,9 +10881,8 @@ with pkgs;
     stdenv = overrideCC stdenv gcc5;
   };
 
-  v8_3_24_10 = callPackage ../development/libraries/v8/3.24.10.nix {
-    inherit (python2Packages) python gyp;
-    stdenv = overrideCC stdenv gcc5;
+  v8_6_x = callPackage ../development/libraries/v8/6_x.nix {
+    inherit (python2Packages) python;
   };
 
   v8 = callPackage ../development/libraries/v8 {
@@ -11498,7 +11502,8 @@ with pkgs;
   elasticmq = callPackage ../servers/elasticmq { };
 
   eventstore = callPackage ../servers/nosql/eventstore {
-    v8 = v8_3_24_10;
+    mono = mono46;
+    v8 = v8_6_x;
   };
 
   etcdctl = etcd;
@@ -12353,6 +12358,8 @@ with pkgs;
   kmscon = callPackage ../os-specific/linux/kmscon { };
 
   kmscube = callPackage ../os-specific/linux/kmscube { };
+
+  kmsxx = callPackage ../development/libraries/kmsxx { };
 
   latencytop = callPackage ../os-specific/linux/latencytop { };
 
@@ -13869,6 +13876,8 @@ with pkgs;
   };
 
   brackets = callPackage ../applications/editors/brackets { gconf = gnome3.gconf; };
+
+  notmuch-bower = callPackage ../applications/networking/mailreaders/notmuch-bower { };
 
   bristol = callPackage ../applications/audio/bristol { };
 
@@ -16252,7 +16261,7 @@ with pkgs;
   falkon = libsForQt5.callPackage ../applications/networking/browsers/falkon { };
 
   qutebrowser = libsForQt5.callPackage ../applications/networking/browsers/qutebrowser {
-    inherit (python3Packages) buildPythonApplication pyqt5 jinja2 pygments pyyaml pypeg2 cssutils pyopengl;
+    inherit (python3Packages) buildPythonApplication pyqt5 jinja2 pygments pyyaml pypeg2 cssutils pyopengl attrs;
     inherit (gst_all_1) gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav;
   };
 
@@ -18297,7 +18306,7 @@ with pkgs;
     kinfocenter kmenuedit kscreen kscreenlocker ksshaskpass ksysguard
     kwallet-pam kwayland-integration kwin kwrited milou oxygen plasma-desktop
     plasma-integration plasma-nm plasma-pa plasma-workspace
-    plasma-workspace-wallpapers polkit-kde-agent powerdevil startkde
+    plasma-workspace-wallpapers polkit-kde-agent powerdevil sddm-kcm startkde
     systemsettings;
 
   ### SCIENCE
@@ -19112,6 +19121,8 @@ with pkgs;
 
   guetzli = callPackage ../applications/graphics/guetzli { };
 
+  gummi = callPackage ../applications/misc/gummi { };
+
   gxemul = callPackage ../misc/emulators/gxemul { };
 
   hatari = callPackage ../misc/emulators/hatari { };
@@ -19279,6 +19290,8 @@ with pkgs;
   ppsspp = libsForQt5.callPackage ../misc/emulators/ppsspp { };
 
   pt = callPackage ../applications/misc/pt { };
+
+  pykms = callPackage ../tools/networking/pykms { };
 
   pyload = callPackage ../applications/networking/pyload {};
 

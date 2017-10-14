@@ -15634,6 +15634,8 @@ in {
   pika-pool = callPackage ../development/python-modules/pika-pool { };
   platformio = callPackage ../development/python-modules/platformio { };
 
+  kmsxx = callPackage ../development/libraries/kmsxx { };
+
   pylibconfig2 = buildPythonPackage rec {
     name = "pylibconfig2-${version}";
     version = "0.2.4";
@@ -17655,6 +17657,8 @@ in {
       maintainers = with maintainers; [ goibhniu ];
     };
   };
+
+  pypcap = callPackage ../development/python-modules/pypcap {};
 
   pyplatec = buildPythonPackage rec {
     name = "PyPlatec-${version}";
@@ -20613,6 +20617,8 @@ in {
       platforms = platforms.unix;
     };
   });
+
+  guzzle_sphinx_theme = callPackage ../development/python-modules/guzzle_sphinx_theme { };
 
   sphinx-testing = callPackage ../development/python-modules/sphinx-testing { };
 
@@ -26590,6 +26596,8 @@ EOF
       sha256 = "1ad0mkixc0s86djwsvhp1qlvcfs25086nh0qw7bys49gz8shczzi";
     };
   };
+
+  yowsup = callPackage ../development/python-modules/yowsup { };
 
   wptserve = callPackage ../development/python-modules/wptserve { };
 
