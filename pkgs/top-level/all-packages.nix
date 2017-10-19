@@ -13677,6 +13677,8 @@ with pkgs;
 
   bazaarTools = callPackage ../applications/version-management/bazaar/tools.nix { };
 
+  bb =  callPackage ../applications/misc/bb { };
+
   beast = callPackage ../applications/audio/beast {
     inherit (gnome2) libgnomecanvas libart_lgpl;
     guile = guile_1_8;
@@ -18971,6 +18973,9 @@ with pkgs;
   nixui = callPackage ../tools/package-management/nixui { node_webkit = nwjs_0_12; };
 
   nix-bundle = callPackage ../tools/package-management/nix-bundle { nix = nixUnstable; };
+
+  nix-info = callPackage ../tools/nix/info { };
+  nix-info-tested = callPackage ../tools/nix/info { doCheck = true; };
 
   nix-index = callPackage ../tools/package-management/nix-index { };
 
