@@ -118,6 +118,8 @@ with pkgs;
 
   dotnetbuildhelpers = callPackage ../build-support/dotnetbuildhelpers { };
 
+  dotnet-sdk = callPackage ../development/compilers/dotnet/sdk/default.nix { };
+
   dispad = callPackage ../tools/X11/dispad { };
 
   vsenv = callPackage ../build-support/vsenv {
@@ -302,6 +304,8 @@ with pkgs;
   nixBufferBuilders = import ../build-support/emacs/buffer.nix { inherit (pkgs) lib writeText; inherit (emacsPackagesNg) inherit-local; };
 
   pathsFromGraph = ../build-support/kernel/paths-from-graph.pl;
+
+  closureInfo = callPackage ../build-support/closure-info.nix { };
 
   setupSystemdUnits = callPackage ../build-support/setup-systemd-units.nix { };
 
@@ -1105,7 +1109,7 @@ with pkgs;
 
   gosu = callPackage ../tools/misc/gosu { };
 
-  gringo = callPackage ../tools/misc/gringo { };
+  gringo = callPackage ../tools/misc/gringo { scons = scons_2_5_1; };
 
   gti = callPackage ../tools/misc/gti { };
 
@@ -1142,6 +1146,8 @@ with pkgs;
   mathics = pythonPackages.mathics;
 
   masscan = callPackage ../tools/security/masscan { };
+
+  meritous = callPackage ../games/meritous { };
 
   meson = callPackage ../development/tools/build-managers/meson { };
 
@@ -1400,7 +1406,13 @@ with pkgs;
 
   ciopfs = callPackage ../tools/filesystems/ciopfs { };
 
-  citrix_receiver = callPackage ../applications/networking/remote/citrix-receiver { };
+  # Use Citrix Receiver 13.4.0 below if you get "A network error occured (SSL error 4)"
+  # See https://discussions.citrix.com/topic/385459-ssl-error-with-135-works-with-134/?p=1977735
+  citrix_receiver        = hiPrio citrix_receiver_13_7_0;
+  citrix_receiver_13_7_0 = callPackage ../applications/networking/remote/citrix-receiver { version = "13.7.0"; };
+  citrix_receiver_13_6_0 = callPackage ../applications/networking/remote/citrix-receiver { version = "13.6.0"; };
+  citrix_receiver_13_5_0 = callPackage ../applications/networking/remote/citrix-receiver { version = "13.5.0"; };
+  citrix_receiver_13_4_0 = callPackage ../applications/networking/remote/citrix-receiver { version = "13.4.0"; };
 
   citra = libsForQt5.callPackage ../misc/emulators/citra { };
 
@@ -2725,6 +2737,8 @@ with pkgs;
   ipfs = callPackage ../applications/networking/ipfs { };
   ipfs-migrator = callPackage ../applications/networking/ipfs-migrator { };
 
+  ipget = callPackage ../applications/networking/ipget { };
+
   ipmitool = callPackage ../tools/system/ipmitool {
     static = false;
   };
@@ -3555,6 +3569,8 @@ with pkgs;
 
   pnmixer = callPackage ../tools/audio/pnmixer { };
 
+  pulsemixer = callPackage ../tools/audio/pulsemixer { };
+
   pwsafe = callPackage ../applications/misc/pwsafe {
     wxGTK = wxGTK30;
   };
@@ -3569,6 +3585,8 @@ with pkgs;
   nitrogen = callPackage ../tools/X11/nitrogen {};
 
   nixbot = callPackage ../tools/misc/nixbot {};
+
+  notify-desktop = callPackage ../tools/misc/notify-desktop {};
 
   nkf = callPackage ../tools/text/nkf {};
 
@@ -4493,6 +4511,8 @@ with pkgs;
   supertux-editor = callPackage ../applications/editors/supertux-editor { };
 
   super-user-spark = haskellPackages.callPackage ../applications/misc/super_user_spark { };
+
+  svgcleaner = callPackage ../tools/graphics/svgcleaner { };
 
   ssdeep = callPackage ../tools/security/ssdeep { };
 
@@ -5422,6 +5442,8 @@ with pkgs;
   clang-sierraHack-stdenv = overrideCC stdenv clang-sierraHack;
   libcxxStdenv = if stdenv.isDarwin then stdenv else lowPrio llvmPackages.libcxxStdenv;
 
+  clasp-common-lisp = callPackage ../development/compilers/clasp {};
+
   clean = callPackage ../development/compilers/clean { };
 
   closurecompiler = callPackage ../development/compilers/closure { };
@@ -6210,33 +6232,9 @@ with pkgs;
     inherit (darwin) apple_sdk;
   };
 
-  rustRegistry = callPackage ./rust-packages.nix { };
-
-  rust = rustStable;
-  rustStable = callPackage ../development/compilers/rust {
-    inherit (llvmPackages_4) llvm;
-  };
-  rustBeta = lowPrio (recurseIntoAttrs (callPackage ../development/compilers/rust/beta.nix {}));
-
-  rustNightly = rustBeta;
-
-  # rust support in nixpkgs isn't yet well maintained enough for us to
-  # pretend to support nightlies in a meaningful way.
-
-  # rustNightly = lowPrio (recurseIntoAttrs (callPackage ../development/compilers/rust/nightly.nix {
-  #   rustPlatform = recurseIntoAttrs (makeRustPlatform rustBeta);
-  # }));
-
-  rustNightlyBin = lowPrio (callPackage ../development/compilers/rust/nightlyBin.nix {
-     buildRustPackage = callPackage ../build-support/rust {
-       rust = rustNightlyBin;
-     };
-  });
-
-  cargo = rust.cargo;
-  rustc = rust.rustc;
-
-  cargo-edit = callPackage ../tools/package-management/cargo-edit { };
+  # For beta and nightly releases use the nixpkgs-mozilla overlay
+  rust = callPackage ../development/compilers/rust { };
+  inherit (rust) cargo rustc;
 
   rustPlatform = recurseIntoAttrs (makeRustPlatform rust);
 
@@ -6258,6 +6256,8 @@ with pkgs;
       };
 
     });
+
+  cargo-edit = callPackage ../tools/package-management/cargo-edit { };
 
   rainicorn = callPackage ../development/tools/rust/rainicorn { };
   rustfmt = callPackage ../development/tools/rust/rustfmt { };
@@ -7391,7 +7391,7 @@ with pkgs;
 
   lttv = callPackage ../development/tools/misc/lttv { };
 
-  massif-visualizer = kde4.callPackage ../development/tools/analysis/massif-visualizer { };
+  massif-visualizer = libsForQt5.callPackage ../development/tools/analysis/massif-visualizer { };
 
   maven = maven3;
   maven3 = callPackage ../development/tools/build-managers/apache-maven { };
@@ -7805,7 +7805,9 @@ with pkgs;
 
   aspellDicts = recurseIntoAttrs (callPackages ../development/libraries/aspell/dictionaries.nix {});
 
-  aspellWithDicts = callPackage ../development/libraries/aspell/aspell-with-dicts.nix { };
+  aspellWithDicts = callPackage ../development/libraries/aspell/aspell-with-dicts.nix {
+    aspell = aspell.override { searchNixProfiles = false; };
+  };
 
   attica = callPackage ../development/libraries/attica { };
 
@@ -7862,7 +7864,6 @@ with pkgs;
 
   botan = callPackage ../development/libraries/botan { };
   botan2 = callPackage ../development/libraries/botan/2.0.nix { };
-  botanUnstable = callPackage ../development/libraries/botan/unstable.nix { };
 
   box2d = callPackage ../development/libraries/box2d { };
 
@@ -8146,14 +8147,14 @@ with pkgs;
   ffmpeg_2_8 = callPackage ../development/libraries/ffmpeg/2.8.nix {
     inherit (darwin.apple_sdk.frameworks) Cocoa;
   };
-  ffmpeg_3_3 = callPackage ../development/libraries/ffmpeg/3.3.nix {
+  ffmpeg_3_4 = callPackage ../development/libraries/ffmpeg/3.4.nix {
     inherit (darwin.apple_sdk.frameworks) Cocoa CoreMedia;
   };
   # Aliases
   ffmpeg_0 = ffmpeg_0_10;
   ffmpeg_1 = ffmpeg_1_2;
   ffmpeg_2 = ffmpeg_2_8;
-  ffmpeg_3 = ffmpeg_3_3;
+  ffmpeg_3 = ffmpeg_3_4;
   ffmpeg = ffmpeg_3;
 
   ffmpeg-full = callPackage ../development/libraries/ffmpeg-full {
@@ -8655,6 +8656,9 @@ with pkgs;
   harfbuzz-icu = callPackage ../development/libraries/harfbuzz {
     withIcu = true;
     withGraphite2 = true;
+  };
+  harfbuzz-icu-58 = harfbuzz-icu.override {
+    icu = icu58;
   };
 
   hawknl = callPackage ../development/libraries/hawknl { };
@@ -10987,17 +10991,12 @@ with pkgs;
   webkitgtk = webkitgtk216x;
 
   webkitgtk24x-gtk3 = callPackage ../development/libraries/webkitgtk/2.4.nix {
-    harfbuzz = harfbuzz-icu;
+    harfbuzz = harfbuzz-icu-58;
     gst-plugins-base = gst_all_1.gst-plugins-base;
     inherit (darwin) libobjc;
   };
 
   webkitgtk216x = callPackage ../development/libraries/webkitgtk/2.16.nix {
-    harfbuzz = harfbuzz-icu;
-    gst-plugins-base = gst_all_1.gst-plugins-base;
-  };
-
-  webkitgtk217x = callPackage ../development/libraries/webkitgtk/2.17.nix {
     harfbuzz = harfbuzz-icu;
     gst-plugins-base = gst_all_1.gst-plugins-base;
   };
@@ -13229,7 +13228,9 @@ with pkgs;
 
   comic-relief = callPackage ../data/fonts/comic-relief {};
 
-  coreclr = callPackage ../development/compilers/coreclr { };
+  coreclr = callPackage ../development/compilers/coreclr {
+    debug = config.coreclr.debug or false;
+  };
 
   corefonts = callPackage ../data/fonts/corefonts { };
 
@@ -13754,6 +13755,8 @@ with pkgs;
   atom-beta = callPackage ../applications/editors/atom/beta.nix { };
 
   aseprite = callPackage ../applications/editors/aseprite { };
+
+  astah-community = callPackage ../applications/graphics/astah-community { };
 
   astroid = callPackage ../applications/networking/mailreaders/astroid { };
 
@@ -15310,9 +15313,9 @@ with pkgs;
 
   inherit (kdeApplications)
     akonadi akregator ark dolphin ffmpegthumbs filelight gwenview k3b
-    kaddressbook kate kcachegrind kcalc kcolorchooser kcontacts kdenlive kdf
+    kaddressbook kate kcachegrind kcalc kcolorchooser kcontacts kdenlive kdf keditbookmarks
     kgpg khelpcenter kig kleopatra kmail kmix kolourpaint kompare konsole
-    kontact korganizer krfb kwalletmanager marble okteta okular spectacle;
+    kontact korganizer krdc krfb kwalletmanager marble minuet okteta okular spectacle;
 
   kdeconnect = libsForQt5.callPackage ../applications/misc/kdeconnect { };
 
@@ -15358,6 +15361,8 @@ with pkgs;
   };
 
   kipi-plugins = libsForQt5.callPackage ../applications/graphics/kipi-plugins { };
+
+  kitty = callPackage ../applications/misc/kitty { };
 
   kiwix = callPackage ../applications/misc/kiwix { };
 
@@ -16182,6 +16187,7 @@ with pkgs;
     notifySupport   = config.profanity.notifySupport   or true;
     traySupport     = config.profanity.traySupport     or true;
     autoAwaySupport = config.profanity.autoAwaySupport or true;
+    python = python3;
   };
 
   psi = kde4.callPackage ../applications/networking/instant-messengers/psi { };
@@ -17093,6 +17099,8 @@ with pkgs;
 
   vue = callPackage ../applications/misc/vue { };
 
+  vuze = callPackage ../applications/networking/p2p/vuze { };
+
   vwm = callPackage ../applications/window-managers/vwm { };
 
   vym = callPackage ../applications/misc/vym { };
@@ -17135,6 +17143,8 @@ with pkgs;
   weechat-matrix-bridge = callPackage ../applications/networking/instant-messengers/weechat-matrix-bridge {
     inherit (luaPackages) cjson;
   };
+
+  weechat-xmpp = callPackage ../applications/networking/instant-messengers/weechat-xmpp {};
 
   westonLite = callPackage ../applications/window-managers/weston {
     pango = null;
@@ -17399,7 +17409,6 @@ with pkgs;
     gconf = gnome2.GConf;
     inherit (gnome2) libglade scrollkeeper;
     gtkhtml = gnome2.gtkhtml4;
-    webkitgtk = webkitgtk217x;
     python = python27;
   };
 
@@ -17410,6 +17419,8 @@ with pkgs;
   apvlv = callPackage ../applications/misc/apvlv { };
 
   xpdf = libsForQt5.callPackage ../applications/misc/xpdf { };
+
+  xpointerbarrier = callPackage ../tools/X11/xpointerbarrier {};
 
   xkb_switch = callPackage ../tools/X11/xkb-switch { };
 
@@ -18607,7 +18618,7 @@ with pkgs;
   };
   coq_8_6 = callPackage ../applications/science/logic/coq {};
   coq_8_7 = callPackage ../applications/science/logic/coq {
-    version = "8.7+beta2";
+    version = "8.7.0";
   };
   coq_HEAD = callPackage ../applications/science/logic/coq/HEAD.nix {};
 
@@ -18667,6 +18678,7 @@ with pkgs;
   coqPackages_8_4 = mkCoqPackages_8_4 coqPackages_8_4;
   coqPackages_8_5 = mkCoqPackages coqPackages_8_5 coq_8_5;
   coqPackages_8_6 = mkCoqPackages coqPackages_8_6 coq_8_6;
+  coqPackages_8_7 = mkCoqPackages coqPackages_8_7 coq_8_7;
   coqPackages = coqPackages_8_6;
   coq = coqPackages.coq;
 
