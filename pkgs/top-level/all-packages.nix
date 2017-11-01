@@ -144,8 +144,6 @@ with pkgs;
 
   fetchgitPrivate = callPackage ../build-support/fetchgit/private.nix { };
 
-  fetchgitrevision = import ../build-support/fetchgitrevision runCommand git;
-
   fetchgitLocal = callPackage ../build-support/fetchgitlocal { };
 
   fetchmtn = callPackage ../build-support/fetchmtn (config.fetchmtn or {});
@@ -153,6 +151,8 @@ with pkgs;
   fetchMavenArtifact = callPackage ../build-support/fetchmavenartifact { };
 
   packer = callPackage ../development/tools/packer { };
+
+  mht2htm = callPackage ../tools/misc/mht2htm { };
 
   fetchpatch = callPackage ../build-support/fetchpatch { };
 
@@ -186,10 +186,8 @@ with pkgs;
 
   fetchzip = callPackage ../build-support/fetchzip { };
 
-  gitRepoToName = callPackage ../build-support/fetchgit/gitrepotoname.nix { };
-
   fetchFromGitHub = {
-    owner, repo, rev, name ? gitRepoToName repo rev,
+    owner, repo, rev, name ? "source",
     fetchSubmodules ? false, private ? false,
     githubBase ? "github.com", varPrefix ? null,
     ... # For hash agility
@@ -222,7 +220,7 @@ with pkgs;
   in fetcher fetcherArgs // { meta.homepage = baseUrl; inherit rev; };
 
   fetchFromBitbucket = {
-    owner, repo, rev, name ? gitRepoToName repo rev,
+    owner, repo, rev, name ? "source",
     ... # For hash agility
   }@args: fetchzip ({
     inherit name;
@@ -233,7 +231,7 @@ with pkgs;
 
   # cgit example, snapshot support is optional in cgit
   fetchFromSavannah = {
-    repo, rev, name ? gitRepoToName repo rev,
+    repo, rev, name ? "source",
     ... # For hash agility
   }@args: fetchzip ({
     inherit name;
@@ -243,7 +241,7 @@ with pkgs;
 
   # gitlab example
   fetchFromGitLab = {
-    owner, repo, rev, name ? gitRepoToName repo rev,
+    owner, repo, rev, name ? "source",
     ... # For hash agility
   }@args: fetchzip ({
     inherit name;
@@ -253,7 +251,7 @@ with pkgs;
 
   # gitweb example, snapshot support is optional in gitweb
   fetchFromRepoOrCz = {
-    repo, rev, name ? gitRepoToName repo rev,
+    repo, rev, name ? "source",
     ... # For hash agility
   }@args: fetchzip ({
     inherit name;
@@ -3059,6 +3057,15 @@ with pkgs;
   };
 
   nodejs-slim-8_x = callPackage ../development/web/nodejs/v8.nix {
+    libtool = darwin.cctools;
+    enableNpm = false;
+  };
+
+  nodejs-9_x = callPackage ../development/web/nodejs/v9.nix {
+    libtool = darwin.cctools;
+  };
+
+  nodejs-slim-9_x = callPackage ../development/web/nodejs/v9.nix {
     libtool = darwin.cctools;
     enableNpm = false;
   };
@@ -10829,6 +10836,8 @@ with pkgs;
 
   tet = callPackage ../development/tools/misc/tet { };
 
+  theft = callPackage ../development/libraries/theft { };
+
   thrift = callPackage ../development/libraries/thrift {
     inherit (pythonPackages) twisted;
   };
@@ -10999,7 +11008,7 @@ with pkgs;
 
   wcslib = callPackage ../development/libraries/wcslib { };
 
-  webkitgtk = webkitgtk216x;
+  webkitgtk = webkitgtk218x;
 
   webkitgtk24x-gtk3 = callPackage ../development/libraries/webkitgtk/2.4.nix {
     harfbuzz = harfbuzz-icu-58;
@@ -11007,9 +11016,9 @@ with pkgs;
     inherit (darwin) libobjc;
   };
 
-  webkitgtk216x = callPackage ../development/libraries/webkitgtk/2.16.nix {
+  webkitgtk218x = callPackage ../development/libraries/webkitgtk/2.18.nix {
     harfbuzz = harfbuzz-icu;
-    gst-plugins-base = gst_all_1.gst-plugins-base;
+    inherit (gst_all_1) gst-plugins-base gst-plugins-bad;
   };
 
   webkitgtk24x-gtk2 = webkitgtk24x-gtk3.override {
@@ -11522,8 +11531,6 @@ with pkgs;
     inherit (perlPackages) Error MailDKIM MIMEtools NetServer;
   };
 
-  dnschain = callPackage ../servers/dnschain { };
-
   dovecot = callPackage ../servers/mail/dovecot { };
   dovecot_pigeonhole = callPackage ../servers/mail/dovecot/plugins/pigeonhole { };
   dovecot_antispam = callPackage ../servers/mail/dovecot/plugins/antispam { };
@@ -11590,8 +11597,6 @@ with pkgs;
   gofish = callPackage ../servers/gopher/gofish { };
 
   grafana = callPackage ../servers/monitoring/grafana { };
-
-  groovebasin = callPackage ../applications/audio/groovebasin { nodejs = nodejs-4_x; };
 
   haka = callPackage ../tools/security/haka { };
 
@@ -15106,7 +15111,9 @@ with pkgs;
 
   hue-cli = callPackage ../tools/networking/hue-cli { };
 
-  hugin = callPackage ../applications/graphics/hugin { };
+  hugin = callPackage ../applications/graphics/hugin {
+    wxGTK = wxGTK30;
+  };
 
   hugo = callPackage ../applications/misc/hugo { };
 
@@ -15128,6 +15135,7 @@ with pkgs;
   spectrwm = callPackage ../applications/window-managers/spectrwm { };
 
   wlc = callPackage ../development/libraries/wlc { };
+  wlroots = callPackage ../development/libraries/wlroots { };
   orbment = callPackage ../applications/window-managers/orbment { };
   sway = callPackage ../applications/window-managers/sway { };
   swaylock = callPackage ../applications/window-managers/sway { };
