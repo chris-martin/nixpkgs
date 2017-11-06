@@ -185,7 +185,7 @@
   ./services/databases/neo4j.nix
   ./services/databases/openldap.nix
   ./services/databases/opentsdb.nix
-  ./services/databases/postage.nix
+  ./services/databases/pgmanage.nix
   ./services/databases/postgresql.nix
   ./services/databases/redis.nix
   ./services/databases/riak.nix
@@ -413,6 +413,7 @@
   ./services/networking/asterisk.nix
   ./services/networking/atftpd.nix
   ./services/networking/avahi-daemon.nix
+  ./services/networking/babeld.nix
   ./services/networking/bind.nix
   ./services/networking/autossh.nix
   ./services/networking/bird.nix
