@@ -62,7 +62,7 @@
   asppsa = "Alastair Pharo <asppsa@gmail.com>";
   astsmtl = "Alexander Tsamutali <astsmtl@yandex.ru>";
   asymmetric = "Lorenzo Manacorda <lorenzo@mailbox.org>";
-  aszlig = "aszlig <aszlig@redmoonstudios.org>";
+  aszlig = "aszlig <aszlig@nix.build>";
   auntie = "Jonathan Glines <auntieNeo@gmail.com>";
   avnik = "Alexander V. Nikolaev <avn@avnik.info>";
   aycanirican = "Aycan iRiCAN <iricanaycan@gmail.com>";
@@ -111,6 +111,7 @@
   changlinli = "Changlin Li <mail@changlinli.com>";
   chaoflow = "Florian Friesdorf <flo@chaoflow.net>";
   chattered = "Phil Scott <me@philscotted.com>";
+  ChengCat = "Yucheng Zhang <yu@cheng.cat>";
   choochootrain = "Hurshal Patel <hurshal@imap.cc>";
   chpatrick = "Patrick Chilton <chpatrick@gmail.com>";
   chris-martin = "Chris Martin <ch.martin@gmail.com>";
@@ -144,6 +145,7 @@
   DamienCassou = "Damien Cassou <damien@cassou.me>";
   danbst = "Danylo Hlynskyi <abcz2.uprola@gmail.com>";
   dancek = "Hannu Hartikainen <hannu.hartikainen@gmail.com>";
+  danharaj = "Dan Haraj <dan@obsidian.systems>";
   danielfullmer = "Daniel Fullmer <danielrf12@gmail.com>";
   dasuxullebt = "Christoph-Simon Senjak <christoph.senjak@googlemail.com>";
   david50407 = "David Kuo <me@davy.tw>";
@@ -217,6 +219,7 @@
   falsifian = "James Cook <james.cook@utoronto.ca>";
   fare = "Francois-Rene Rideau <fahree@gmail.com>";
   fgaz = "Francesco Gazzetta <francygazz@gmail.com>";
+  FireyFly = "Jonas Höglund <nix@firefly.nu>";
   flokli = "Florian Klink <flokli@flokli.de>";
   florianjacob = "Florian Jacob <projects+nixos@florianjacob.de>";
   flosse = "Markus Kohlhase <mail@markus-kohlhase.de>";
@@ -358,6 +361,7 @@
   linus = "Linus Arver <linusarver@gmail.com>";
   lluchs = "Lukas Werling <lukas.werling@gmail.com>";
   lnl7 = "Daiderd Jordan <daiderd@gmail.com>";
+  lo1tuma = "Mathias Schreck <schreck.mathias@gmail.com>";
   loskutov = "Ignat Loskutov <ignat.loskutov@gmail.com>";
   lovek323 = "Jason O'Conal <jason@oconal.id.au>";
   lowfatcomputing = "Andreas Wagner <andreas.wagner@lowfatcomputing.org>";
@@ -614,6 +618,7 @@
   sztupi = "Attila Sztupak <attila.sztupak@gmail.com>";
   taeer = "Taeer Bar-Yam <taeer@necsi.edu>";
   tailhook = "Paul Colomiets <paul@colomiets.name>";
+  taketwo = "Sergey Alexandrov <alexandrov88@gmail.com>";
   takikawa = "Asumu Takikawa <asumu@igalia.com>";
   taktoa = "Remy Goldschmidt <taktoa@gmail.com>";
   taku0 = "Takuo Yonezawa <mxxouy6x3m_github@tatapa.org>";

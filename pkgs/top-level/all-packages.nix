@@ -124,6 +124,8 @@ with pkgs;
 
   dump1090 = callPackage ../applications/misc/dump1090 { };
 
+  ebook2cw = callPackage ../applications/misc/ebook2cw { };
+
   vsenv = callPackage ../build-support/vsenv {
     vs = vs90wrapper;
   };
@@ -513,13 +515,13 @@ with pkgs;
 
   avfs = callPackage ../tools/filesystems/avfs { };
 
-  awscli = pythonPackages.awscli; # Should be moved out of python-packages.nix
+  awscli = pythonPackages.callPackage ../tools/admin/awscli { };
 
   awsebcli = callPackage ../tools/virtualization/awsebcli {};
 
   awslogs = callPackage ../tools/admin/awslogs { };
 
-  aws_shell = python2Packages.aws_shell; # Should be moved out of python-packages.nix
+  aws_shell = pythonPackages.callPackage ../tools/admin/aws_shell { };
 
   azure-cli = nodePackages.azure-cli;
 
@@ -887,6 +889,8 @@ with pkgs;
 
   clib = callPackage ../tools/package-management/clib { };
 
+  clingo = callPackage ../applications/science/logic/potassco/clingo.nix { };
+
   colord-kde = libsForQt5.callPackage ../tools/misc/colord-kde {};
 
   colpack = callPackage ../applications/science/math/colpack { };
@@ -1159,6 +1163,8 @@ with pkgs;
   meson = callPackage ../development/tools/build-managers/meson { };
 
   mp3fs = callPackage ../tools/filesystems/mp3fs { };
+
+  mpdas = callPackage ../tools/audio/mpdas { };
 
   mpdcron = callPackage ../tools/audio/mpdcron { };
 
@@ -1762,6 +1768,8 @@ with pkgs;
   docbook2odf = callPackage ../tools/typesetting/docbook2odf {
     inherit (perlPackages) PerlMagick;
   };
+
+  doas = callPackage ../tools/security/doas { };
 
   docbook2x = callPackage ../tools/typesetting/docbook2x {
     inherit (perlPackages) XMLSAX XMLParser XMLNamespaceSupport;
@@ -2594,6 +2602,9 @@ with pkgs;
   heimdall-gui = libsForQt5.callPackage ../tools/misc/heimdall { enableGUI = true; };
 
   hevea = callPackage ../tools/typesetting/hevea { };
+
+  hexd = callPackage ../tools/misc/hexd { };
+  pixd = callPackage ../tools/misc/pixd { };
 
   hhpc = callPackage ../tools/misc/hhpc { };
 
@@ -4693,8 +4704,6 @@ with pkgs;
 
   tmuxinator = callPackage ../tools/misc/tmuxinator { };
 
-  tmin = callPackage ../tools/security/tmin { };
-
   tmsu = callPackage ../tools/filesystems/tmsu { };
 
   toilet = callPackage ../tools/misc/toilet { };
@@ -4831,6 +4840,8 @@ with pkgs;
 
   usbmuxd = callPackage ../tools/misc/usbmuxd {};
 
+  usync = callPackage ../applications/misc/usync { };
+
   uwsgi = callPackage ../servers/uwsgi {
     plugins = [];
     withPAM = stdenv.isLinux;
@@ -4910,7 +4921,7 @@ with pkgs;
 
   vtun = callPackage ../tools/networking/vtun { };
 
-  wakatime = callPackage ../tools/misc/wakatime { };
+  wakatime = pythonPackages.callPackage ../tools/misc/wakatime { };
 
   weather = callPackage ../applications/misc/weather { };
 
@@ -5157,7 +5168,7 @@ with pkgs;
   xbursttools = assert stdenv ? glibc; callPackage ../tools/misc/xburst-tools rec {
     # It needs a cross compiler for mipsel to build the firmware it will
     # load into the Ben Nanonote
-    crossPrefix = "mipsel-unknown-linux";
+    crossPrefix = "mips64el-unknown-linux-gnu";
     gccCross =
       let
         pkgsCross = nixpkgsFun {
@@ -5320,6 +5331,8 @@ with pkgs;
   });
 
   bash-completion = callPackage ../shells/bash-completion { };
+
+  nix-bash-completions = callPackage ../shells/nix-bash-completions { };
 
   dash = callPackage ../shells/dash { };
 
@@ -5549,7 +5562,7 @@ with pkgs;
   # built with, and use, that cross-compiled libc.
   gccCrossStageStatic = assert targetPlatform != buildPlatform; let
     libcCross1 =
-      if targetPlatform.libc == "msvcrt" then __targetPackages.windows.mingw_w64_headers
+      if targetPlatform.libc == "msvcrt" then targetPackages.windows.mingw_w64_headers
       else if targetPlatform.libc == "libSystem" then darwin.xcode
       else null;
     in wrapCCWith {
@@ -6420,13 +6433,6 @@ with pkgs;
   clisp = callPackage ../development/interpreters/clisp { };
   clisp-tip = callPackage ../development/interpreters/clisp/hg.nix { };
 
-  # compatibility issues in 2.47 - at list 2.44.1 is known good
-  # for sbcl bootstrap.
-  # SBCL page recommends 2.33.2, though. Not sure when was it last tested
-  clisp_2_44_1 = callPackage ../development/interpreters/clisp/2.44.1.nix {
-    libsigsegv = libsigsegv_25;
-  };
-
   clojure = callPackage ../development/interpreters/clojure { };
 
   clooj = callPackage ../development/interpreters/clojure/clooj.nix { };
@@ -6720,7 +6726,12 @@ with pkgs;
 
   pyrex096 = callPackage ../development/interpreters/pyrex/0.9.6.nix { };
 
-  racket = callPackage ../development/interpreters/racket { };
+  racket = callPackage ../development/interpreters/racket {
+    # racket 6.11 doesn't build with gcc6 + recent glibc:
+    # https://github.com/racket/racket/pull/1886
+    # https://github.com/NixOS/nixpkgs/pull/31017#issuecomment-343574769
+    stdenv = overrideCC stdenv gcc7;
+  };
 
   rakudo = callPackage ../development/interpreters/rakudo {
     inherit (darwin.apple_sdk.frameworks) CoreServices ApplicationServices;
@@ -7075,7 +7086,7 @@ with pkgs;
 
   complexity = callPackage ../development/tools/misc/complexity { };
 
-  conan = callPackage ../development/tools/build-managers/conan { };
+  conan = pythonPackages.callPackage ../development/tools/build-managers/conan { };
 
   cookiecutter = pythonPackages.cookiecutter;
 
@@ -7241,9 +7252,7 @@ with pkgs;
     inherit (ocamlPackages) ocaml findlib camlp4 sedlex ocamlbuild;
   };
 
-  framac = callPackage ../development/tools/analysis/frama-c {
-    ocamlPackages = ocamlPackages_4_03;
-  };
+  framac = callPackage ../development/tools/analysis/frama-c { };
 
   frame = callPackage ../development/libraries/frame { };
 
@@ -8336,13 +8345,15 @@ with pkgs;
 
   icon-lang = callPackage ../development/interpreters/icon-lang { };
 
-  inherit (rec {
-    arg = stdenv.lib.optionalAttrs stdenv.isDarwin {
-      inherit (darwin) libiconv;
-    };
-    libgit2 = callPackage ../development/libraries/git2 arg;
-    libgit2_0_25 = callPackage ../development/libraries/git2/0.25.nix arg;
-  }) libgit2 libgit2_0_25;
+  libgit2 = callPackage ../development/libraries/git2 {
+    inherit (darwin) libiconv;
+    inherit (darwin.apple_sdk.frameworks) Security;
+  };
+
+  libgit2_0_25 = callPackage ../development/libraries/git2/0.25.nix {
+    inherit (darwin) libiconv;
+    inherit (darwin.apple_sdk.frameworks) Security;
+  };
 
   gle = callPackage ../development/libraries/gle { };
 
@@ -8374,9 +8385,9 @@ with pkgs;
   libcCrossChooser = name:
     # libc is hackily often used from the previous stage. This `or`
     # hack fixes the hack, *sigh*.
-    /**/ if name == "glibc" then __targetPackages.glibcCross or glibcCross
+    /**/ if name == "glibc" then targetPackages.glibcCross or glibcCross
     else if name == "uclibc" then uclibcCross
-    else if name == "msvcrt" then __targetPackages.windows.mingw_w64 or windows.mingw_w64
+    else if name == "msvcrt" then targetPackages.windows.mingw_w64 or windows.mingw_w64
     else if name == "libSystem" then darwin.xcode
     else throw "Unknown libc";
 
@@ -9277,6 +9288,7 @@ with pkgs;
   libmtp = callPackage ../development/libraries/libmtp { };
 
   libmsgpack = callPackage ../development/libraries/libmsgpack { };
+  libmsgpack_2_0 = callPackage ../development/libraries/libmsgpack/2.0.nix { };
   libmsgpack_1_4 = callPackage ../development/libraries/libmsgpack/1.4.nix { };
 
   libmysqlconnectorcpp = callPackage ../development/libraries/libmysqlconnectorcpp {
@@ -9572,9 +9584,6 @@ with pkgs;
   libsigcxx12 = callPackage ../development/libraries/libsigcxx/1.2.nix { };
 
   libsigsegv = callPackage ../development/libraries/libsigsegv { };
-
-  # To bootstrap SBCL, I need CLisp 2.44.1; it needs libsigsegv 2.5
-  libsigsegv_25 = callPackage ../development/libraries/libsigsegv/2.5.nix { };
 
   libsndfile = callPackage ../development/libraries/libsndfile {
     inherit (darwin.apple_sdk.frameworks) Carbon AudioToolbox;
@@ -12457,6 +12466,15 @@ with pkgs;
 
   klibcShrunk = lowPrio (callPackage ../os-specific/linux/klibc/shrunk.nix { });
 
+  linux_beagleboard = callPackage ../os-specific/linux/kernel/linux-beagleboard.nix {
+    kernelPatches =
+      [ kernelPatches.bridge_stp_helper
+        kernelPatches.p9_fixes
+        kernelPatches.cpu-cgroup-v2."4.9"
+        kernelPatches.modinst_arg_list_too_long
+      ];
+  };
+
   linux_hardened_copperhead = callPackage ../os-specific/linux/kernel/linux-hardened-copperhead.nix {
     kernelPatches = with kernelPatches; [
       kernelPatches.bridge_stp_helper
@@ -12521,6 +12539,22 @@ with pkgs;
   };
 
   linux_4_13 = callPackage ../os-specific/linux/kernel/linux-4.13.nix {
+    kernelPatches =
+      [ kernelPatches.bridge_stp_helper
+        kernelPatches.p9_fixes
+        # See pkgs/os-specific/linux/kernel/cpu-cgroup-v2-patches/README.md
+        # when adding a new linux version
+        kernelPatches.cpu-cgroup-v2."4.11"
+        kernelPatches.modinst_arg_list_too_long
+      ]
+      ++ lib.optionals ((platform.kernelArch or null) == "mips")
+      [ kernelPatches.mips_fpureg_emu
+        kernelPatches.mips_fpu_sigill
+        kernelPatches.mips_ext3_n32
+      ];
+  };
+
+  linux_4_14 = callPackage ../os-specific/linux/kernel/linux-4.14.nix {
     kernelPatches =
       [ kernelPatches.bridge_stp_helper
         kernelPatches.p9_fixes
@@ -12721,16 +12755,18 @@ with pkgs;
   linux = linuxPackages.kernel;
 
   # Update this when adding the newest kernel major version!
-  linuxPackages_latest = linuxPackages_4_13;
+  linuxPackages_latest = linuxPackages_4_14;
   linux_latest = linuxPackages_latest.kernel;
 
   # Build the kernel modules for the some of the kernels.
+  linuxPackages_beagleboard = linuxPackagesFor pkgs.linux_beagleboard;
   linuxPackages_hardened_copperhead = linuxPackagesFor pkgs.linux_hardened_copperhead;
   linuxPackages_mptcp = linuxPackagesFor pkgs.linux_mptcp;
   linuxPackages_rpi = linuxPackagesFor pkgs.linux_rpi;
   linuxPackages_4_4 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_4_4);
   linuxPackages_4_9 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_4_9);
   linuxPackages_4_13 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_4_13);
+  linuxPackages_4_14 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_4_14);
   # Don't forget to update linuxPackages_latest!
 
   # Intentionally lacks recurseIntoAttrs, as -rc kernels will quite likely break out-of-tree modules and cause failed Hydra builds.
@@ -13421,6 +13457,8 @@ with pkgs;
 
   libertine = callPackage ../data/fonts/libertine { };
 
+  libertinus = callPackage ../data/fonts/libertinus { };
+
   libre-baskerville = callPackage ../data/fonts/libre-baskerville { };
 
   libre-bodoni = callPackage ../data/fonts/libre-bodoni { };
@@ -13642,6 +13680,8 @@ with pkgs;
 
   vistafonts = callPackage ../data/fonts/vista-fonts { };
 
+  vistafonts-chs = callPackage ../data/fonts/vista-fonts-chs { };
+
   wireless-regdb = callPackage ../data/misc/wireless-regdb { };
 
   wqy_microhei = callPackage ../data/fonts/wqy-microhei { };
@@ -13755,7 +13795,7 @@ with pkgs;
 
   amsn = callPackage ../applications/networking/instant-messengers/amsn { };
 
-  androidStudioPackages = callPackage ../applications/editors/android-studio/packages.nix {};
+  androidStudioPackages = callPackage ../applications/editors/android-studio { };
   android-studio = androidStudioPackages.stable;
   android-studio-preview = androidStudioPackages.preview;
 
@@ -14091,7 +14131,7 @@ with pkgs;
 
   confclerk = callPackage ../applications/misc/confclerk { };
 
-  copyq = callPackage ../applications/misc/copyq { };
+  copyq = libsForQt5.callPackage ../applications/misc/copyq { };
 
   coriander = callPackage ../applications/video/coriander {
     inherit (gnome2) libgnomeui GConf;
@@ -14886,7 +14926,7 @@ with pkgs;
 
   gitAndTools = recurseIntoAttrs (callPackage ../applications/version-management/git-and-tools {});
 
-  inherit (gitAndTools) git gitFull gitSVN git-cola svn2git git-radar transcrypt git-crypt;
+  inherit (gitAndTools) git gitFull gitSVN git-cola svn2git git-radar git-secret transcrypt git-crypt;
 
   gitMinimal = git.override {
     withManual = false;
@@ -15311,6 +15351,8 @@ with pkgs;
   jamin = callPackage ../applications/audio/jamin { };
 
   japa = callPackage ../applications/audio/japa { };
+
+  jdupes = callPackage ../tools/misc/jdupes { };
 
   jedit = callPackage ../applications/editors/jedit { };
 
@@ -16316,7 +16358,7 @@ with pkgs;
 
   qtbitcointrader = callPackage ../applications/misc/qtbitcointrader { };
 
-  qtox = libsForQt5.callPackage ../applications/networking/instant-messengers/qtox { };
+  qtox = libsForQt5.callPackage ../applications/networking/instant-messengers/qtox { ffmpeg = ffmpeg_2; };
 
   qtpass = libsForQt5.callPackage ../applications/misc/qtpass { };
 
@@ -17673,7 +17715,7 @@ with pkgs;
 
   angband = callPackage ../games/angband { };
 
-  anki = callPackage ../games/anki { };
+  anki = python2Packages.callPackage ../games/anki { };
 
   armagetronad = callPackage ../games/armagetronad { };
 
@@ -17716,6 +17758,8 @@ with pkgs;
 
   blobby = callPackage ../games/blobby { };
 
+  braincurses = callPackage ../games/braincurses { };
+
   brogue = callPackage ../games/brogue { };
 
   bsdgames = callPackage ../games/bsdgames { };
@@ -17725,6 +17769,8 @@ with pkgs;
   bzflag = callPackage ../games/bzflag { };
 
   cataclysm-dda = callPackage ../games/cataclysm-dda { };
+
+  cataclysm-dda-git = callPackage ../games/cataclysm-dda/git.nix { };
 
   chessdb = callPackage ../games/chessdb { };
 
@@ -18741,7 +18787,9 @@ with pkgs;
     coqPackages = self;
 
     autosubst = callPackage ../development/coq-modules/autosubst {};
-    bignums = callPackage ../development/coq-modules/bignums {};
+    bignums = if stdenv.lib.versionAtLeast coq.coq-version "8.6"
+      then callPackage ../development/coq-modules/bignums {}
+      else null;
     coq-ext-lib = callPackage ../development/coq-modules/coq-ext-lib {};
     coquelicot = callPackage ../development/coq-modules/coquelicot {};
     dpdgraph = callPackage ../development/coq-modules/dpdgraph {};
@@ -18750,12 +18798,14 @@ with pkgs;
     HoTT = callPackage ../development/coq-modules/HoTT {};
     interval = callPackage ../development/coq-modules/interval {};
     mathcomp = callPackage ../development/coq-modules/mathcomp { };
+    metalib = callPackage ../development/coq-modules/metalib { };
     paco = callPackage ../development/coq-modules/paco {};
     ssreflect = callPackage ../development/coq-modules/ssreflect { };
     QuickChick = callPackage ../development/coq-modules/QuickChick {};
     CoLoR = callPackage ../development/coq-modules/CoLoR {};
     math-classes = callPackage ../development/coq-modules/math-classes { };
     fiat_HEAD = callPackage ../development/coq-modules/fiat/HEAD.nix {};
+    equations = callPackage ../development/coq-modules/equations { };
   };
 
   coqPackages_8_4 = mkCoqPackages_8_4 coqPackages_8_4;
