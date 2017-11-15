@@ -20,13 +20,13 @@ stdenv.mkDerivation rec {
 
   # I can't find any version numbers, so we're just using the date of the
   # last commit.
-  version = "2016-11-27";
+  version = "2017-04-26";
 
   src = fetchFromGitHub {
     owner = "bitcoin-core";
     repo = "secp256k1";
-    rev = "2928420c1b8e1feee8c20dff4e3cc41a0de2fc22";
-    sha256 = "1djsr2vrhh88353czlwb8bwlyabf008w1f7xg0fs3q33rf42w5gm";
+    rev = "cbc20b8c34d44c2ef175420f3cdfe054f82e8e2c";
+    sha256 = "0dkslsghf8rb49dpxdnwb9nr9w4lrqxh6lq726d4jwapcf56xad4";
   };
 
   buildInputs = optionals enableJNI [ jdk ];
