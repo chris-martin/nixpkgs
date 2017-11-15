@@ -18229,6 +18229,8 @@ with pkgs;
 
   terraria-server = callPackage ../games/terraria-server/default.nix { };
 
+  tetrinetx = callPackage ../games/tetrinetx { };
+
   tibia = callPackage_i686 ../games/tibia { };
 
   tintin = callPackage ../games/tintin { };
