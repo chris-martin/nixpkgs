@@ -17975,6 +17975,8 @@ with pkgs;
 
   ja2-stracciatella = callPackage ../games/ja2-stracciatella { };
 
+  jetrix = callPackage ../games/jetrix { };
+
   klavaro = callPackage ../games/klavaro {};
 
   kobodeluxe = callPackage ../games/kobodeluxe { };
