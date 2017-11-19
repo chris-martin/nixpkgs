@@ -3179,6 +3179,8 @@ with pkgs;
 
   libxcomp = callPackage ../development/libraries/libxcomp { };
 
+  libxl = callPackage ../development/libraries/libxl {};
+
   libx86emu = callPackage ../development/libraries/libx86emu { };
 
   libzmf = callPackage ../development/libraries/libzmf {};
@@ -5326,6 +5328,8 @@ with pkgs;
 
   zsh-autosuggestions = callPackage ../shells/zsh-autosuggestions { };
 
+  zsh-powerlevel9k = callPackage ../shells/zsh-powerlevel9k { };
+
   zstd = callPackage ../tools/compression/zstd { };
   zstdmt = callPackage ../tools/compression/zstdmt { };
 
@@ -6668,6 +6672,7 @@ with pkgs;
 
   # Python interpreters. All standard library modules are included except for tkinter, which is
   # available as `pythonPackages.tkinter` and can be used as any other Python package.
+  # When switching these sets, please update docs at ../../doc/languages-frameworks/python.md
   python = python2;
   python2 = python27;
   python3 = python36;
