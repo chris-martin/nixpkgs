@@ -6991,6 +6991,8 @@ with pkgs;
 
   "cl-launch" = callPackage ../development/tools/misc/cl-launch {};
 
+  cloudfoundry-cli = callPackage ../development/tools/cloudfoundry-cli { };
+
   coan = callPackage ../development/tools/analysis/coan { };
 
   compile-daemon = callPackage ../development/tools/compile-daemon { };
@@ -11147,7 +11149,7 @@ with pkgs;
     go = go_1_9;
   };
 
-  buildGoPackage = buildGo18Package;
+  buildGoPackage = buildGo19Package;
 
   go2nix = callPackage ../development/tools/go2nix { };
 
@@ -12033,7 +12035,10 @@ with pkgs;
 
   cifs-utils = callPackage ../os-specific/linux/cifs-utils { };
 
-  cockroachdb = callPackage ../servers/sql/cockroachdb { };
+  cockroachdb = callPackage ../servers/sql/cockroachdb {
+    # Go 1.9 build fails with "go1.8.* required (see CONTRIBUTING.md)".
+    buildGoPackage = buildGo18Package;
+  };
 
   conky = callPackage ../os-specific/linux/conky ({
     lua = lua5_1; # conky can use 5.2, but toluapp can not
