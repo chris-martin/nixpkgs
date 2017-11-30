@@ -2926,10 +2926,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   CryptX = buildPerlPackage rec {
-    name = "CryptX-0.054";
+    name = "CryptX-0.055";
     src = fetchurl {
       url = "mirror://cpan/authors/id/M/MI/MIK/${name}.tar.gz";
-      sha256 = "f084a706f6ff032ca5c46ec6f90ba5b6a26ae8752584911830f6535bf76d8e57";
+      sha256 = "4d680e8356497fbd2c66114a2bfbde753d77930f997430ba077db66a4458cee9";
     };
     propagatedBuildInputs = [ JSONMaybeXS ];
     meta = {
@@ -8046,10 +8046,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   LogContextual = buildPerlPackage rec {
-    name = "Log-Contextual-0.007001";
+    name = "Log-Contextual-0.008000";
     src = fetchurl {
       url = "mirror://cpan/authors/id/F/FR/FREW/${name}.tar.gz";
-      sha256 = "163c46f9cf4ed921356d300925a1c3ec4d7e0d20d1c678ade9ccc24efd990cd6";
+      sha256 = "acd804508740e35c208e0cff575f3dbca2e01b8e64ec00eec3f88c7c4e3d656c";
     };
     buildInputs = [ TestFatal ];
     propagatedBuildInputs = [ DataDumperConcise ExporterDeclare Moo ];
@@ -8057,7 +8057,6 @@ let self = _self // overrides; _self = with self; {
       homepage = https://github.com/frioux/Log-Contextual;
       description = "Simple logging interface with a contextual log";
       license = with stdenv.lib.licenses; [ artistic1 gpl1Plus ];
-      platforms   = stdenv.lib.platforms.unix;
     };
   };
 

@@ -1102,7 +1102,9 @@ with pkgs;
 
   geekbench = callPackage ../tools/misc/geekbench { };
 
-  gencfsm = callPackage ../tools/security/gencfsm { };
+  gencfsm = callPackage ../tools/security/gencfsm {
+    vala = vala_0_34;
+  };
 
   genromfs = callPackage ../tools/filesystems/genromfs { };
 
@@ -1496,6 +1498,11 @@ with pkgs;
 
   libpinyin = callPackage ../development/libraries/libpinyin { };
 
+  libskk = callPackage ../development/libraries/libskk {
+    gnome_common = gnome3.gnome_common;
+    vala = vala_0_34;
+  };
+
   m17n_db = callPackage ../tools/inputmethods/m17n-db { };
 
   m17n_lib = callPackage ../tools/inputmethods/m17n-lib { };
@@ -1547,10 +1554,6 @@ with pkgs;
   };
 
   brotli = callPackage ../tools/compression/brotli { };
-
-  brotliUnstable = callPackage ../tools/compression/brotli/unstable.nix { };
-
-  libbrotli = callPackage ../development/libraries/libbrotli { };
 
   biosdevname = callPackage ../tools/networking/biosdevname { };
 
@@ -5465,7 +5468,9 @@ with pkgs;
 
   ccl = callPackage ../development/compilers/ccl { };
 
-  chez = callPackage ../development/compilers/chez { };
+  chez = callPackage ../development/compilers/chez {
+    inherit (darwin) cctools;
+  };
 
   clang = llvmPackages.clang;
 
@@ -7112,9 +7117,7 @@ with pkgs;
 
   cheat = callPackage ../applications/misc/cheat { };
 
-  chefdk = callPackage ../development/tools/chefdk {
-    ruby = ruby_2_0;
-  };
+  chefdk = callPackage ../development/tools/chefdk { };
 
   matter-compiler = callPackage ../development/compilers/matter-compiler {};
 
@@ -7816,6 +7819,10 @@ with pkgs;
   };
 
   yodl = callPackage ../development/tools/misc/yodl { };
+
+  yq = callPackage ../development/tools/yq {
+    inherit (python3Packages) buildPythonApplication fetchPypi pyyaml;
+  };
 
   winpdb = callPackage ../development/tools/winpdb { };
 
@@ -8581,14 +8588,12 @@ with pkgs;
 
   gnu-efi = callPackage ../development/libraries/gnu-efi { };
 
-  gnutls = gnutls35;
-
-  gnutls35 = callPackage
+  gnutls = callPackage
     (if stdenv.isDarwin
       # Avoid > 3.5.10 due to frameworks for now; see discussion on:
       # https://github.com/NixOS/nixpkgs/commit/d6454e6a1
       then ../development/libraries/gnutls/3.5.10.nix
-      else ../development/libraries/gnutls/3.5.nix)
+      else ../development/libraries/gnutls/3.6.nix)
     {
       guileBindings = config.gnutls.guile or false;
     };
@@ -8953,6 +8958,8 @@ with pkgs;
   };
 
   libabw = callPackage ../development/libraries/libabw { };
+
+  libamqpcpp = callPackage ../development/libraries/libamqpcpp { };
 
   libantlr3c = callPackage ../development/libraries/libantlr3c {};
 
@@ -9729,7 +9736,6 @@ with pkgs;
 
   giflib = giflib_5_1;
   giflib_4_1 = callPackage ../development/libraries/giflib/4.1.nix { };
-  giflib_5_0 = callPackage ../development/libraries/giflib/5.0.nix { };
   giflib_5_1 = callPackage ../development/libraries/giflib/5.1.nix { };
 
   libungif = callPackage ../development/libraries/giflib/libungif.nix { };
@@ -10076,6 +10082,7 @@ with pkgs;
   };
 
   nettle = callPackage ../development/libraries/nettle { };
+  nettle_3_3 = callPackage ../development/libraries/nettle/3.3.nix { };
 
   newt = callPackage ../development/libraries/newt { };
 
@@ -13759,6 +13766,8 @@ with pkgs;
 
   vanilla-dmz = callPackage ../data/icons/vanilla-dmz { };
 
+  vdrsymbols = callPackage ../data/fonts/vdrsymbols { };
+
   vistafonts = callPackage ../data/fonts/vista-fonts { };
 
   vistafonts-chs = callPackage ../data/fonts/vista-fonts-chs { };
@@ -13913,6 +13922,7 @@ with pkgs;
   atom-beta = callPackage ../applications/editors/atom/beta.nix { };
 
   aseprite = callPackage ../applications/editors/aseprite { };
+  aseprite-unfree = aseprite.override { unfree = true; };
 
   astah-community = callPackage ../applications/graphics/astah-community { };
 
@@ -16249,6 +16259,8 @@ with pkgs;
     inherit (gst_all_1) gstreamer gst-plugins-base;
   };
 
+  peek = callPackage ../applications/video/peek { };
+
   pflask = callPackage ../os-specific/linux/pflask {};
 
   photoqt = libsForQt5.callPackage ../applications/graphics/photoqt { };
@@ -16987,9 +16999,9 @@ with pkgs;
   };
 
   deepin-terminal = callPackage ../applications/misc/deepin-terminal {
-    vte = gnome3.vte;
+    inherit (gnome3) libgee vte;
     wnck = libwnck3;
-    gee = libgee_0_8;
+    vala = vala_0_34;
   };
 
   termite = callPackage ../applications/misc/termite {
@@ -20111,4 +20123,6 @@ with pkgs;
   };
 
   wal-g = callPackage ../tools/backup/wal-g {};
+
+  tlwg = callPackage ../data/fonts/tlwg { };
 }
