@@ -832,10 +832,10 @@ with pkgs;
     enableSharedExecutables = false;
     executableToolDepends = [ makeWrapper ];
     postInstall = ''
-      exe=$libexec/bin/${drv.pname}-${drv.version}/${drv.pname}
-      install -D $bin/bin/${drv.pname} $exe
-      rm -rf $bin/bin $out/lib $out/share
-      makeWrapper $exe $bin/bin/${drv.pname} \
+      exe=$out/libexec/${drv.pname}-${drv.version}/${drv.pname}
+      install -D $out/bin/${drv.pname} $exe
+      rm -rf $out/{bin,lib,share}
+      makeWrapper $exe $out/bin/${drv.pname} \
         --prefix PATH ":" "${nix}/bin" \
         --prefix PATH ":" "${nix-prefetch-scripts}/bin"
       mkdir -p $out/share/{bash-completion/completions,zsh/vendor-completions,fish/completions}
@@ -849,7 +849,7 @@ with pkgs;
     executableToolDepends = [ makeWrapper ];
     postInstall = ''
       wrapProgram $out/bin/stack2nix \
-        ${lib.makeBinPath [ git cabal2nix cabal-install stack ]}
+        --prefix PATH ":" "${git}/bin:${cabal2nix}/bin:${cabal-install}/bin:${stack}/bin"
     '';
   });
 
@@ -857,6 +857,7 @@ with pkgs;
   traefik = callPackage ../servers/traefik { };
 
   capstone = callPackage ../development/libraries/capstone { };
+  unicorn-emu = callPackage ../development/libraries/unicorn-emu { };
 
   cataract          = callPackage ../applications/misc/cataract { };
   cataract-unstable = callPackage ../applications/misc/cataract/unstable.nix { };
@@ -5542,6 +5543,8 @@ with pkgs;
 
   devpi-client = callPackage ../development/tools/devpi-client {};
 
+  devpi-server = callPackage ../development/tools/devpi-server {};
+
   dotty = callPackage ../development/compilers/scala/dotty.nix { jre = jre8;};
 
   drumstick = callPackage ../development/libraries/drumstick { };
@@ -5983,7 +5986,6 @@ with pkgs;
           overrides = self: super: {
             binary = lib.dontCheck self.binary_0_8_5_1;
             cheapskate = self.cheapskate_0_1_1;
-            idris = self.idris_1_1_1;
             parsers = lib.dontCheck super.parsers;
             semigroupoids = lib.dontCheck super.semigroupoids;
             trifecta = lib.dontCheck super.trifecta;
@@ -6091,7 +6093,8 @@ with pkgs;
   supportsJDK =
     system == "i686-linux" ||
     system == "x86_64-linux" ||
-    system == "armv7l-linux";
+    system == "armv7l-linux" ||
+    system == "aarch64-linux";
 
   jdkdistro = oraclejdk8distro;
 
@@ -7305,7 +7308,7 @@ with pkgs;
   flow = callPackage ../development/tools/analysis/flow {
     inherit (darwin.apple_sdk.frameworks) CoreServices;
     inherit (darwin) cf-private;
-    inherit (ocamlPackages) ocaml findlib camlp4 sedlex ocamlbuild;
+    inherit (ocamlPackages) ocaml findlib camlp4 sedlex ocamlbuild ocaml_lwt;
   };
 
   framac = callPackage ../development/tools/analysis/frama-c { };
@@ -8947,6 +8950,8 @@ with pkgs;
   libaal = callPackage ../development/libraries/libaal { };
 
   libaccounts-glib = callPackage ../development/libraries/libaccounts-glib { };
+
+  libacr38u = callPackage ../tools/security/libacr38u { };
 
   libagar = callPackage ../development/libraries/libagar { };
   libagar_test = callPackage ../development/libraries/libagar/libagar_test.nix { };
@@ -14291,6 +14296,8 @@ with pkgs;
 
   dd-agent = callPackage ../tools/networking/dd-agent { };
 
+  ddgr = callPackage ../applications/misc/ddgr { };
+
   deadbeef = callPackage ../applications/audio/deadbeef {
     pulseSupport = config.pulseaudio or true;
   };
@@ -15610,7 +15617,7 @@ with pkgs;
   libreoffice-fresh = lowPrio (callPackage ../applications/office/libreoffice {
     inherit (perlPackages) ArchiveZip CompressZlib;
     inherit (gnome2) GConf ORBit2 gnome_vfs;
-    inherit (gnome3) gsettings_desktop_schemas defaultIconTheme;
+    inherit (gnome3) defaultIconTheme;
     zip = zip.override { enableNLS = false; };
     bluez5 = bluez5_28;
     fontsConf = makeFontsConf {
@@ -15630,7 +15637,7 @@ with pkgs;
   libreoffice-still = lowPrio (callPackage ../applications/office/libreoffice/still.nix {
     inherit (perlPackages) ArchiveZip CompressZlib;
     inherit (gnome2) GConf ORBit2 gnome_vfs;
-    inherit (gnome3) gsettings_desktop_schemas defaultIconTheme;
+    inherit (gnome3) defaultIconTheme;
     zip = zip.override { enableNLS = false; };
     #glm = glm_0954;
     bluez5 = bluez5_28;
