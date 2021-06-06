@@ -19,7 +19,7 @@ in buildGoPackage {
   meta = with stdenv.lib; {
     inherit (src.meta) homepage;
     description = "Simple Riemann query tool";
-    license = licenses.unfree; # https://github.com/rasputnik/riemannq/issues/2
+    license = licenses.mit;
     maintainers = with maintainers; [ chris-martin ];
     platforms = platforms.linux;
   };
